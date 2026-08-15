@@ -27,8 +27,8 @@
             font-family: 'Noto Sans JP', sans-serif;
             background-color: var(--bg-main);
             background-image:
-                radial-gradient(circle, rgba(133, 139, 152, 0.3) 5px, transparent 5px),
-                radial-gradient(circle, rgba(133, 139, 152, 0.3) 5px, transparent 5px);
+                radial-gradient(circle, rgba(133, 139, 152, 0.14) 5px, transparent 5px),
+                radial-gradient(circle, rgba(133, 139, 152, 0.14) 5px, transparent 5px);
             background-size: 28px 28px;
             background-position: 0 0, 14px 14px;
             color: var(--text-main);
@@ -137,14 +137,14 @@
         <!-- 1. ダッシュボード タブ -->
         <section id="tab-dashboard" class="tab-content space-y-6">
 
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border border-[#ECEDEF] shadow-sm">
                 <div>
                     <h2 class="text-2xl font-extrabold text-[#2F3440] flex items-center gap-2">
                         <span class="w-1.5 h-6 bg-[#EFA6B5] rounded-full"></span>
                         ダッシュボード
                     </h2>
                 </div>
-                <div class="flex items-center gap-2 bg-white p-1.5 rounded-xl border border-[#ECEDEF] text-sm shadow-sm">
+                <div class="flex items-center gap-2 bg-[#F8F8F9] p-1.5 rounded-xl border border-[#ECEDEF] text-sm">
                     <span class="text-xs text-[#858B98] pl-2">表示期間:</span>
                     <select id="dashboard-filter" onchange="updateDashboard()" class="bg-transparent font-medium focus:outline-none pr-2 cursor-pointer text-[#2F3440]">
                         <option value="this-month" selected>今月</option>
@@ -308,7 +308,10 @@
         <section id="tab-product-stats" class="tab-content hidden space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h2 class="text-xl font-bold text-[#2F3440]">商品別実績</h2>
+                    <h2 class="text-2xl font-extrabold text-[#2F3440] flex items-center gap-2">
+                        <span class="w-1.5 h-6 bg-[#EFA6B5] rounded-full"></span>
+                        商品別実績
+                    </h2>
                 </div>
                 <div class="flex items-center gap-2 bg-white p-1.5 rounded-xl border border-[#ECEDEF] text-sm shadow-sm">
                     <span class="text-xs text-[#858B98] pl-2">表示期間:</span>
@@ -489,7 +492,10 @@
         <section id="tab-purchases" class="tab-content hidden space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h2 class="text-xl font-bold text-[#2F3440]">仕入れ管理</h2>
+                    <h2 class="text-2xl font-extrabold text-[#2F3440] flex items-center gap-2">
+                        <span class="w-1.5 h-6 bg-[#EFA6B5] rounded-full"></span>
+                        仕入れ管理
+                    </h2>
                 </div>
                 <button onclick="openAddPurchaseModal()" class="bg-[#EFA6B5] hover:bg-[#E395A6] text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition-colors flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
