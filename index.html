@@ -20,7 +20,7 @@
             --pink-hover: #E395A6;
             --border-color: #ECEDEF;
             --text-main: #2F3440;
-            --text-sub: #858B98;
+            --text-sub: #6B7280;
         }
 
         body {
@@ -56,11 +56,11 @@
                     <span class="text-2xl leading-none" role="img" aria-hidden="true">📦</span>
                 </div>
                 <h1 class="font-bold text-base text-[#2F3440] mt-2">メルカリ売上・在庫管理</h1>
-                <p class="text-xs text-[#858B98]">この端末には保存されたデータがありません</p>
+                <p class="text-xs text-[#6B7280]">この端末には保存されたデータがありません</p>
             </div>
 
             <div class="space-y-3">
-                <h2 class="text-xs font-bold text-[#858B98]">他の端末で設定済みのメールアドレスがあればログイン</h2>
+                <h2 class="text-xs font-bold text-[#6B7280]">他の端末で設定済みのメールアドレスがあればログイン</h2>
                 <input type="email" id="gate-login-email" placeholder="メールアドレス" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]">
                 <input type="password" id="gate-login-password" placeholder="パスワード" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]">
                 <button onclick="handleGateLogin()" class="w-full bg-[#EFA6B5] hover:bg-[#E395A6] text-white font-bold py-2.5 rounded-xl text-sm">ログイン</button>
@@ -68,7 +68,7 @@
             </div>
 
             <div class="relative py-1 text-center">
-                <span class="text-[10px] text-[#858B98] bg-white px-2 relative z-10">または</span>
+                <span class="text-[10px] text-[#6B7280] bg-white px-2 relative z-10">または</span>
                 <div class="absolute left-0 right-0 top-1/2 border-t border-[#ECEDEF]"></div>
             </div>
 
@@ -89,7 +89,7 @@
                     <h1 class="font-bold text-base sm:text-lg text-[#2F3440] leading-tight whitespace-nowrap">メルカリ売上・在庫管理</h1>
                 </div>
                 <div>
-                    <span id="sync-badge" class="inline-flex px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold bg-[#FFF1F4] text-[#EFA6B5] rounded-full border border-[#FCDCE4] items-center gap-1 shrink-0">
+                    <span id="sync-badge" class="inline-flex px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold bg-[#FFF1F4] text-[#DB7C93] rounded-full border border-[#FCDCE4] items-center gap-1 shrink-0">
                         <span class="w-1.5 h-1.5 rounded-full bg-[#EFA6B5] animate-pulse"></span>
                         データ同期完了
                     </span>
@@ -98,27 +98,27 @@
 
             <!-- デスクトップ ナビゲーション -->
             <nav class="hidden xl:flex items-center space-x-1 bg-[#F8F8F9] p-1 rounded-xl border border-[#ECEDEF]">
-                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#EFA6B5] bg-white shadow-sm">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#DB7C93] bg-white shadow-sm">
                     <span class="text-base leading-none" role="img" aria-hidden="true">🏠</span>
                     ダッシュボード
                 </button>
-                <button onclick="switchTab('product-stats')" id="nav-product-stats" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
+                <button onclick="switchTab('product-stats')" id="nav-product-stats" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#6B7280] hover:text-[#2F3440]">
                     <span class="text-base leading-none" role="img" aria-hidden="true">📦</span>
                     商品別実績
                 </button>
-                <button onclick="switchTab('transactions')" id="nav-transactions" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
+                <button onclick="switchTab('transactions')" id="nav-transactions" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#6B7280] hover:text-[#2F3440]">
                     <span class="text-base leading-none" role="img" aria-hidden="true">📋</span>
                     取引一覧
                 </button>
-                <button onclick="switchTab('add')" id="nav-add" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
+                <button onclick="switchTab('add')" id="nav-add" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#6B7280] hover:text-[#2F3440]">
                     <span class="text-base leading-none" role="img" aria-hidden="true">📱</span>
                     新規登録
                 </button>
-                <button onclick="switchTab('purchases')" id="nav-purchases" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
+                <button onclick="switchTab('purchases')" id="nav-purchases" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#6B7280] hover:text-[#2F3440]">
                     <span class="text-base leading-none" role="img" aria-hidden="true">🛍️</span>
                     仕入れ管理
                 </button>
-                <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
+                <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#6B7280] hover:text-[#2F3440]">
                     <span class="text-base leading-none" role="img" aria-hidden="true">⚙️</span>
                     設定・データ管理
                 </button>
@@ -145,7 +145,7 @@
                     </h2>
                 </div>
                 <div class="flex items-center gap-2 bg-[#F8F8F9] p-1.5 rounded-xl border border-[#ECEDEF] text-sm">
-                    <span class="text-xs text-[#858B98] pl-2">表示期間:</span>
+                    <span class="text-xs text-[#6B7280] pl-2">表示期間:</span>
                     <select id="dashboard-filter" onchange="updateDashboard()" class="bg-transparent font-medium focus:outline-none pr-2 cursor-pointer text-[#2F3440]">
                         <option value="this-month" selected>今月</option>
                         <option value="last-month">先月</option>
@@ -158,32 +158,32 @@
             <!-- KPIカード -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm relative overflow-hidden">
-                    <div class="flex items-center justify-between text-[#858B98] mb-1">
+                    <div class="flex items-center justify-between text-[#6B7280] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">総売上</span>
                         <div class="p-1.5 bg-[#F8F8F9] text-[#2F3440] rounded-lg">
                             <span class="text-base leading-none" role="img" aria-hidden="true">💴</span>
                         </div>
                     </div>
                     <div id="kpi-sales" class="text-lg sm:text-2xl font-extrabold text-[#2F3440]">¥0</div>
-                    <div class="mt-1 text-xs text-[#858B98]">
+                    <div class="mt-1 text-xs text-[#6B7280]">
                         販売数: <span id="kpi-count" class="font-semibold text-[#2F3440]">0</span> 個
                     </div>
                 </div>
 
                 <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm relative overflow-hidden">
-                    <div class="flex items-center justify-between text-[#858B98] mb-1">
+                    <div class="flex items-center justify-between text-[#6B7280] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">手取り額</span>
-                        <div class="p-1.5 bg-[#FFF1F4] text-[#EFA6B5] rounded-lg">
+                        <div class="p-1.5 bg-[#FFF1F4] text-[#DB7C93] rounded-lg">
                             <span class="text-base leading-none" role="img" aria-hidden="true">💰</span>
                         </div>
                     </div>
-                    <div id="kpi-sales-net" class="text-lg sm:text-2xl font-extrabold text-[#EFA6B5]">¥0</div>
+                    <div id="kpi-sales-net" class="text-lg sm:text-2xl font-extrabold text-[#DB7C93]">¥0</div>
                 </div>
 
                 <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm relative overflow-hidden">
-                    <div class="flex items-center justify-between text-[#858B98] mb-1">
+                    <div class="flex items-center justify-between text-[#6B7280] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">仕入総額</span>
-                        <div class="p-1.5 bg-[#F8F8F9] text-[#858B98] rounded-lg">
+                        <div class="p-1.5 bg-[#F8F8F9] text-[#6B7280] rounded-lg">
                             <span class="text-base leading-none" role="img" aria-hidden="true">🛍️</span>
                         </div>
                     </div>
@@ -191,17 +191,17 @@
                 </div>
 
                 <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm relative overflow-hidden border-l-4 border-l-[#EFA6B5]">
-                    <div class="flex items-center justify-between text-[#858B98] mb-1">
+                    <div class="flex items-center justify-between text-[#6B7280] mb-1">
                         <span class="text-xs font-bold uppercase tracking-wider text-[#2F3440]">最終利益</span>
-                        <div class="p-1.5 bg-[#FFF1F4] text-[#EFA6B5] rounded-lg">
+                        <div class="p-1.5 bg-[#FFF1F4] text-[#DB7C93] rounded-lg">
                             <span class="text-base leading-none" role="img" aria-hidden="true">🪙</span>
                         </div>
                     </div>
-                    <div id="kpi-net-profit" class="text-lg sm:text-2xl font-extrabold text-[#EFA6B5]">¥0</div>
+                    <div id="kpi-net-profit" class="text-lg sm:text-2xl font-extrabold text-[#DB7C93]">¥0</div>
                 </div>
 
                 <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm relative overflow-hidden">
-                    <div class="flex items-center justify-between text-[#858B98] mb-1">
+                    <div class="flex items-center justify-between text-[#6B7280] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">現在庫総数</span>
                         <div class="p-1.5 bg-[#F8F8F9] text-[#2F3440] rounded-lg">
                             <span class="text-base leading-none" role="img" aria-hidden="true">📦</span>
@@ -211,9 +211,9 @@
                 </div>
 
                 <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm relative overflow-hidden">
-                    <div class="flex items-center justify-between text-[#858B98] mb-1">
+                    <div class="flex items-center justify-between text-[#6B7280] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">在庫商品種類数</span>
-                        <div class="p-1.5 bg-[#F8F8F9] text-[#858B98] rounded-lg">
+                        <div class="p-1.5 bg-[#F8F8F9] text-[#6B7280] rounded-lg">
                             <span class="text-base leading-none" role="img" aria-hidden="true">🏷️</span>
                         </div>
                     </div>
@@ -225,10 +225,10 @@
             <div id="stock-alert-section" class="hidden bg-[#FFF1F4] border border-[#FCDCE4] p-4 rounded-2xl space-y-2">
                 <div class="flex items-center justify-between">
                     <h3 class="font-bold text-[#2F3440] text-xs sm:text-sm flex items-center gap-1.5">
-                        <span class="text-base text-[#EFA6B5] leading-none" role="img" aria-hidden="true">⚠️</span>
+                        <span class="text-base text-[#DB7C93] leading-none" role="img" aria-hidden="true">⚠️</span>
                         在庫注意・在庫切れ
                     </h3>
-                    <button onclick="switchTab('purchases')" class="text-xs font-bold text-[#EFA6B5] hover:underline">仕入れ登録 →</button>
+                    <button onclick="switchTab('purchases')" class="text-xs font-bold text-[#DB7C93] hover:underline">仕入れ登録 →</button>
                 </div>
                 <div id="stock-alert-list" class="flex flex-wrap gap-2 pt-1">
                     <!-- JS挿入 -->
@@ -241,7 +241,7 @@
                 <div class="lg:col-span-2 bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-bold text-[#2F3440] flex items-center gap-2 text-sm sm:text-base">
-                            <span class="text-base text-[#EFA6B5] leading-none" role="img" aria-hidden="true">📈</span>
+                            <span class="text-base text-[#DB7C93] leading-none" role="img" aria-hidden="true">📈</span>
                             月別推移 (売上 / 手取り額 / 最終利益)
                         </h3>
                     </div>
@@ -255,7 +255,7 @@
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="font-bold text-[#2F3440] flex items-center gap-1.5 text-sm">
-                                <span class="text-base text-[#EFA6B5] leading-none" role="img" aria-hidden="true">🏆</span>
+                                <span class="text-base text-[#DB7C93] leading-none" role="img" aria-hidden="true">🏆</span>
                                 商品ランキング
                             </h3>
                             <select id="ranking-sort-type" onchange="updateDashboard()" class="text-xs font-semibold border border-[#ECEDEF] rounded-lg p-1 bg-white focus:outline-none">
@@ -269,7 +269,7 @@
                         </div>
                     </div>
                     <div class="pt-3 border-t border-[#ECEDEF] text-center mt-3">
-                        <button onclick="switchTab('product-stats')" class="text-xs font-bold text-[#EFA6B5] hover:text-[#E395A6] flex items-center justify-center gap-1 mx-auto">
+                        <button onclick="switchTab('product-stats')" class="text-xs font-bold text-[#DB7C93] hover:text-[#E395A6] flex items-center justify-center gap-1 mx-auto">
                             商品別実績を詳しく見る <span class="text-sm leading-none" role="img" aria-hidden="true">➡️</span>
                         </button>
                     </div>
@@ -280,17 +280,17 @@
             <div class="bg-white rounded-2xl border border-[#ECEDEF] shadow-sm overflow-hidden">
                 <div class="p-4 border-b border-[#ECEDEF] flex items-center justify-between">
                     <h3 class="font-bold text-[#2F3440] flex items-center gap-2 text-sm">
-                        <span class="text-base text-[#858B98] leading-none" role="img" aria-hidden="true">🕓</span>
+                        <span class="text-base text-[#6B7280] leading-none" role="img" aria-hidden="true">🕓</span>
                         最近売れた商品
                     </h3>
-                    <button onclick="switchTab('transactions')" class="text-xs font-semibold text-[#EFA6B5] hover:text-[#E395A6] flex items-center gap-1">
+                    <button onclick="switchTab('transactions')" class="text-xs font-semibold text-[#DB7C93] hover:text-[#E395A6] flex items-center gap-1">
                         すべて見る <span class="text-xs leading-none" role="img" aria-hidden="true">➡️</span>
                     </button>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-[#F8F8F9] text-[#858B98] text-xs font-semibold">
+                            <tr class="bg-[#F8F8F9] text-[#6B7280] text-xs font-semibold">
                                 <th class="p-3 pl-4">日付</th>
                                 <th class="p-3">商品名</th>
                                 <th class="p-3 text-right">販売価格</th>
@@ -314,7 +314,7 @@
                     </h2>
                 </div>
                 <div class="flex items-center gap-2 bg-[#F8F8F9] p-1.5 rounded-xl border border-[#ECEDEF] text-sm">
-                    <span class="text-xs text-[#858B98] pl-2">表示期間:</span>
+                    <span class="text-xs text-[#6B7280] pl-2">表示期間:</span>
                     <select id="product-stats-filter" onchange="renderProductStatsTable()" class="bg-transparent font-medium focus:outline-none pr-2 cursor-pointer text-[#2F3440]">
                         <option value="this-month">今月</option>
                         <option value="last-month">先月</option>
@@ -329,7 +329,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-[#F8F8F9] text-[#858B98] text-xs font-semibold uppercase tracking-wider border-b border-[#ECEDEF]">
+                            <tr class="bg-[#F8F8F9] text-[#6B7280] text-xs font-semibold uppercase tracking-wider border-b border-[#ECEDEF] whitespace-nowrap">
                                 <th class="p-3 pl-4">商品名</th>
                                 <th class="p-3 text-right">販売数</th>
                                 <th class="p-3 text-right">累計売上</th>
@@ -347,10 +347,10 @@
                     </table>
                 </div>
                 <div id="product-stats-empty" class="hidden p-12 text-center">
-                    <div class="inline-flex p-4 bg-[#F8F8F9] text-[#858B98] rounded-full mb-3">
+                    <div class="inline-flex p-4 bg-[#F8F8F9] text-[#6B7280] rounded-full mb-3">
                         <span class="text-4xl leading-none" role="img" aria-hidden="true">📦</span>
                     </div>
-                    <p class="text-[#858B98] font-medium">登録されている商品データがありません</p>
+                    <p class="text-[#6B7280] font-medium">登録されている商品データがありません</p>
                 </div>
             </div>
         </section>
@@ -359,7 +359,7 @@
         <section id="tab-transactions" class="tab-content hidden space-y-4">
             <div class="bg-white p-4 rounded-2xl border border-[#ECEDEF] shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between">
                 <div class="relative w-full md:w-80">
-                    <span class="text-base text-[#858B98] absolute left-3 top-3 leading-none" role="img" aria-hidden="true">🔍</span>
+                    <span class="text-base text-[#6B7280] absolute left-3 top-3 leading-none" role="img" aria-hidden="true">🔍</span>
                     <input type="text" id="search-input" oninput="debouncedRenderTransactions()" placeholder="商品名・メモで検索..." class="w-full pl-9 pr-4 py-2 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]">
                 </div>
 
@@ -377,10 +377,10 @@
                 <!-- JS動的描画 -->
             </div>
             <div id="empty-state" class="hidden p-12 text-center bg-white rounded-2xl border border-[#ECEDEF] shadow-sm">
-                <div class="inline-flex p-4 bg-[#F8F8F9] text-[#858B98] rounded-full mb-3">
+                <div class="inline-flex p-4 bg-[#F8F8F9] text-[#6B7280] rounded-full mb-3">
                     <span class="text-4xl leading-none" role="img" aria-hidden="true">📭</span>
                 </div>
-                <p class="text-[#858B98] font-medium">該当する取引データがありません</p>
+                <p class="text-[#6B7280] font-medium">該当する取引データがありません</p>
             </div>
         </section>
 
@@ -391,21 +391,21 @@
             <div class="bg-white p-6 sm:p-8 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-6">
                 <form id="add-transaction-form" onsubmit="handleFormSubmit(event)" class="space-y-5">
                     <div>
-                        <label class="block text-xs font-semibold text-[#858B98] mb-1">取引日付 <span class="text-[#EFA6B5]">*</span></label>
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">取引日付 <span class="text-[#DB7C93]">*</span></label>
                         <input type="date" id="form-date" required class="w-full max-w-full box-border appearance-none px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]">
                     </div>
 
                     <!-- 商品指定方法選択 -->
                     <div>
                         <div class="grid grid-cols-2 gap-2 bg-[#F8F8F9] p-1 rounded-xl text-xs font-bold text-center border border-[#ECEDEF]">
-                            <button type="button" id="btn-mode-master" onclick="setProductInputMode('master')" class="py-2 rounded-lg bg-white text-[#EFA6B5] shadow-sm transition-all">
+                            <button type="button" id="btn-mode-master" onclick="setProductInputMode('master')" class="py-2 rounded-lg bg-white text-[#DB7C93] shadow-sm transition-all">
                                 マスター商品
                             </button>
-                            <button type="button" id="btn-mode-single" onclick="setProductInputMode('single')" class="py-2 rounded-lg text-[#858B98] transition-all">
+                            <button type="button" id="btn-mode-single" onclick="setProductInputMode('single')" class="py-2 rounded-lg text-[#6B7280] transition-all">
                                 単発商品
                             </button>
                         </div>
-                        <p id="mode-desc-text" class="text-[11px] text-[#858B98] mt-1.5 pl-1">登録済みの商品から選ぶ</p>
+                        <p id="mode-desc-text" class="text-[11px] text-[#6B7280] mt-1.5 pl-1">登録済みの商品から選ぶ</p>
                     </div>
 
                     <!-- モード①: マスター商品 -->
@@ -418,11 +418,11 @@
 
                     <!-- モード②: 単発商品 -->
                     <div id="section-single-input" class="hidden space-y-2">
-                        <label class="block text-xs font-semibold text-[#858B98] mb-1">商品名を直接入力 <span class="text-[#EFA6B5]">*</span></label>
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">商品名を直接入力 <span class="text-[#DB7C93]">*</span></label>
                         <input type="text" id="form-single-title" placeholder="例: rino様 リクエスト 2点まとめ" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5] font-bold">
 
                         <div>
-                            <label class="block text-xs font-semibold text-[#858B98] mb-1 mt-3">仕入原価 (円・任意)</label>
+                            <label class="block text-xs font-semibold text-[#6B7280] mb-1 mt-3">仕入原価 (円・任意)</label>
                             <input type="number" id="form-single-cost" min="0" placeholder="例: 1500" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5] font-semibold">
                         </div>
                     </div>
@@ -430,51 +430,51 @@
                     <!-- 参考カード -->
                     <div id="product-ref-card" class="hidden bg-[#FFF1F4] border border-[#FCDCE4] p-3.5 rounded-xl grid grid-cols-3 gap-2 text-center text-xs">
                         <div>
-                            <div class="text-[10px] text-[#858B98] font-semibold">現在庫</div>
+                            <div class="text-[10px] text-[#6B7280] font-semibold">現在庫</div>
                             <div id="ref-stock" class="font-bold text-[#2F3440] mt-0.5">--</div>
                         </div>
                         <div>
-                            <div class="text-[10px] text-[#858B98] font-semibold">直近販売価格</div>
+                            <div class="text-[10px] text-[#6B7280] font-semibold">直近販売価格</div>
                             <div id="ref-latest-price" class="font-bold text-[#2F3440] mt-0.5">--</div>
                         </div>
                         <div>
-                            <div class="text-[10px] text-[#858B98] font-semibold">平均販売価格</div>
+                            <div class="text-[10px] text-[#6B7280] font-semibold">平均販売価格</div>
                             <div id="ref-avg-price" class="font-bold text-[#2F3440] mt-0.5">--</div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold text-[#858B98] mb-1">販売価格 (円) <span class="text-[#EFA6B5]">*</span></label>
+                            <label class="block text-xs font-semibold text-[#6B7280] mb-1">販売価格 (円) <span class="text-[#DB7C93]">*</span></label>
                             <input type="number" id="form-sell-price" required min="0" placeholder="3000" oninput="calculatePreview()" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5] font-semibold text-[#2F3440]">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-[#858B98] mb-1">発送時の送料 (円)</label>
+                            <label class="block text-xs font-semibold text-[#6B7280] mb-1">発送時の送料 (円)</label>
                             <input type="number" id="form-shipping-fee" min="0" placeholder="215" value="215" oninput="calculatePreview()" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]">
                         </div>
                     </div>
 
                     <!-- リアルタイム計算プレビュー -->
                     <div class="bg-[#F8F8F9] p-4 rounded-xl border border-[#ECEDEF] space-y-2">
-                        <div class="text-xs font-semibold text-[#858B98] uppercase tracking-wider mb-1">計算プレビュー</div>
+                        <div class="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">計算プレビュー</div>
                         <div class="grid grid-cols-3 gap-2 text-center">
                             <div class="bg-white p-2 rounded-lg border border-[#ECEDEF]">
-                                <div class="text-[11px] text-[#858B98]">販売手数料 (<span id="preview-fee-rate-label">10</span>%)</div>
+                                <div class="text-[11px] text-[#6B7280]">販売手数料 (<span id="preview-fee-rate-label">10</span>%)</div>
                                 <div id="preview-fee" class="font-bold text-[#2F3440] mt-0.5">¥0</div>
                             </div>
                             <div class="bg-white p-2 rounded-lg border border-[#ECEDEF]">
-                                <div class="text-[11px] text-[#858B98]">送料</div>
+                                <div class="text-[11px] text-[#6B7280]">送料</div>
                                 <div id="preview-shipping" class="font-bold text-[#2F3440] mt-0.5">¥215</div>
                             </div>
                             <div class="bg-white p-2 rounded-lg border border-[#ECEDEF]">
-                                <div class="text-[11px] text-[#EFA6B5] font-semibold">手取り額</div>
-                                <div id="preview-profit" class="font-bold text-[#EFA6B5] mt-0.5">¥0</div>
+                                <div class="text-[11px] text-[#DB7C93] font-semibold">手取り額</div>
+                                <div id="preview-profit" class="font-bold text-[#DB7C93] mt-0.5">¥0</div>
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-[#858B98] mb-1">メモ</label>
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">メモ</label>
                         <textarea id="form-memo" rows="2" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]"></textarea>
                     </div>
 
@@ -506,15 +506,15 @@
             <!-- 仕入れKPI -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-white p-5 rounded-2xl border border-[#ECEDEF] shadow-sm">
-                    <div class="text-xs text-[#858B98] font-semibold mb-1">今月の仕入額</div>
-                    <div id="kpi-pur-month" class="text-2xl font-extrabold text-[#EFA6B5]">¥0</div>
+                    <div class="text-xs text-[#6B7280] font-semibold mb-1">今月の仕入額</div>
+                    <div id="kpi-pur-month" class="text-2xl font-extrabold text-[#DB7C93]">¥0</div>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-[#ECEDEF] shadow-sm">
-                    <div class="text-xs text-[#858B98] font-semibold mb-1">今年の仕入額</div>
+                    <div class="text-xs text-[#6B7280] font-semibold mb-1">今年の仕入額</div>
                     <div id="kpi-pur-year" class="text-2xl font-extrabold text-[#2F3440]">¥0</div>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-[#ECEDEF] shadow-sm">
-                    <div class="text-xs text-[#858B98] font-semibold mb-1">累計仕入額</div>
+                    <div class="text-xs text-[#6B7280] font-semibold mb-1">累計仕入額</div>
                     <div id="kpi-pur-total" class="text-2xl font-extrabold text-[#2F3440]">¥0</div>
                 </div>
             </div>
@@ -524,7 +524,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-[#F8F8F9] text-[#858B98] text-xs font-semibold uppercase tracking-wider border-b border-[#ECEDEF]">
+                            <tr class="bg-[#F8F8F9] text-[#6B7280] text-xs font-semibold uppercase tracking-wider border-b border-[#ECEDEF] whitespace-nowrap">
                                 <th class="p-3 pl-4">仕入日</th>
                                 <th class="p-3">仕入れ商品内訳</th>
                                 <th class="p-3 text-right">仕入総額</th>
@@ -537,10 +537,10 @@
                     </table>
                 </div>
                 <div id="purchases-empty-state" class="hidden p-12 text-center">
-                    <div class="inline-flex p-4 bg-[#F8F8F9] text-[#858B98] rounded-full mb-3">
+                    <div class="inline-flex p-4 bg-[#F8F8F9] text-[#6B7280] rounded-full mb-3">
                         <span class="text-4xl leading-none" role="img" aria-hidden="true">🛍️</span>
                     </div>
-                    <p class="text-[#858B98] font-medium">仕入れデータがありません</p>
+                    <p class="text-[#6B7280] font-medium">仕入れデータがありません</p>
                 </div>
             </div>
         </section>
@@ -550,7 +550,7 @@
             <!-- Gmail自動取込みの状態カード -->
             <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-3">
                 <h2 class="text-xl font-bold text-[#2F3440] flex items-center gap-2">
-                    <span class="text-xl text-[#EFA6B5] leading-none" role="img" aria-hidden="true">📬</span>
+                    <span class="text-xl text-[#DB7C93] leading-none" role="img" aria-hidden="true">📬</span>
                     Gmail自動取込みの状態
                 </h2>
                 <div id="gmail-import-status" class="text-xs space-y-2">まだ一度も実行されていません</div>
@@ -559,18 +559,18 @@
             <!-- システム設定カード -->
             <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-4">
                 <h2 class="text-xl font-bold text-[#2F3440] flex items-center gap-2">
-                    <span class="text-xl text-[#EFA6B5] leading-none" role="img" aria-hidden="true">🎚️</span>
+                    <span class="text-xl text-[#DB7C93] leading-none" role="img" aria-hidden="true">🎚️</span>
                     計算設定
                 </h2>
                 <div>
-                    <label class="block text-xs font-semibold text-[#858B98] mb-1">メルカリ販売手数料率 (%)</label>
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">メルカリ販売手数料率 (%)</label>
                     <div class="flex items-center gap-2">
                         <input type="number" id="setting-fee-rate" min="0" max="100" step="0.1" value="10" class="w-32 px-3.5 py-2 border border-[#ECEDEF] rounded-xl text-sm font-bold text-[#2F3440] focus:outline-none focus:border-[#EFA6B5]">
                         <button onclick="saveFeeRateSetting()" class="px-4 py-2 bg-[#EFA6B5] hover:bg-[#E395A6] text-white text-xs font-bold rounded-xl transition-colors">
                             保存する
                         </button>
                     </div>
-                    <p class="text-[11px] text-[#858B98] mt-1">通常は10%。カテゴリによって違う場合はここで変更できます。</p>
+                    <p class="text-[11px] text-[#6B7280] mt-1">通常は10%。カテゴリによって違う場合はここで変更できます。</p>
                 </div>
             </div>
 
@@ -580,12 +580,12 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <button onclick="exportAllJSON()" class="p-4 border border-[#FCDCE4] bg-[#FFF1F4]/60 rounded-xl text-left hover:border-[#EFA6B5] transition-all flex items-start gap-3">
-                        <div class="p-2.5 bg-white text-[#EFA6B5] rounded-lg shrink-0 border border-[#FCDCE4]">
+                        <div class="p-2.5 bg-white text-[#DB7C93] rounded-lg shrink-0 border border-[#FCDCE4]">
                             <span class="text-xl leading-none" role="img" aria-hidden="true">📄</span>
                         </div>
                         <div>
                             <div class="font-bold text-[#2F3440] text-sm">全データ一括バックアップ (JSON)</div>
-                            <div class="text-xs text-[#EFA6B5] mt-0.5">商品マスター・売上・仕入れを保存</div>
+                            <div class="text-xs text-[#DB7C93] mt-0.5">商品マスター・売上・仕入れを保存</div>
                         </div>
                     </button>
 
@@ -595,40 +595,40 @@
                         </div>
                         <div>
                             <div class="font-bold text-[#2F3440] text-sm">売上CSVダウンロード</div>
-                            <div class="text-xs text-[#858B98] mt-0.5">売上データをCSV形式で出力</div>
+                            <div class="text-xs text-[#6B7280] mt-0.5">売上データをCSV形式で出力</div>
                         </div>
                     </button>
                 </div>
 
                 <div class="p-4 border border-[#ECEDEF] rounded-xl space-y-3 bg-[#F8F8F9]">
                     <div class="font-bold text-sm text-[#2F3440] flex items-center gap-2">
-                        <span class="text-base text-[#EFA6B5] leading-none" role="img" aria-hidden="true">📤</span>
+                        <span class="text-base text-[#DB7C93] leading-none" role="img" aria-hidden="true">📤</span>
                         バックアップから復元 (JSON / CSV)
                     </div>
 
-                    <div class="flex items-center gap-4 text-xs font-semibold text-[#858B98]">
+                    <div class="flex items-center gap-4 text-xs font-semibold text-[#6B7280]">
                         <span>復元モード:</span>
                         <label class="flex items-center gap-1 cursor-pointer">
-                            <input type="radio" name="import-mode" value="append" checked class="text-[#EFA6B5]">
+                            <input type="radio" name="import-mode" value="append" checked class="text-[#DB7C93]">
                             <span>追加 (結合)</span>
                         </label>
                         <label class="flex items-center gap-1 cursor-pointer">
-                            <input type="radio" name="import-mode" value="replace" class="text-[#EFA6B5]">
+                            <input type="radio" name="import-mode" value="replace" class="text-[#DB7C93]">
                             <span class="text-red-500">置き換え (初期化して復元)</span>
                         </label>
                     </div>
 
-                    <input type="file" id="backup-file-input" accept=".json,.csv" onchange="handleBackupFileImport(event)" class="block w-full text-xs text-[#858B98] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#2F3440] file:text-white hover:file:bg-black cursor-pointer">
+                    <input type="file" id="backup-file-input" accept=".json,.csv" onchange="handleBackupFileImport(event)" class="block w-full text-xs text-[#6B7280] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#2F3440] file:text-white hover:file:bg-black cursor-pointer">
                 </div>
             </div>
 
             <!-- アカウント情報 -->
             <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-3">
                 <h3 class="font-bold text-[#2F3440] text-base">アカウント情報</h3>
-                <div id="account-status-display" class="text-xs text-[#858B98]">確認中...</div>
+                <div id="account-status-display" class="text-xs text-[#6B7280]">確認中...</div>
 
                 <div class="bg-[#F8F8F9] border border-[#ECEDEF] rounded-xl p-3 space-y-1.5">
-                    <div class="text-[10px] text-[#858B98] font-semibold">ID（外部連携の設定で使用）</div>
+                    <div class="text-[10px] text-[#6B7280] font-semibold">ID（外部連携の設定で使用）</div>
                     <div class="flex items-center gap-2">
                         <code id="account-uid-display" class="flex-1 text-xs font-mono text-[#2F3440] break-all select-all">読み込み中...</code>
                         <button onclick="copyUidToClipboard()" class="shrink-0 px-3 py-1.5 bg-white border border-[#ECEDEF] rounded-lg text-xs font-bold text-[#2F3440] hover:bg-[#ECEDEF]">コピー</button>
@@ -637,7 +637,7 @@
 
                 <div id="account-link-section" class="hidden space-y-4 pt-2 border-t border-[#ECEDEF]">
                     <div class="space-y-2">
-                        <p class="text-[11px] text-[#858B98] font-semibold">他の端末で設定済みのメールアドレスがあればログイン</p>
+                        <p class="text-[11px] text-[#6B7280] font-semibold">他の端末で設定済みのメールアドレスがあればログイン</p>
                         <input type="email" id="settings-login-email" placeholder="メールアドレス" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
                         <input type="password" id="settings-login-password" placeholder="パスワード" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
                         <button onclick="handleSettingsLogin()" class="w-full bg-[#2F3440] hover:bg-black text-white text-xs font-bold py-2.5 rounded-xl">ログインする</button>
@@ -645,8 +645,8 @@
                     </div>
 
                     <div class="space-y-2 pt-3 border-t border-dashed border-[#ECEDEF]">
-                        <p class="text-[11px] text-[#858B98] font-semibold">今のデータにメールアドレスを設定する</p>
-                        <p class="text-[11px] text-[#858B98]">設定すると、他の端末からもこのデータにログインできます。</p>
+                        <p class="text-[11px] text-[#6B7280] font-semibold">今のデータにメールアドレスを設定する</p>
+                        <p class="text-[11px] text-[#6B7280]">設定すると、他の端末からもこのデータにログインできます。</p>
                         <input type="email" id="link-email" placeholder="メールアドレス" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
                         <input type="password" id="link-password" placeholder="パスワード（6文字以上）" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
                         <button onclick="handleLinkEmailAccount()" class="w-full bg-[#EFA6B5] hover:bg-[#E395A6] text-white text-xs font-bold py-2.5 rounded-xl">このデータに設定する</button>
@@ -655,7 +655,7 @@
                 </div>
 
                 <div id="account-password-section" class="hidden space-y-2 pt-2 border-t border-[#ECEDEF]">
-                    <p class="text-[11px] text-[#858B98] font-semibold">パスワードの変更</p>
+                    <p class="text-[11px] text-[#6B7280] font-semibold">パスワードの変更</p>
                     <input type="password" id="pw-current" placeholder="現在のパスワード" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
                     <input type="password" id="pw-new" placeholder="新しいパスワード（6文字以上）" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
                     <button onclick="handleChangePassword()" class="w-full bg-[#2F3440] hover:bg-black text-white text-xs font-bold py-2.5 rounded-xl">パスワードを変更する</button>
@@ -683,27 +683,27 @@
 
     <!-- モバイルボトムナビゲーション -->
     <div id="app-mobile-nav" class="hidden xl:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEDEF] z-40 px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex justify-around shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
-        <button onclick="switchTab('dashboard')" id="mobile-nav-dashboard" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#EFA6B5]">
+        <button onclick="switchTab('dashboard')" id="mobile-nav-dashboard" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#DB7C93]">
             <span class="text-base mb-0.5 leading-none" role="img" aria-hidden="true">🏠</span>
             ホーム
         </button>
-        <button onclick="switchTab('product-stats')" id="mobile-nav-product-stats" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
+        <button onclick="switchTab('product-stats')" id="mobile-nav-product-stats" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#6B7280]">
             <span class="text-base mb-0.5 leading-none" role="img" aria-hidden="true">📦</span>
             実績
         </button>
-        <button onclick="switchTab('transactions')" id="mobile-nav-transactions" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
+        <button onclick="switchTab('transactions')" id="mobile-nav-transactions" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#6B7280]">
             <span class="text-base mb-0.5 leading-none" role="img" aria-hidden="true">📋</span>
             取引一覧
         </button>
-        <button onclick="switchTab('add')" id="mobile-nav-add" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
+        <button onclick="switchTab('add')" id="mobile-nav-add" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#6B7280]">
             <span class="text-base mb-0.5 leading-none" role="img" aria-hidden="true">📱</span>
             登録
         </button>
-        <button onclick="switchTab('purchases')" id="mobile-nav-purchases" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
+        <button onclick="switchTab('purchases')" id="mobile-nav-purchases" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#6B7280]">
             <span class="text-base mb-0.5 leading-none" role="img" aria-hidden="true">🛍️</span>
             仕入れ
         </button>
-        <button onclick="switchTab('settings')" id="mobile-nav-settings" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
+        <button onclick="switchTab('settings')" id="mobile-nav-settings" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#6B7280]">
             <span class="text-base mb-0.5 leading-none" role="img" aria-hidden="true">⚙️</span>
             設定
         </button>
@@ -712,13 +712,13 @@
     <!-- 商品詳細モーダル -->
     <div id="product-detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl space-y-5 relative max-h-[90vh] overflow-y-auto border border-[#ECEDEF]">
-            <button onclick="closeProductDetailModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
+            <button onclick="closeProductDetailModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#6B7280] hover:text-[#2F3440]">
                 <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
 
             <div class="flex items-center justify-between border-b border-[#ECEDEF] pb-3">
                 <div>
-                    <span class="px-2 py-0.5 text-[10px] font-bold bg-[#FFF1F4] text-[#EFA6B5] rounded-md border border-[#FCDCE4]">ID: <span id="detail-product-id">---</span></span>
+                    <span class="px-2 py-0.5 text-[10px] font-bold bg-[#FFF1F4] text-[#DB7C93] rounded-md border border-[#FCDCE4]">ID: <span id="detail-product-id">---</span></span>
                     <h3 id="detail-product-title" class="text-xl font-bold text-[#2F3440] mt-1">商品名</h3>
                 </div>
                 <button onclick="openEditProductMasterModal()" class="px-3 py-1.5 bg-[#F8F8F9] hover:bg-[#ECEDEF] text-[#2F3440] text-xs font-bold rounded-xl transition-colors flex items-center gap-1 border border-[#ECEDEF]">
@@ -730,49 +730,49 @@
             <!-- 数値サマリーグリッド -->
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center">
                 <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
-                    <div class="text-[10px] text-[#858B98] font-semibold">累計販売数</div>
-                    <div id="detail-total-sold" class="text-base font-extrabold text-[#EFA6B5] mt-0.5">0 個</div>
+                    <div class="text-[10px] text-[#6B7280] font-semibold">累計販売数</div>
+                    <div id="detail-total-sold" class="text-base font-extrabold text-[#DB7C93] mt-0.5">0 個</div>
                 </div>
                 <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
-                    <div class="text-[10px] text-[#858B98] font-semibold">累計売上</div>
+                    <div class="text-[10px] text-[#6B7280] font-semibold">累計売上</div>
                     <div id="detail-total-sales" class="text-base font-extrabold text-[#2F3440] mt-0.5">¥0</div>
                 </div>
                 <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
-                    <div class="text-[10px] text-[#858B98] font-semibold">累計手取り</div>
+                    <div class="text-[10px] text-[#6B7280] font-semibold">累計手取り</div>
                     <div id="detail-sales-net" class="text-base font-extrabold text-teal-600 mt-0.5">¥0</div>
                 </div>
                 <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
-                    <div class="text-[10px] text-[#858B98] font-semibold">累計仕入数</div>
+                    <div class="text-[10px] text-[#6B7280] font-semibold">累計仕入数</div>
                     <div id="detail-purchased-qty" class="text-base font-extrabold text-[#2F3440] mt-0.5">0 個</div>
                 </div>
                 <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
-                    <div class="text-[10px] text-[#858B98] font-semibold">現在庫</div>
+                    <div class="text-[10px] text-[#6B7280] font-semibold">現在庫</div>
                     <div id="detail-stock" class="text-base font-extrabold text-amber-600 mt-0.5">未設定</div>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
                 <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
-                    <div class="text-[10px] text-[#858B98] font-semibold">平均販売価格</div>
+                    <div class="text-[10px] text-[#6B7280] font-semibold">平均販売価格</div>
                     <div id="detail-avg-price" class="text-sm font-bold text-[#2F3440] mt-0.5">¥0</div>
                 </div>
                 <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
-                    <div class="text-[10px] text-[#858B98] font-semibold">最高 / 最低価格</div>
+                    <div class="text-[10px] text-[#6B7280] font-semibold">最高 / 最低価格</div>
                     <div id="detail-minmax-price" class="text-xs font-bold text-[#2F3440] mt-1">¥0 / ¥0</div>
                 </div>
                 <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
-                    <div class="text-[10px] text-[#858B98] font-semibold">直近販売価格</div>
+                    <div class="text-[10px] text-[#6B7280] font-semibold">直近販売価格</div>
                     <div id="detail-latest-price" class="text-sm font-bold text-[#2F3440] mt-0.5">¥0</div>
                 </div>
                 <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
-                    <div class="text-[10px] text-[#858B98] font-semibold">最終販売日</div>
+                    <div class="text-[10px] text-[#6B7280] font-semibold">最終販売日</div>
                     <div id="detail-last-date" class="text-xs font-bold text-[#2F3440] mt-1">--</div>
                 </div>
             </div>
 
             <div class="bg-[#F8F8F9] p-4 rounded-xl border border-[#ECEDEF]">
                 <h4 class="text-xs font-bold text-[#2F3440] mb-2 flex items-center gap-1.5">
-                    <span class="text-sm text-[#EFA6B5] leading-none" role="img" aria-hidden="true">📈</span>
+                    <span class="text-sm text-[#DB7C93] leading-none" role="img" aria-hidden="true">📈</span>
                     販売価格の推移
                 </h4>
                 <div class="h-44 relative">
@@ -782,7 +782,7 @@
 
             <div class="space-y-2">
                 <h4 class="text-xs font-bold text-[#2F3440] flex items-center gap-1.5">
-                    <span class="text-sm text-[#858B98] leading-none" role="img" aria-hidden="true">🕓</span>
+                    <span class="text-sm text-[#6B7280] leading-none" role="img" aria-hidden="true">🕓</span>
                     販売履歴
                 </h4>
                 <div id="product-sales-timeline" class="max-h-40 overflow-y-auto bg-[#F8F8F9] rounded-xl p-3 border border-[#ECEDEF] text-xs space-y-1.5">
@@ -799,7 +799,7 @@
     <!-- 初期在庫・警告設定モーダル -->
     <div id="product-master-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 relative border border-[#ECEDEF]">
-            <button onclick="closeProductMasterModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
+            <button onclick="closeProductMasterModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#6B7280] hover:text-[#2F3440]">
                 <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
             <h3 class="text-lg font-bold text-[#2F3440]">在庫・マスター設定</h3>
@@ -807,23 +807,23 @@
             <form id="product-master-form" onsubmit="handleProductMasterSubmit(event)" class="space-y-4">
                 <input type="hidden" id="pm-id">
                 <div>
-                    <label class="block text-xs font-semibold text-[#858B98] mb-1">商品名</label>
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">商品名</label>
                     <input type="text" id="pm-title" required class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-bold text-[#2F3440]">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-[#858B98] mb-1">初期在庫数 (個)</label>
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">初期在庫数 (個)</label>
                         <input type="number" id="pm-initial-stock" min="0" placeholder="未設定時は空欄" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-semibold">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-[#858B98] mb-1">在庫警告数 (個)</label>
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">在庫警告数 (個)</label>
                         <input type="number" id="pm-alert-stock" min="0" value="5" required class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-semibold">
                     </div>
                 </div>
 
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeProductMasterModal()" class="px-4 py-2 border border-[#ECEDEF] text-[#858B98] rounded-xl text-sm font-medium">キャンセル</button>
+                    <button type="button" onclick="closeProductMasterModal()" class="px-4 py-2 border border-[#ECEDEF] text-[#6B7280] rounded-xl text-sm font-medium">キャンセル</button>
                     <button type="submit" class="px-4 py-2 bg-[#EFA6B5] hover:bg-[#E395A6] text-white rounded-xl text-sm font-medium">保存する</button>
                 </div>
             </form>
@@ -833,18 +833,18 @@
     <!-- 新規商品作成ダイアログ -->
     <div id="new-product-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl space-y-4 relative border border-[#ECEDEF]">
-            <button onclick="closeNewProductModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
+            <button onclick="closeNewProductModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#6B7280] hover:text-[#2F3440]">
                 <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
             <h3 class="text-base font-bold text-[#2F3440]">新しい商品をマスター追加</h3>
 
             <form id="new-product-form" onsubmit="handleNewProductSubmit(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs font-semibold text-[#858B98] mb-1">新商品名 <span class="text-[#EFA6B5]">*</span></label>
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">新商品名 <span class="text-[#DB7C93]">*</span></label>
                     <input type="text" id="new-prod-title" required placeholder="例: 商品ABC" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-semibold">
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeNewProductModal()" class="px-3.5 py-2 border border-[#ECEDEF] text-[#858B98] rounded-xl text-xs font-medium">キャンセル</button>
+                    <button type="button" onclick="closeNewProductModal()" class="px-3.5 py-2 border border-[#ECEDEF] text-[#6B7280] rounded-xl text-xs font-medium">キャンセル</button>
                     <button type="submit" class="px-4 py-2 bg-[#2F3440] hover:bg-black text-white rounded-xl text-xs font-medium">追加する</button>
                 </div>
             </form>
@@ -854,7 +854,7 @@
     <!-- 編集モーダル（売上） -->
     <div id="edit-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto border border-[#ECEDEF]">
-            <button onclick="closeEditModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
+            <button onclick="closeEditModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#6B7280] hover:text-[#2F3440]">
                 <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
             <h3 class="text-lg font-bold text-[#2F3440]">取引データの編集</h3>
@@ -862,56 +862,56 @@
             <form id="edit-form" onsubmit="handleEditSubmit(event)" class="space-y-4">
                 <input type="hidden" id="edit-id">
                 <div>
-                    <label class="block text-xs font-semibold text-[#858B98] mb-1">日付</label>
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">日付</label>
                     <input type="date" id="edit-date" required class="w-full max-w-full box-border appearance-none px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-[#858B98] mb-1.5">商品指定方法</label>
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1.5">商品指定方法</label>
                     <div class="grid grid-cols-2 gap-2 bg-[#F8F8F9] p-1 rounded-xl text-xs font-bold text-center border border-[#ECEDEF]">
-                        <button type="button" id="btn-edit-mode-master" onclick="setEditProductInputMode('master')" class="py-1.5 rounded-lg bg-white text-[#EFA6B5] shadow-sm transition-all">
+                        <button type="button" id="btn-edit-mode-master" onclick="setEditProductInputMode('master')" class="py-1.5 rounded-lg bg-white text-[#DB7C93] shadow-sm transition-all">
                             マスター商品
                         </button>
-                        <button type="button" id="btn-edit-mode-single" onclick="setEditProductInputMode('single')" class="py-1.5 rounded-lg text-[#858B98] transition-all">
+                        <button type="button" id="btn-edit-mode-single" onclick="setEditProductInputMode('single')" class="py-1.5 rounded-lg text-[#6B7280] transition-all">
                             単発商品
                         </button>
                     </div>
                 </div>
 
                 <div id="edit-section-master" class="space-y-2">
-                    <label class="block text-xs font-semibold text-[#858B98] mb-1">商品選択</label>
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">商品選択</label>
                     <select id="edit-product-id" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-bold text-[#2F3440]">
                         <!-- JS挿入 -->
                     </select>
                 </div>
 
                 <div id="edit-section-single" class="hidden space-y-2">
-                    <label class="block text-xs font-semibold text-[#858B98] mb-1">単発商品名</label>
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">単発商品名</label>
                     <input type="text" id="edit-single-title" placeholder="例: rino様 リクエスト 2点まとめ" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-bold">
                     <div>
-                        <label class="block text-xs font-semibold text-[#858B98] mb-1 mt-2">個別仕入原価 (円)</label>
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1 mt-2">個別仕入原価 (円)</label>
                         <input type="number" id="edit-single-cost" min="0" placeholder="例: 1500" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-[#858B98] mb-1">販売価格 (円)</label>
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">販売価格 (円)</label>
                         <input type="number" id="edit-sell-price" required min="0" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-[#858B98] mb-1">発送送料 (円)</label>
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">発送送料 (円)</label>
                         <input type="number" id="edit-shipping-fee" min="0" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-[#858B98] mb-1">メモ</label>
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">メモ</label>
                     <textarea id="edit-memo" rows="2" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm"></textarea>
                 </div>
 
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-[#ECEDEF] text-[#858B98] rounded-xl text-sm font-medium">キャンセル</button>
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-[#ECEDEF] text-[#6B7280] rounded-xl text-sm font-medium">キャンセル</button>
                     <button type="submit" class="px-4 py-2 bg-[#EFA6B5] hover:bg-[#E395A6] text-white rounded-xl text-sm font-medium">更新する</button>
                 </div>
             </form>
@@ -921,7 +921,7 @@
     <!-- 仕入れ新規/編集モーダル -->
     <div id="purchase-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto border border-[#ECEDEF]">
-            <button onclick="closePurchaseModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
+            <button onclick="closePurchaseModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#6B7280] hover:text-[#2F3440]">
                 <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
             <h3 id="purchase-modal-title" class="text-lg font-bold text-[#2F3440]">新規まとめ仕入れの登録</h3>
@@ -931,11 +931,11 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-[#858B98] mb-1">仕入日 <span class="text-[#EFA6B5]">*</span></label>
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">仕入日 <span class="text-[#DB7C93]">*</span></label>
                         <input type="date" id="pur-date" required class="w-full max-w-full box-border appearance-none px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-[#858B98] mb-1">仕入総額 (円) <span class="text-[#EFA6B5]">*</span></label>
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">仕入総額 (円) <span class="text-[#DB7C93]">*</span></label>
                         <input type="number" id="pur-amount" min="0" required placeholder="例: 30000" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-extrabold text-[#2F3440] focus:outline-none focus:border-[#EFA6B5]">
                     </div>
                 </div>
@@ -943,7 +943,7 @@
                 <div class="space-y-2 border-t border-b border-[#ECEDEF] py-3">
                     <div class="flex items-center justify-between">
                         <label class="block text-xs font-bold text-[#2F3440]">仕入れ商品内訳 (商品 & 数量)</label>
-                        <button type="button" onclick="addPurchaseItemRow()" class="text-xs text-[#EFA6B5] font-bold hover:underline flex items-center gap-1">
+                        <button type="button" onclick="addPurchaseItemRow()" class="text-xs text-[#DB7C93] font-bold hover:underline flex items-center gap-1">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg> 商品を追加
                         </button>
                     </div>
@@ -954,12 +954,12 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-[#858B98] mb-1">メモ</label>
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">メモ</label>
                     <textarea id="pur-memo" rows="2" placeholder="例: 8月まとめ仕入れ" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm"></textarea>
                 </div>
 
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closePurchaseModal()" class="px-4 py-2 border border-[#ECEDEF] text-[#858B98] rounded-xl text-sm font-medium">キャンセル</button>
+                    <button type="button" onclick="closePurchaseModal()" class="px-4 py-2 border border-[#ECEDEF] text-[#6B7280] rounded-xl text-sm font-medium">キャンセル</button>
                     <button type="submit" class="px-4 py-2 bg-[#EFA6B5] hover:bg-[#E395A6] text-white rounded-xl text-sm font-medium">保存する</button>
                 </div>
             </form>
@@ -969,16 +969,16 @@
     <!-- 単体削除確認モーダル（元に戻せない旨を明記） -->
     <div id="delete-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4 text-center border border-[#ECEDEF]">
-            <div class="w-12 h-12 bg-[#FFF1F4] text-[#EFA6B5] rounded-full flex items-center justify-center mx-auto">
+            <div class="w-12 h-12 bg-[#FFF1F4] text-[#DB7C93] rounded-full flex items-center justify-center mx-auto">
                 <span class="text-2xl leading-none" role="img" aria-hidden="true">⚠️</span>
             </div>
             <div>
                 <h3 class="text-base font-bold text-[#2F3440]">データの削除</h3>
-                <p class="text-xs text-[#858B98] mt-1">「<span id="delete-item-name" class="font-bold text-[#2F3440]"></span>」を削除しますか？</p>
+                <p class="text-xs text-[#6B7280] mt-1">「<span id="delete-item-name" class="font-bold text-[#2F3440]"></span>」を削除しますか？</p>
                 <p class="text-[11px] text-red-500 font-bold mt-2">この操作は元に戻せません。</p>
             </div>
             <div class="flex justify-center gap-3 pt-2">
-                <button onclick="closeDeleteModal()" class="w-full py-2.5 border border-[#ECEDEF] text-[#858B98] rounded-xl text-sm font-medium">キャンセル</button>
+                <button onclick="closeDeleteModal()" class="w-full py-2.5 border border-[#ECEDEF] text-[#6B7280] rounded-xl text-sm font-medium">キャンセル</button>
                 <button onclick="confirmDelete()" class="w-full py-2.5 bg-[#EFA6B5] hover:bg-[#E395A6] text-white rounded-xl text-sm font-medium shadow-sm">削除する</button>
             </div>
         </div>
@@ -992,7 +992,7 @@
             </div>
             <div>
                 <h3 class="text-base font-bold text-[#2F3440]">【二段階確認】全データの初期化</h3>
-                <p class="text-xs text-[#858B98] mt-1">すべての登録データを消去します。<br>この操作は絶対に取り消せません。</p>
+                <p class="text-xs text-[#6B7280] mt-1">すべての登録データを消去します。<br>この操作は絶対に取り消せません。</p>
             </div>
 
             <div class="bg-[#FFF1F4] p-3 rounded-xl border border-[#FCDCE4] text-xs text-[#2F3440]">
@@ -1003,7 +1003,7 @@
             </div>
 
             <div class="flex justify-center gap-3 pt-2">
-                <button onclick="closeClearAllModal()" class="w-full py-2.5 border border-[#ECEDEF] text-[#858B98] rounded-xl text-sm font-medium">キャンセル</button>
+                <button onclick="closeClearAllModal()" class="w-full py-2.5 border border-[#ECEDEF] text-[#6B7280] rounded-xl text-sm font-medium">キャンセル</button>
                 <button onclick="confirmClearAllExecution()" class="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-bold shadow-sm">全データを消去実行</button>
             </div>
         </div>
@@ -1406,7 +1406,7 @@
             if (!el) return;
 
             if (!data || !data.lastRunAt) {
-                el.innerHTML = '<span class="text-[#858B98]">まだ一度も実行されていません</span>';
+                el.innerHTML = '<span class="text-[#6B7280]">まだ一度も実行されていません</span>';
                 return;
             }
 
@@ -1437,7 +1437,7 @@
                     </div>`;
             }
 
-            el.innerHTML = statusHtml + `<div class="text-[#858B98] mt-2">最終チェック: ${dateStr}（前回 ${data.lastImportedCount || 0} 件取り込み）</div>`;
+            el.innerHTML = statusHtml + `<div class="text-[#6B7280] mt-2">最終チェック: ${dateStr}（前回 ${data.lastImportedCount || 0} 件取り込み）</div>`;
         }
 
         // 商品/売上/仕入れの3つのリスナーがほぼ同時に発火しても、
@@ -1706,14 +1706,14 @@
             const descText = document.getElementById('mode-desc-text');
 
             if (mode === 'master') {
-                btnMaster.className = 'py-2 rounded-lg bg-white text-[#EFA6B5] shadow-sm transition-all';
-                btnSingle.className = 'py-2 rounded-lg text-[#858B98] transition-all';
+                btnMaster.className = 'py-2 rounded-lg bg-white text-[#DB7C93] shadow-sm transition-all';
+                btnSingle.className = 'py-2 rounded-lg text-[#6B7280] transition-all';
                 secMaster.classList.remove('hidden');
                 secSingle.classList.add('hidden');
                 if (descText) descText.textContent = '登録済みの商品から選ぶ';
             } else {
-                btnSingle.className = 'py-2 rounded-lg bg-white text-[#EFA6B5] shadow-sm transition-all';
-                btnMaster.className = 'py-2 rounded-lg text-[#858B98] transition-all';
+                btnSingle.className = 'py-2 rounded-lg bg-white text-[#DB7C93] shadow-sm transition-all';
+                btnMaster.className = 'py-2 rounded-lg text-[#6B7280] transition-all';
                 secSingle.classList.remove('hidden');
                 secMaster.classList.add('hidden');
                 if (descText) descText.textContent = '専用出品やまとめ売りなど、1回限りの商品はこちら';
@@ -1729,13 +1729,13 @@
             const secSingle = document.getElementById('edit-section-single');
 
             if (mode === 'master') {
-                btnMaster.className = 'py-1.5 rounded-lg bg-white text-[#EFA6B5] shadow-sm transition-all';
-                btnSingle.className = 'py-1.5 rounded-lg text-[#858B98] transition-all';
+                btnMaster.className = 'py-1.5 rounded-lg bg-white text-[#DB7C93] shadow-sm transition-all';
+                btnSingle.className = 'py-1.5 rounded-lg text-[#6B7280] transition-all';
                 secMaster.classList.remove('hidden');
                 secSingle.classList.add('hidden');
             } else {
-                btnSingle.className = 'py-1.5 rounded-lg bg-white text-[#EFA6B5] shadow-sm transition-all';
-                btnMaster.className = 'py-1.5 rounded-lg text-[#858B98] transition-all';
+                btnSingle.className = 'py-1.5 rounded-lg bg-white text-[#DB7C93] shadow-sm transition-all';
+                btnMaster.className = 'py-1.5 rounded-lg text-[#6B7280] transition-all';
                 secSingle.classList.remove('hidden');
                 secMaster.classList.add('hidden');
             }
@@ -1955,23 +1955,23 @@
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
 
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-[#EFA6B5]', 'bg-white', 'shadow-sm');
-                btn.classList.add('text-[#858B98]');
+                btn.classList.remove('text-[#DB7C93]', 'bg-white', 'shadow-sm');
+                btn.classList.add('text-[#6B7280]');
             });
             const activeNav = document.getElementById(`nav-${tabId}`);
             if (activeNav) {
-                activeNav.classList.remove('text-[#858B98]');
-                activeNav.classList.add('text-[#EFA6B5]', 'bg-white', 'shadow-sm');
+                activeNav.classList.remove('text-[#6B7280]');
+                activeNav.classList.add('text-[#DB7C93]', 'bg-white', 'shadow-sm');
             }
 
             document.querySelectorAll('[id^="mobile-nav-"]').forEach(btn => {
-                btn.classList.remove('text-[#EFA6B5]');
-                btn.classList.add('text-[#858B98]');
+                btn.classList.remove('text-[#DB7C93]');
+                btn.classList.add('text-[#6B7280]');
             });
             const activeMobileNav = document.getElementById(`mobile-nav-${tabId}`);
             if (activeMobileNav) {
-                activeMobileNav.classList.remove('text-[#858B98]');
-                activeMobileNav.classList.add('text-[#EFA6B5]');
+                activeMobileNav.classList.remove('text-[#6B7280]');
+                activeMobileNav.classList.add('text-[#DB7C93]');
             }
 
             if (tabId === 'dashboard') {
@@ -2000,7 +2000,7 @@
             if (profit < 0) {
                 profitEl.className = 'font-bold text-red-500 mt-0.5';
             } else {
-                profitEl.className = 'font-bold text-[#EFA6B5] mt-0.5';
+                profitEl.className = 'font-bold text-[#DB7C93] mt-0.5';
             }
         }
 
@@ -2185,10 +2185,10 @@
                         ${options}
                     </select>
                     <div class="flex items-center gap-1 shrink-0">
-                        <span class="text-xs text-[#858B98]">数量:</span>
+                        <span class="text-xs text-[#6B7280]">数量:</span>
                         <input type="number" min="1" value="${defaultQty}" class="pur-row-qty w-20 px-2 py-1.5 border border-[#ECEDEF] rounded-lg text-xs font-bold text-center">
                     </div>
-                    <button type="button" onclick="removePurchaseItemRow('${rowId}')" aria-label="この行を削除" class="p-1 text-[#858B98] hover:text-red-500">
+                    <button type="button" onclick="removePurchaseItemRow('${rowId}')" aria-label="この行を削除" class="p-1 text-[#6B7280] hover:text-red-500">
                         <span class="text-base leading-none" role="img" aria-hidden="true">✖️</span>
                     </button>
                 </div>
@@ -2458,12 +2458,12 @@
             const topProducts = products.filter(p => p.periodSoldQty > 0).slice(0, 5);
 
             if (topProducts.length === 0) {
-                container.innerHTML = '<div class="text-center text-[#858B98] text-xs py-8">この期間の販売データはありません</div>';
+                container.innerHTML = '<div class="text-center text-[#6B7280] text-xs py-8">この期間の販売データはありません</div>';
                 return;
             }
 
             const badges = ['🥇', '🥈', '🥉', '4位', '5位'];
-            const badgeBg = ['bg-[#FFF1F4] text-[#EFA6B5]', 'bg-[#F8F8F9] text-[#2F3440]', 'bg-[#F8F8F9] text-[#2F3440]', 'bg-[#F8F8F9] text-[#858B98]', 'bg-[#F8F8F9] text-[#858B98]'];
+            const badgeBg = ['bg-[#FFF1F4] text-[#DB7C93]', 'bg-[#F8F8F9] text-[#2F3440]', 'bg-[#F8F8F9] text-[#2F3440]', 'bg-[#F8F8F9] text-[#6B7280]', 'bg-[#F8F8F9] text-[#6B7280]'];
 
             container.innerHTML = topProducts.map((p, idx) => `
                 <div onclick="openProductDetailModal('${p.id}')" class="flex items-center justify-between p-2 hover:bg-[#F8F8F9] rounded-xl cursor-pointer transition-colors border border-[#ECEDEF]">
@@ -2471,12 +2471,12 @@
                         <span class="px-2 py-0.5 text-xs font-bold rounded-lg ${badgeBg[idx]} shrink-0">${badges[idx]}</span>
                         <div class="truncate">
                             <div class="font-bold text-[#2F3440] text-xs truncate">${escapeHtml(p.title)}</div>
-                            <div class="text-[10px] text-[#858B98]">売上: ¥${p.periodSalesTotal.toLocaleString()} | 手取り: ¥${p.periodNetSalesTotal.toLocaleString()}</div>
+                            <div class="text-[10px] text-[#6B7280]">売上: ¥${p.periodSalesTotal.toLocaleString()} | 手取り: ¥${p.periodNetSalesTotal.toLocaleString()}</div>
                         </div>
                     </div>
                     <div class="text-right shrink-0 pl-2">
-                        <span class="font-extrabold text-[#EFA6B5] text-sm">${p.periodSoldQty}</span> <span class="text-[10px] text-[#858B98]">個</span>
-                        <div class="text-[10px] ${p.isStockSet && p.currentStock <= p.alertStock ? 'text-red-500 font-bold' : 'text-[#858B98]'}">在庫: ${p.isStockSet ? p.currentStock + '個' : '未設定'}</div>
+                        <span class="font-extrabold text-[#DB7C93] text-sm">${p.periodSoldQty}</span> <span class="text-[10px] text-[#6B7280]">個</span>
+                        <div class="text-[10px] ${p.isStockSet && p.currentStock <= p.alertStock ? 'text-red-500 font-bold' : 'text-[#6B7280]'}">在庫: ${p.isStockSet ? p.currentStock + '個' : '未設定'}</div>
                     </div>
                 </div>
             `).join('');
@@ -2485,15 +2485,15 @@
         function renderRecentTable(list) {
             const tbody = document.getElementById('recent-transactions-list');
             if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-[#858B98] text-xs">売上データがありません</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-[#6B7280] text-xs">売上データがありません</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = list.map(t => `
                 <tr class="hover:bg-[#F8F8F9] transition-colors">
-                    <td class="p-3 pl-4 text-[#858B98] whitespace-nowrap text-xs">${t.date || ''}</td>
+                    <td class="p-3 pl-4 text-[#6B7280] whitespace-nowrap text-xs">${t.date || ''}</td>
                     <td class="p-3 font-medium text-[#2F3440]">
-                        ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[#FFF1F4] text-[#EFA6B5] font-bold rounded mr-1.5 border border-[#FCDCE4]">単発</span>' : ''}
+                        ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[#FFF1F4] text-[#DB7C93] font-bold rounded mr-1.5 border border-[#FCDCE4]">単発</span>' : ''}
                         ${escapeHtml(t.title || '')}
                     </td>
                     <td class="p-3 text-right font-semibold text-[#2F3440]">¥${(t.sellPrice || 0).toLocaleString()}</td>
@@ -2596,22 +2596,22 @@
             tbody.innerHTML = products.map(p => `
                 <tr class="hover:bg-[#F8F8F9] transition-colors">
                     <td class="p-3 pl-4 font-bold text-[#2F3440]">
-                        <button onclick="openProductDetailModal('${p.id}')" class="hover:text-[#EFA6B5] text-left flex items-center gap-1">
-                            <span class="text-sm text-[#858B98] leading-none no-underline" role="img" aria-hidden="true">📦</span>
+                        <button onclick="openProductDetailModal('${p.id}')" class="hover:text-[#DB7C93] text-left flex items-center gap-1">
+                            <span class="text-sm text-[#6B7280] leading-none no-underline" role="img" aria-hidden="true">📦</span>
                             <span class="underline">${escapeHtml(p.title)}</span>
                         </button>
                     </td>
-                    <td class="p-3 text-right font-extrabold text-[#EFA6B5]">${p.periodSoldQty} 個</td>
+                    <td class="p-3 text-right font-extrabold text-[#DB7C93]">${p.periodSoldQty} 個</td>
                     <td class="p-3 text-right font-bold text-[#2F3440]">¥${p.periodSalesTotal.toLocaleString()}</td>
-                    <td class="p-3 text-right text-xs text-[#858B98] font-semibold">¥${p.avgPrice.toLocaleString()}</td>
+                    <td class="p-3 text-right text-xs text-[#6B7280] font-semibold">¥${p.avgPrice.toLocaleString()}</td>
                     <td class="p-3 text-right text-xs text-[#2F3440] font-bold">¥${p.latestPrice.toLocaleString()}</td>
-                    <td class="p-3 text-right text-[11px] text-[#858B98]">¥${p.maxPrice.toLocaleString()} / ¥${p.minPrice.toLocaleString()}</td>
+                    <td class="p-3 text-right text-[11px] text-[#6B7280]">¥${p.maxPrice.toLocaleString()} / ¥${p.minPrice.toLocaleString()}</td>
                     <td class="p-3 text-right font-bold text-teal-600">¥${p.periodNetSalesTotal.toLocaleString()}</td>
                     <td class="p-3 text-right text-xs text-[#2F3440] font-semibold">${p.allTimePurchasedQty} 個</td>
-                    <td class="p-3 text-right font-bold ${!p.isStockSet ? 'text-[#858B98] font-normal' : p.currentStock <= p.alertStock ? 'text-red-500' : 'text-[#2F3440]'}">
+                    <td class="p-3 text-right font-bold ${!p.isStockSet ? 'text-[#6B7280] font-normal' : p.currentStock <= p.alertStock ? 'text-red-500' : 'text-[#2F3440]'}">
                         ${p.isStockSet ? (p.currentStock <= 0 ? '【在庫切れ】' : p.currentStock + ' 個') : '未設定'}
                     </td>
-                    <td class="p-3 text-center text-xs text-[#858B98] pr-4">${p.lastDate || '--'}</td>
+                    <td class="p-3 text-center text-xs text-[#6B7280] pr-4">${p.lastDate || '--'}</td>
                 </tr>
             `).join('');
 
@@ -2642,13 +2642,13 @@
 
             const timelineEl = document.getElementById('product-sales-timeline');
             if (pTrans.length === 0) {
-                timelineEl.innerHTML = '<div class="text-[#858B98] text-center py-2">販売履歴がありません</div>';
+                timelineEl.innerHTML = '<div class="text-[#6B7280] text-center py-2">販売履歴がありません</div>';
             } else {
                 timelineEl.innerHTML = pTrans.map(t => `
                     <div class="flex items-center justify-between py-1 border-b border-[#ECEDEF] last:border-0">
-                        <span class="font-semibold text-[#858B98]">${t.date || ''}</span>
+                        <span class="font-semibold text-[#6B7280]">${t.date || ''}</span>
                         <span class="font-bold text-[#2F3440]">売上: ¥${(t.sellPrice || 0).toLocaleString()}</span>
-                        <span class="text-[11px] text-[#EFA6B5] font-bold">手取り: ¥${(t.profit || 0).toLocaleString()}</span>
+                        <span class="text-[11px] text-[#DB7C93] font-bold">手取り: ¥${(t.profit || 0).toLocaleString()}</span>
                     </div>
                 `).join('');
             }
@@ -2787,7 +2787,7 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-[#F8F8F9] text-[#858B98] text-xs font-semibold uppercase tracking-wider border-b border-[#ECEDEF]">
+                                <tr class="bg-[#F8F8F9] text-[#6B7280] text-xs font-semibold uppercase tracking-wider border-b border-[#ECEDEF] whitespace-nowrap">
                                     <th class="p-3 pl-4">日付</th>
                                     <th class="p-3">商品名</th>
                                     <th class="p-3 text-right">販売価格</th>
@@ -2800,19 +2800,19 @@
                             <tbody class="divide-y divide-[#ECEDEF] text-sm">
                                 ${filtered.map(t => `
                                     <tr class="hover:bg-[#F8F8F9] transition-colors">
-                                        <td class="p-3 pl-4 text-xs text-[#858B98] whitespace-nowrap">${t.date || ''}</td>
+                                        <td class="p-3 pl-4 text-xs text-[#6B7280] whitespace-nowrap">${t.date || ''}</td>
                                         <td class="p-3 font-semibold text-[#2F3440]">
-                                            ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[#FFF1F4] text-[#EFA6B5] font-bold rounded mr-1.5 border border-[#FCDCE4]">単発</span>' : ''}
+                                            ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[#FFF1F4] text-[#DB7C93] font-bold rounded mr-1.5 border border-[#FCDCE4]">単発</span>' : ''}
                                             ${escapeHtml(t.title || '')}
                                         </td>
                                         <td class="p-3 text-right font-medium text-[#2F3440]">¥${(t.sellPrice || 0).toLocaleString()}</td>
-                                        <td class="p-3 text-right text-xs text-[#858B98]">¥${(t.fee || 0).toLocaleString()}</td>
-                                        <td class="p-3 text-right text-xs text-[#858B98]">¥${(t.shippingFee || 0).toLocaleString()}</td>
-                                        <td class="p-3 text-right font-bold text-[#EFA6B5]">¥${(t.profit || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right text-xs text-[#6B7280]">¥${(t.fee || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right text-xs text-[#6B7280]">¥${(t.shippingFee || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right font-bold text-[#DB7C93]">¥${(t.profit || 0).toLocaleString()}</td>
                                         <td class="p-3 text-center pr-4">
                                             <div class="flex items-center justify-center gap-1">
-                                                <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1.5 text-[#858B98] hover:text-[#2F3440]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
-                                                <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1.5 text-[#858B98] hover:text-red-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                                                <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1.5 text-[#6B7280] hover:text-[#2F3440]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
+                                                <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1.5 text-[#6B7280] hover:text-red-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -2827,26 +2827,26 @@
                         <div class="bg-white p-3.5 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-2">
                             <div class="flex items-start justify-between">
                                 <div>
-                                    <span class="text-[10px] font-semibold text-[#858B98]">${t.date || ''}</span>
+                                    <span class="text-[10px] font-semibold text-[#6B7280]">${t.date || ''}</span>
                                     <h4 class="font-bold text-[#2F3440] text-sm leading-tight flex items-center gap-1">
-                                        ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[9px] bg-[#FFF1F4] text-[#EFA6B5] font-bold rounded shrink-0">単発</span>' : ''}
+                                        ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[9px] bg-[#FFF1F4] text-[#DB7C93] font-bold rounded shrink-0">単発</span>' : ''}
                                         ${escapeHtml(t.title || '')}
                                     </h4>
                                 </div>
                                 <div class="flex items-center gap-1 shrink-0">
-                                    <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1 text-[#858B98]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
-                                    <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1 text-[#858B98]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                                    <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1 text-[#6B7280]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
+                                    <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1 text-[#6B7280]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-2 bg-[#F8F8F9] p-2 rounded-xl text-center text-xs">
                                 <div>
-                                    <div class="text-[10px] text-[#858B98]">販売価格</div>
+                                    <div class="text-[10px] text-[#6B7280]">販売価格</div>
                                     <div class="font-bold text-[#2F3440]">¥${(t.sellPrice || 0).toLocaleString()}</div>
                                 </div>
                                 <div>
-                                    <div class="text-[10px] text-[#EFA6B5] font-semibold">手取り額</div>
-                                    <div class="font-extrabold text-[#EFA6B5]">¥${(t.profit || 0).toLocaleString()}</div>
+                                    <div class="text-[10px] text-[#DB7C93] font-semibold">手取り額</div>
+                                    <div class="font-extrabold text-[#DB7C93]">¥${(t.profit || 0).toLocaleString()}</div>
                                 </div>
                             </div>
                         </div>
@@ -2909,14 +2909,14 @@
 
                 return `
                     <tr class="hover:bg-[#F8F8F9] transition-colors">
-                        <td class="p-3 pl-4 text-xs font-semibold text-[#858B98] whitespace-nowrap">${p.date || ''}</td>
+                        <td class="p-3 pl-4 text-xs font-semibold text-[#6B7280] whitespace-nowrap">${p.date || ''}</td>
                         <td class="p-3 font-semibold text-[#2F3440] text-xs">${itemsSummary}</td>
-                        <td class="p-3 text-right font-extrabold text-[#EFA6B5] whitespace-nowrap">¥${(p.amount || 0).toLocaleString()}</td>
+                        <td class="p-3 text-right font-extrabold text-[#DB7C93] whitespace-nowrap">¥${(p.amount || 0).toLocaleString()}</td>
                         <td class="p-3 text-[#2F3440] text-xs">${escapeHtml(p.memo || '-')}</td>
                         <td class="p-3 text-center pr-4 whitespace-nowrap">
                             <div class="flex items-center justify-center gap-1">
-                                <button onclick="openEditPurchaseModal('${p.id}')" aria-label="編集" class="p-2 text-[#858B98] hover:text-[#2F3440]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
-                                <button onclick="openDeleteModal('purchase', '${p.id}')" aria-label="削除" class="p-2 text-[#858B98] hover:text-red-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                                <button onclick="openEditPurchaseModal('${p.id}')" aria-label="編集" class="p-2 text-[#6B7280] hover:text-[#2F3440]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
+                                <button onclick="openDeleteModal('purchase', '${p.id}')" aria-label="削除" class="p-2 text-[#6B7280] hover:text-red-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                             </div>
                         </td>
                     </tr>
