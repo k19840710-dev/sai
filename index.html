@@ -972,14 +972,21 @@
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // システム規定に基づきapiKeyは空文字とし、実行環境注入に依存
+        // 画像OCR解析 (Gemini API) 用のキー。未設定のため、スクリーンショットからの自動登録機能は
+        // 現状無効です。使う場合は Google AI Studio 等で取得したキーをここに設定してください
+        // （本来はサーバー経由にすべきですが、このアプリはクライアント単体構成のためここに置いています）。
         const apiKey = "";
 
+        // 実行環境から __firebase_config が注入される場合はそちらを優先し、
+        // 通常のホスティング（GitHub Pages 等）ではこの既定値の Firebase プロジェクトに接続する
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "",
-            authDomain: "default.firebaseapp.com",
-            projectId: "default",
-            storageBucket: "default.appspot.com"
+            apiKey: "AIzaSyAyv6B3rtdgxyCMSJxfu4_FX1IupABtKMY",
+            authDomain: "sai-4d708.firebaseapp.com",
+            projectId: "sai-4d708",
+            storageBucket: "sai-4d708.firebasestorage.app",
+            messagingSenderId: "439897510721",
+            appId: "1:439897510721:web:aea9095ba9bf64d80c87c0",
+            measurementId: "G-PW8FD91NP7"
         };
 
         const app = initializeApp(firebaseConfig);
