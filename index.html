@@ -47,7 +47,7 @@
 
     <!-- ヘッダー -->
     <header class="bg-white border-b border-[#ECEDEF] sticky top-0 z-30 pt-[env(safe-area-inset-top,0px)]">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-0 sm:h-16 flex flex-wrap items-center justify-between gap-y-2">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-0 sm:min-h-16 flex flex-wrap items-center justify-between gap-y-2">
 
             <!-- アプリタイトル & 同期バッジ -->
             <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
@@ -66,7 +66,7 @@
             </div>
 
             <!-- デスクトップ ナビゲーション -->
-            <nav class="hidden lg:flex items-center space-x-1 bg-[#F8F8F9] p-1 rounded-xl border border-[#ECEDEF]">
+            <nav class="hidden xl:flex items-center space-x-1 bg-[#F8F8F9] p-1 rounded-xl border border-[#ECEDEF]">
                 <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#EFA6B5] bg-white shadow-sm">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                     ダッシュボード
@@ -102,7 +102,7 @@
     </header>
 
     <!-- メインコンテンツ -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 lg:pb-8">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 xl:pb-8">
 
         <!-- 1. ダッシュボード タブ -->
         <section id="tab-dashboard" class="tab-content space-y-6">
@@ -633,7 +633,7 @@
     </main>
 
     <!-- モバイルボトムナビゲーション -->
-    <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEDEF] z-40 px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex justify-around shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
+    <div class="xl:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEDEF] z-40 px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex justify-around shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
         <button onclick="switchTab('dashboard')" id="mobile-nav-dashboard" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#EFA6B5]">
             <i data-lucide="layout-dashboard" class="w-4 h-4 mb-0.5"></i>
             ホーム
