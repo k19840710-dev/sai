@@ -484,7 +484,7 @@
                     <h2 class="text-xl font-bold text-[#2F3440]">仕入れ管理</h2>
                 </div>
                 <button onclick="openAddPurchaseModal()" class="bg-[#EFA6B5] hover:bg-[#E395A6] text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition-colors flex items-center gap-1.5">
-                    <span class="text-base leading-none" role="img" aria-hidden="true">➕</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                     新規仕入れ登録
                 </button>
             </div>
@@ -658,7 +658,7 @@
                 <h3 class="font-bold text-[#2F3440] text-base">データ初期化</h3>
                 <div class="flex flex-wrap gap-3">
                     <button onclick="openClearAllModal()" class="px-4 py-2 bg-red-50 text-red-600 border border-red-100 rounded-xl text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-1.5">
-                        <span class="text-base leading-none" role="img" aria-hidden="true">🗑️</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         全データを消去
                     </button>
                 </div>
@@ -930,7 +930,7 @@
                     <div class="flex items-center justify-between">
                         <label class="block text-xs font-bold text-[#2F3440]">仕入れ商品内訳 (商品 & 数量)</label>
                         <button type="button" onclick="addPurchaseItemRow()" class="text-xs text-[#EFA6B5] font-bold hover:underline flex items-center gap-1">
-                            <span class="text-sm leading-none" role="img" aria-hidden="true">➕</span> 商品を追加
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg> 商品を追加
                         </button>
                     </div>
 
@@ -974,7 +974,7 @@
     <div id="clear-all-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 text-center border border-[#ECEDEF]">
             <div class="w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto">
-                <span class="text-2xl leading-none" role="img" aria-hidden="true">🗑️</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             </div>
             <div>
                 <h3 class="text-base font-bold text-[#2F3440]">【二段階確認】全データの初期化</h3>
@@ -2797,8 +2797,8 @@
                                         <td class="p-3 text-right font-bold text-[#EFA6B5]">¥${(t.profit || 0).toLocaleString()}</td>
                                         <td class="p-3 text-center pr-4">
                                             <div class="flex items-center justify-center gap-1">
-                                                <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1.5 text-[#858B98] hover:text-[#2F3440]"><span class="text-base leading-none" role="img" aria-hidden="true">✏️</span></button>
-                                                <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1.5 text-[#858B98] hover:text-red-600"><span class="text-base leading-none" role="img" aria-hidden="true">🗑️</span></button>
+                                                <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1.5 text-[#858B98] hover:text-[#2F3440]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
+                                                <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1.5 text-[#858B98] hover:text-red-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -2820,8 +2820,8 @@
                                     </h4>
                                 </div>
                                 <div class="flex items-center gap-1 shrink-0">
-                                    <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1 text-[#858B98]"><span class="text-sm leading-none" role="img" aria-hidden="true">✏️</span></button>
-                                    <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1 text-[#858B98]"><span class="text-sm leading-none" role="img" aria-hidden="true">🗑️</span></button>
+                                    <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1 text-[#858B98]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
+                                    <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1 text-[#858B98]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                                 </div>
                             </div>
 
@@ -2901,8 +2901,8 @@
                         <td class="p-3 text-[#2F3440] text-xs">${escapeHtml(p.memo || '-')}</td>
                         <td class="p-3 text-center pr-4 whitespace-nowrap">
                             <div class="flex items-center justify-center gap-1">
-                                <button onclick="openEditPurchaseModal('${p.id}')" aria-label="編集" class="p-2 text-[#858B98] hover:text-[#2F3440]"><span class="text-base leading-none" role="img" aria-hidden="true">✏️</span></button>
-                                <button onclick="openDeleteModal('purchase', '${p.id}')" aria-label="削除" class="p-2 text-[#858B98] hover:text-red-600"><span class="text-base leading-none" role="img" aria-hidden="true">🗑️</span></button>
+                                <button onclick="openEditPurchaseModal('${p.id}')" aria-label="編集" class="p-2 text-[#858B98] hover:text-[#2F3440]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
+                                <button onclick="openDeleteModal('purchase', '${p.id}')" aria-label="削除" class="p-2 text-[#858B98] hover:text-red-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                             </div>
                         </td>
                     </tr>
