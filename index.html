@@ -1,0 +1,3325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>メルカリ売上・在庫管理ツール</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg-main: #FFFDFD;
+            --bg-sub: #F8F8F9;
+            --card-bg: #FFFFFF;
+            --pink-soft: #FFF1F4;
+            --pink-accent: #EFA6B5;
+            --pink-hover: #E395A6;
+            --border-color: #ECEDEF;
+            --text-main: #2F3440;
+            --text-sub: #858B98;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F8F8F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E5E7EB;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="text-[#2F3440] antialiased min-h-screen flex flex-col bg-[#FFFDFD]">
+
+    <!-- ヘッダー -->
+    <header class="bg-white border-b border-[#ECEDEF] sticky top-0 z-30 pt-[env(safe-area-inset-top,0px)]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-0 sm:h-16 flex flex-wrap items-center justify-between gap-y-2">
+
+            <!-- アプリタイトル & 同期バッジ -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                <div class="flex items-center space-x-2">
+                    <div class="bg-[#EFA6B5] text-white p-1.5 sm:p-2 rounded-xl shadow-sm shrink-0">
+                        <i data-lucide="package-check" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                    </div>
+                    <h1 class="font-bold text-base sm:text-lg text-[#2F3440] leading-tight whitespace-nowrap">メルカリ売上・在庫管理</h1>
+                </div>
+                <div>
+                    <span id="sync-badge" class="inline-flex px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold bg-[#FFF1F4] text-[#EFA6B5] rounded-full border border-[#FCDCE4] items-center gap-1 shrink-0">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#EFA6B5] animate-pulse"></span>
+                        データ同期完了
+                    </span>
+                </div>
+            </div>
+
+            <!-- デスクトップ ナビゲーション -->
+            <nav class="hidden lg:flex items-center space-x-1 bg-[#F8F8F9] p-1 rounded-xl border border-[#ECEDEF]">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#EFA6B5] bg-white shadow-sm">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    ダッシュボード
+                </button>
+                <button onclick="switchTab('product-stats')" id="nav-product-stats" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
+                    <i data-lucide="boxes" class="w-4 h-4"></i>
+                    商品別実績
+                </button>
+                <button onclick="switchTab('transactions')" id="nav-transactions" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
+                    <i data-lucide="list" class="w-4 h-4"></i>
+                    取引一覧
+                </button>
+                <button onclick="switchTab('add')" id="nav-add" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    新規登録
+                </button>
+                <button onclick="switchTab('purchases')" id="nav-purchases" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
+                    <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                    仕入れ管理
+                </button>
+                <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                    設定・データ管理
+                </button>
+            </nav>
+
+            <!-- クイック売上登録ボタン -->
+            <button onclick="openAddModal()" class="bg-[#EFA6B5] hover:bg-[#E395A6] text-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-colors flex items-center gap-1 whitespace-nowrap shrink-0 ml-auto sm:ml-0">
+                <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
+                <span>売上記録</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 lg:pb-8">
+
+        <!-- 1. ダッシュボード タブ -->
+        <section id="tab-dashboard" class="tab-content space-y-6">
+
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-[#2F3440]">ダッシュボード</h2>
+                </div>
+                <div class="flex items-center gap-2 bg-white p-1.5 rounded-xl border border-[#ECEDEF] text-sm shadow-sm">
+                    <span class="text-xs text-[#858B98] pl-2">表示期間:</span>
+                    <select id="dashboard-filter" onchange="updateDashboard()" class="bg-transparent font-medium focus:outline-none pr-2 cursor-pointer text-[#2F3440]">
+                        <option value="this-month" selected>今月</option>
+                        <option value="last-month">先月</option>
+                        <option value="this-year">今年</option>
+                        <option value="all">全期間</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- KPIカード -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm relative overflow-hidden">
+                    <div class="flex items-center justify-between text-[#858B98] mb-1">
+                        <span class="text-xs font-semibold uppercase tracking-wider">総売上</span>
+                        <div class="p-1.5 bg-[#F8F8F9] text-[#2F3440] rounded-lg">
+                            <i data-lucide="japanese-yen" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div id="kpi-sales" class="text-lg sm:text-2xl font-extrabold text-[#2F3440]">¥0</div>
+                    <div class="mt-1 text-xs text-[#858B98]">
+                        販売数: <span id="kpi-count" class="font-semibold text-[#2F3440]">0</span> 個
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm relative overflow-hidden">
+                    <div class="flex items-center justify-between text-[#858B98] mb-1">
+                        <span class="text-xs font-semibold uppercase tracking-wider">手取り額</span>
+                        <div class="p-1.5 bg-[#FFF1F4] text-[#EFA6B5] rounded-lg">
+                            <i data-lucide="hand-coins" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div id="kpi-sales-net" class="text-lg sm:text-2xl font-extrabold text-[#EFA6B5]">¥0</div>
+                </div>
+
+                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm relative overflow-hidden">
+                    <div class="flex items-center justify-between text-[#858B98] mb-1">
+                        <span class="text-xs font-semibold uppercase tracking-wider">仕入総額</span>
+                        <div class="p-1.5 bg-[#F8F8F9] text-[#858B98] rounded-lg">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div id="kpi-purchases" class="text-lg sm:text-2xl font-extrabold text-[#2F3440]">¥0</div>
+                </div>
+
+                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm relative overflow-hidden border-l-4 border-l-[#EFA6B5]">
+                    <div class="flex items-center justify-between text-[#858B98] mb-1">
+                        <span class="text-xs font-bold uppercase tracking-wider text-[#2F3440]">最終利益</span>
+                        <div class="p-1.5 bg-[#FFF1F4] text-[#EFA6B5] rounded-lg">
+                            <i data-lucide="coins" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div id="kpi-net-profit" class="text-lg sm:text-2xl font-extrabold text-[#EFA6B5]">¥0</div>
+                </div>
+
+                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm relative overflow-hidden">
+                    <div class="flex items-center justify-between text-[#858B98] mb-1">
+                        <span class="text-xs font-semibold uppercase tracking-wider">現在庫総数</span>
+                        <div class="p-1.5 bg-[#F8F8F9] text-[#2F3440] rounded-lg">
+                            <i data-lucide="boxes" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div id="kpi-total-stock" class="text-lg sm:text-2xl font-extrabold text-[#2F3440]">0 個</div>
+                </div>
+
+                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm relative overflow-hidden">
+                    <div class="flex items-center justify-between text-[#858B98] mb-1">
+                        <span class="text-xs font-semibold uppercase tracking-wider">在庫商品種類数</span>
+                        <div class="p-1.5 bg-[#F8F8F9] text-[#858B98] rounded-lg">
+                            <i data-lucide="layers" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div id="kpi-product-type-count" class="text-lg sm:text-2xl font-extrabold text-[#2F3440]">0 種類</div>
+                </div>
+            </div>
+
+            <!-- 在庫注意アラートカード -->
+            <div id="stock-alert-section" class="hidden bg-[#FFF1F4] border border-[#FCDCE4] p-4 rounded-2xl space-y-2">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-[#2F3440] text-xs sm:text-sm flex items-center gap-1.5">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 text-[#EFA6B5]"></i>
+                        在庫注意・在庫切れ
+                    </h3>
+                    <button onclick="switchTab('purchases')" class="text-xs font-bold text-[#EFA6B5] hover:underline">仕入れ登録 →</button>
+                </div>
+                <div id="stock-alert-list" class="flex flex-wrap gap-2 pt-1">
+                    <!-- JS挿入 -->
+                </div>
+            </div>
+
+            <!-- グラフ & 商品別ランキング -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- 月別推移グラフ -->
+                <div class="lg:col-span-2 bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-[#2F3440] flex items-center gap-2 text-sm sm:text-base">
+                            <i data-lucide="line-chart" class="w-4 h-4 text-[#EFA6B5]"></i>
+                            月別推移 (売上 / 手取り額 / 最終利益)
+                        </h3>
+                    </div>
+                    <div class="h-64 relative">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 商品別ランキング -->
+                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-[#2F3440] flex items-center gap-1.5 text-sm">
+                                <i data-lucide="trophy" class="w-4 h-4 text-[#EFA6B5]"></i>
+                                商品ランキング
+                            </h3>
+                            <select id="ranking-sort-type" onchange="updateDashboard()" class="text-xs font-semibold border border-[#ECEDEF] rounded-lg p-1 bg-white focus:outline-none">
+                                <option value="qty" selected>販売数</option>
+                                <option value="sales">売上高</option>
+                                <option value="profit">手取り額</option>
+                            </select>
+                        </div>
+                        <div id="product-ranking-list" class="space-y-2.5">
+                            <!-- JS描画 -->
+                        </div>
+                    </div>
+                    <div class="pt-3 border-t border-[#ECEDEF] text-center mt-3">
+                        <button onclick="switchTab('product-stats')" class="text-xs font-bold text-[#EFA6B5] hover:text-[#E395A6] flex items-center justify-center gap-1 mx-auto">
+                            商品別実績を詳しく見る <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最近の販売取引 -->
+            <div class="bg-white rounded-2xl border border-[#ECEDEF] shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-[#ECEDEF] flex items-center justify-between">
+                    <h3 class="font-bold text-[#2F3440] flex items-center gap-2 text-sm">
+                        <i data-lucide="history" class="w-4 h-4 text-[#858B98]"></i>
+                        最近売れた商品
+                    </h3>
+                    <button onclick="switchTab('transactions')" class="text-xs font-semibold text-[#EFA6B5] hover:text-[#E395A6] flex items-center gap-1">
+                        すべて見る <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#F8F8F9] text-[#858B98] text-xs font-semibold">
+                                <th class="p-3 pl-4">日付</th>
+                                <th class="p-3">商品名</th>
+                                <th class="p-3 text-right">販売価格</th>
+                                <th class="p-3 text-right pr-4">手取り額</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-transactions-list" class="divide-y divide-[#ECEDEF] text-sm">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 商品別実績 タブ -->
+        <section id="tab-product-stats" class="tab-content hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-[#2F3440]">商品別実績</h2>
+                </div>
+                <div class="flex items-center gap-2 bg-white p-1.5 rounded-xl border border-[#ECEDEF] text-sm shadow-sm">
+                    <span class="text-xs text-[#858B98] pl-2">表示期間:</span>
+                    <select id="product-stats-filter" onchange="renderProductStatsTable()" class="bg-transparent font-medium focus:outline-none pr-2 cursor-pointer text-[#2F3440]">
+                        <option value="this-month">今月</option>
+                        <option value="last-month">先月</option>
+                        <option value="this-year">今年</option>
+                        <option value="all" selected>全期間</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 商品実績テーブル -->
+            <div class="bg-white rounded-2xl border border-[#ECEDEF] shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#F8F8F9] text-[#858B98] text-xs font-semibold uppercase tracking-wider border-b border-[#ECEDEF]">
+                                <th class="p-3 pl-4">商品名</th>
+                                <th class="p-3 text-right">販売数</th>
+                                <th class="p-3 text-right">累計売上</th>
+                                <th class="p-3 text-right">平均価格</th>
+                                <th class="p-3 text-right">直近価格</th>
+                                <th class="p-3 text-right">最高 / 最低</th>
+                                <th class="p-3 text-right">累計手取り</th>
+                                <th class="p-3 text-right">仕入数</th>
+                                <th class="p-3 text-right">現在庫</th>
+                                <th class="p-3 text-center pr-4">最終販売日</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product-stats-list" class="divide-y divide-[#ECEDEF] text-sm">
+                        </tbody>
+                    </table>
+                </div>
+                <div id="product-stats-empty" class="hidden p-12 text-center">
+                    <div class="inline-flex p-4 bg-[#F8F8F9] text-[#858B98] rounded-full mb-3">
+                        <i data-lucide="boxes" class="w-8 h-8"></i>
+                    </div>
+                    <p class="text-[#858B98] font-medium">登録されている商品データがありません</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. 取引一覧 タブ -->
+        <section id="tab-transactions" class="tab-content hidden space-y-4">
+            <div class="bg-white p-4 rounded-2xl border border-[#ECEDEF] shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between">
+                <div class="relative w-full md:w-80">
+                    <i data-lucide="search" class="w-4 h-4 text-[#858B98] absolute left-3 top-3"></i>
+                    <input type="text" id="search-input" oninput="debouncedRenderTransactions()" placeholder="商品名・メモで検索..." class="w-full pl-9 pr-4 py-2 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]">
+                </div>
+
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <select id="sort-order" onchange="renderTransactions()" class="px-3 py-2 border border-[#ECEDEF] rounded-xl text-sm bg-white focus:outline-none focus:border-[#EFA6B5] text-[#2F3440]">
+                        <option value="date-desc">日付: 新しい順</option>
+                        <option value="date-asc">日付: 古い順</option>
+                        <option value="profit-desc">手取り額: 高い順</option>
+                        <option value="price-desc">販売価格: 高い順</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="transactions-container" class="space-y-3">
+                <!-- JS動的描画 -->
+            </div>
+            <div id="empty-state" class="hidden p-12 text-center bg-white rounded-2xl border border-[#ECEDEF] shadow-sm">
+                <div class="inline-flex p-4 bg-[#F8F8F9] text-[#858B98] rounded-full mb-3">
+                    <i data-lucide="package-open" class="w-8 h-8"></i>
+                </div>
+                <p class="text-[#858B98] font-medium">該当する取引データがありません</p>
+            </div>
+        </section>
+
+        <!-- 4. 新規売上登録 タブ -->
+        <section id="tab-add" class="tab-content hidden max-w-2xl mx-auto space-y-6">
+
+            <!-- スクリーンショットから登録カード -->
+            <div class="bg-gradient-to-r from-[#EFA6B5] to-[#F5BAC6] text-white p-5 sm:p-6 rounded-2xl shadow-sm space-y-3">
+                <div class="flex items-center gap-2">
+                    <div class="p-2 bg-white/20 rounded-xl">
+                        <i data-lucide="camera" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base">スクリーンショットから登録</h3>
+                        <p class="text-xs text-white/90">メルカリ画面または通知メールの画像を選択</p>
+                    </div>
+                </div>
+
+                <div class="bg-white/15 p-3.5 rounded-xl backdrop-blur-sm border border-white/25 space-y-2">
+                    <input type="file" id="ocr-image-input" accept="image/*" multiple onchange="handleImageOcrUpload(event)" class="block w-full text-xs text-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-white file:text-[#EFA6B5] hover:file:bg-[#FFF1F4] cursor-pointer">
+                </div>
+
+                <!-- 解析中プログレス表示 -->
+                <div id="ocr-loading" class="hidden bg-white/20 p-2.5 rounded-xl text-center text-xs font-bold flex items-center justify-center gap-2">
+                    <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+                    <span id="ocr-progress-text">読み取り中...</span>
+                </div>
+            </div>
+
+            <!-- OCR検出候補リスト -->
+            <div id="ocr-results-container" class="hidden space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-[#2F3440] text-sm flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-[#EFA6B5]"></i>
+                        登録候補 (<span id="ocr-candidate-count">0</span>件)
+                    </h3>
+                    <button onclick="confirmAllOcrCandidates()" class="px-3.5 py-1.5 bg-[#EFA6B5] hover:bg-[#E395A6] text-white text-xs font-bold rounded-xl shadow-sm transition-colors">
+                        すべて登録する
+                    </button>
+                </div>
+
+                <div id="ocr-candidates-list" class="space-y-3">
+                    <!-- JS候補カード生成 -->
+                </div>
+            </div>
+
+            <!-- 手動登録フォーム -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-6">
+                <div>
+                    <h2 class="text-lg font-bold text-[#2F3440]">手動で登録</h2>
+                </div>
+
+                <form id="add-transaction-form" onsubmit="handleFormSubmit(event)" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-[#858B98] mb-1">取引日付 <span class="text-[#EFA6B5]">*</span></label>
+                        <input type="date" id="form-date" required class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]">
+                    </div>
+
+                    <!-- 商品指定方法選択 -->
+                    <div>
+                        <div class="grid grid-cols-2 gap-2 bg-[#F8F8F9] p-1 rounded-xl text-xs font-bold text-center border border-[#ECEDEF]">
+                            <button type="button" id="btn-mode-master" onclick="setProductInputMode('master')" class="py-2 rounded-lg bg-white text-[#EFA6B5] shadow-sm transition-all">
+                                マスター商品
+                            </button>
+                            <button type="button" id="btn-mode-single" onclick="setProductInputMode('single')" class="py-2 rounded-lg text-[#858B98] transition-all">
+                                単発商品
+                            </button>
+                        </div>
+                        <p id="mode-desc-text" class="text-[11px] text-[#858B98] mt-1.5 pl-1">※登録済み商品から選択</p>
+                    </div>
+
+                    <!-- モード①: マスター商品 -->
+                    <div id="section-master-select" class="space-y-2">
+                        <input type="text" id="form-product-search" oninput="filterProductDropdown()" placeholder="商品名で検索・絞り込み..." class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-xs mb-1 focus:outline-none focus:border-[#EFA6B5]">
+                        <select id="form-product-id" onchange="onSaleProductSelectChange()" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm bg-white focus:outline-none focus:border-[#EFA6B5] font-semibold text-[#2F3440]">
+                            <!-- JS動的生成 -->
+                        </select>
+                    </div>
+
+                    <!-- モード②: 単発商品 -->
+                    <div id="section-single-input" class="hidden space-y-2">
+                        <label class="block text-xs font-semibold text-[#858B98] mb-1">商品名を直接入力 <span class="text-[#EFA6B5]">*</span></label>
+                        <input type="text" id="form-single-title" placeholder="例: rino様 リクエスト 2点まとめ" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5] font-bold">
+
+                        <div>
+                            <label class="block text-xs font-semibold text-[#858B98] mb-1 mt-3">仕入原価 (円・任意)</label>
+                            <input type="number" id="form-single-cost" min="0" placeholder="例: 1500" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5] font-semibold">
+                        </div>
+                    </div>
+
+                    <!-- 参考カード -->
+                    <div id="product-ref-card" class="hidden bg-[#FFF1F4] border border-[#FCDCE4] p-3.5 rounded-xl grid grid-cols-3 gap-2 text-center text-xs">
+                        <div>
+                            <div class="text-[10px] text-[#858B98] font-semibold">現在庫</div>
+                            <div id="ref-stock" class="font-bold text-[#2F3440] mt-0.5">--</div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-[#858B98] font-semibold">直近販売価格</div>
+                            <div id="ref-latest-price" class="font-bold text-[#2F3440] mt-0.5">--</div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-[#858B98] font-semibold">平均販売価格</div>
+                            <div id="ref-avg-price" class="font-bold text-[#2F3440] mt-0.5">--</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-[#858B98] mb-1">販売価格 (円) <span class="text-[#EFA6B5]">*</span></label>
+                            <input type="number" id="form-sell-price" required min="0" placeholder="3000" oninput="calculatePreview()" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5] font-semibold text-[#2F3440]">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[#858B98] mb-1">発送時の送料 (円)</label>
+                            <input type="number" id="form-shipping-fee" min="0" placeholder="215" value="215" oninput="calculatePreview()" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]">
+                        </div>
+                    </div>
+
+                    <!-- リアルタイム計算プレビュー -->
+                    <div class="bg-[#F8F8F9] p-4 rounded-xl border border-[#ECEDEF] space-y-2">
+                        <div class="text-xs font-semibold text-[#858B98] uppercase tracking-wider mb-1">計算プレビュー</div>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-white p-2 rounded-lg border border-[#ECEDEF]">
+                                <div class="text-[11px] text-[#858B98]">販売手数料 (<span id="preview-fee-rate-label">10</span>%)</div>
+                                <div id="preview-fee" class="font-bold text-[#2F3440] mt-0.5">¥0</div>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg border border-[#ECEDEF]">
+                                <div class="text-[11px] text-[#858B98]">送料</div>
+                                <div id="preview-shipping" class="font-bold text-[#2F3440] mt-0.5">¥215</div>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg border border-[#ECEDEF]">
+                                <div class="text-[11px] text-[#EFA6B5] font-semibold">手取り額</div>
+                                <div id="preview-profit" class="font-bold text-[#EFA6B5] mt-0.5">¥0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-[#858B98] mb-1">メモ</label>
+                        <textarea id="form-memo" rows="2" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]"></textarea>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" class="w-full bg-[#EFA6B5] hover:bg-[#E395A6] text-white font-bold py-3 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="check" class="w-5 h-5"></i>
+                            登録する
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 5. 仕入れ管理 タブ -->
+        <section id="tab-purchases" class="tab-content hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-[#2F3440]">仕入れ管理</h2>
+                </div>
+                <button onclick="openAddPurchaseModal()" class="bg-[#EFA6B5] hover:bg-[#E395A6] text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition-colors flex items-center gap-1.5">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    新規仕入れ登録
+                </button>
+            </div>
+
+            <!-- 仕入れKPI -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-[#ECEDEF] shadow-sm">
+                    <div class="text-xs text-[#858B98] font-semibold mb-1">今月の仕入額</div>
+                    <div id="kpi-pur-month" class="text-2xl font-extrabold text-[#EFA6B5]">¥0</div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-[#ECEDEF] shadow-sm">
+                    <div class="text-xs text-[#858B98] font-semibold mb-1">今年の仕入額</div>
+                    <div id="kpi-pur-year" class="text-2xl font-extrabold text-[#2F3440]">¥0</div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-[#ECEDEF] shadow-sm">
+                    <div class="text-xs text-[#858B98] font-semibold mb-1">累計仕入額</div>
+                    <div id="kpi-pur-total" class="text-2xl font-extrabold text-[#2F3440]">¥0</div>
+                </div>
+            </div>
+
+            <!-- 仕入れ一覧テーブル -->
+            <div class="bg-white rounded-2xl border border-[#ECEDEF] shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#F8F8F9] text-[#858B98] text-xs font-semibold uppercase tracking-wider border-b border-[#ECEDEF]">
+                                <th class="p-3 pl-4">仕入日</th>
+                                <th class="p-3">仕入れ商品内訳</th>
+                                <th class="p-3 text-right">仕入総額</th>
+                                <th class="p-3">メモ</th>
+                                <th class="p-3 text-center pr-4">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="purchases-list" class="divide-y divide-[#ECEDEF] text-sm">
+                        </tbody>
+                    </table>
+                </div>
+                <div id="purchases-empty-state" class="hidden p-12 text-center">
+                    <div class="inline-flex p-4 bg-[#F8F8F9] text-[#858B98] rounded-full mb-3">
+                        <i data-lucide="shopping-bag" class="w-8 h-8"></i>
+                    </div>
+                    <p class="text-[#858B98] font-medium">仕入れデータがありません</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. 設定・データ管理 タブ -->
+        <section id="tab-settings" class="tab-content hidden max-w-2xl mx-auto space-y-6">
+            <!-- システム設定カード -->
+            <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-4">
+                <h2 class="text-xl font-bold text-[#2F3440] flex items-center gap-2">
+                    <i data-lucide="sliders" class="w-5 h-5 text-[#EFA6B5]"></i>
+                    計算設定
+                </h2>
+                <div>
+                    <label class="block text-xs font-semibold text-[#858B98] mb-1">メルカリ販売手数料率 (%)</label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="setting-fee-rate" min="0" max="100" step="0.1" value="10" class="w-32 px-3.5 py-2 border border-[#ECEDEF] rounded-xl text-sm font-bold text-[#2F3440] focus:outline-none focus:border-[#EFA6B5]">
+                        <button onclick="saveFeeRateSetting()" class="px-4 py-2 bg-[#EFA6B5] hover:bg-[#E395A6] text-white text-xs font-bold rounded-xl transition-colors">
+                            保存する
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-[#858B98] mt-1">※標準の手数料率は10%です。カテゴリ等で変更がある場合に指定してください。</p>
+                </div>
+            </div>
+
+            <!-- バックアップ・復元カード -->
+            <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-4">
+                <h2 class="text-xl font-bold text-[#2F3440]">データバックアップ & 復元</h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <button onclick="exportAllJSON()" class="p-4 border border-[#FCDCE4] bg-[#FFF1F4]/60 rounded-xl text-left hover:border-[#EFA6B5] transition-all flex items-start gap-3">
+                        <div class="p-2.5 bg-white text-[#EFA6B5] rounded-lg shrink-0 border border-[#FCDCE4]">
+                            <i data-lucide="file-json" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-[#2F3440] text-sm">全データ一括バックアップ (JSON)</div>
+                            <div class="text-xs text-[#EFA6B5] mt-0.5">商品マスター・売上・仕入れを保存</div>
+                        </div>
+                    </button>
+
+                    <button onclick="exportCSV('sales')" class="p-4 border border-[#ECEDEF] rounded-xl text-left hover:border-[#EFA6B5] hover:bg-[#FFF1F4]/30 transition-all flex items-start gap-3">
+                        <div class="p-2.5 bg-[#F8F8F9] text-[#2F3440] rounded-lg shrink-0 border border-[#ECEDEF]">
+                            <i data-lucide="download" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-[#2F3440] text-sm">売上CSVダウンロード</div>
+                            <div class="text-xs text-[#858B98] mt-0.5">売上データをCSV形式で出力</div>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="p-4 border border-[#ECEDEF] rounded-xl space-y-3 bg-[#F8F8F9]">
+                    <div class="font-bold text-sm text-[#2F3440] flex items-center gap-2">
+                        <i data-lucide="upload-cloud" class="w-4 h-4 text-[#EFA6B5]"></i>
+                        バックアップから復元 (JSON / CSV)
+                    </div>
+
+                    <div class="flex items-center gap-4 text-xs font-semibold text-[#858B98]">
+                        <span>復元モード:</span>
+                        <label class="flex items-center gap-1 cursor-pointer">
+                            <input type="radio" name="import-mode" value="append" checked class="text-[#EFA6B5]">
+                            <span>追加 (結合)</span>
+                        </label>
+                        <label class="flex items-center gap-1 cursor-pointer">
+                            <input type="radio" name="import-mode" value="replace" class="text-[#EFA6B5]">
+                            <span class="text-red-500">置き換え (初期化して復元)</span>
+                        </label>
+                    </div>
+
+                    <input type="file" id="backup-file-input" accept=".json,.csv" onchange="handleBackupFileImport(event)" class="block w-full text-xs text-[#858B98] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#2F3440] file:text-white hover:file:bg-black cursor-pointer">
+                </div>
+            </div>
+
+            <!-- 全消去 -->
+            <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-4">
+                <h3 class="font-bold text-[#2F3440] text-base">データ初期化</h3>
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="openClearAllModal()" class="px-4 py-2 bg-red-50 text-red-600 border border-red-100 rounded-xl text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-1.5">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        全データを消去
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- モバイルボトムナビゲーション -->
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEDEF] z-40 px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex justify-around shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
+        <button onclick="switchTab('dashboard')" id="mobile-nav-dashboard" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#EFA6B5]">
+            <i data-lucide="layout-dashboard" class="w-4 h-4 mb-0.5"></i>
+            ホーム
+        </button>
+        <button onclick="switchTab('product-stats')" id="mobile-nav-product-stats" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
+            <i data-lucide="boxes" class="w-4 h-4 mb-0.5"></i>
+            実績
+        </button>
+        <button onclick="switchTab('transactions')" id="mobile-nav-transactions" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
+            <i data-lucide="list" class="w-4 h-4 mb-0.5"></i>
+            取引一覧
+        </button>
+        <button onclick="switchTab('add')" id="mobile-nav-add" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
+            <i data-lucide="plus-circle" class="w-4 h-4 mb-0.5"></i>
+            登録
+        </button>
+        <button onclick="switchTab('purchases')" id="mobile-nav-purchases" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
+            <i data-lucide="shopping-bag" class="w-4 h-4 mb-0.5"></i>
+            仕入れ
+        </button>
+        <button onclick="switchTab('settings')" id="mobile-nav-settings" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
+            <i data-lucide="settings" class="w-4 h-4 mb-0.5"></i>
+            設定
+        </button>
+    </div>
+
+    <!-- 商品詳細モーダル -->
+    <div id="product-detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl space-y-5 relative max-h-[90vh] overflow-y-auto border border-[#ECEDEF]">
+            <button onclick="closeProductDetailModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="flex items-center justify-between border-b border-[#ECEDEF] pb-3">
+                <div>
+                    <span class="px-2 py-0.5 text-[10px] font-bold bg-[#FFF1F4] text-[#EFA6B5] rounded-md border border-[#FCDCE4]">ID: <span id="detail-product-id">---</span></span>
+                    <h3 id="detail-product-title" class="text-xl font-bold text-[#2F3440] mt-1">商品名</h3>
+                </div>
+                <button onclick="openEditProductMasterModal()" class="px-3 py-1.5 bg-[#F8F8F9] hover:bg-[#ECEDEF] text-[#2F3440] text-xs font-bold rounded-xl transition-colors flex items-center gap-1 border border-[#ECEDEF]">
+                    <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
+                    初期在庫設定
+                </button>
+            </div>
+
+            <!-- 数値サマリーグリッド -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center">
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#858B98] font-semibold">累計販売数</div>
+                    <div id="detail-total-sold" class="text-base font-extrabold text-[#EFA6B5] mt-0.5">0 個</div>
+                </div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#858B98] font-semibold">累計売上</div>
+                    <div id="detail-total-sales" class="text-base font-extrabold text-[#2F3440] mt-0.5">¥0</div>
+                </div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#858B98] font-semibold">累計手取り</div>
+                    <div id="detail-sales-net" class="text-base font-extrabold text-teal-600 mt-0.5">¥0</div>
+                </div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#858B98] font-semibold">累計仕入数</div>
+                    <div id="detail-purchased-qty" class="text-base font-extrabold text-[#2F3440] mt-0.5">0 個</div>
+                </div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#858B98] font-semibold">現在庫</div>
+                    <div id="detail-stock" class="text-base font-extrabold text-amber-600 mt-0.5">未設定</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#858B98] font-semibold">平均販売価格</div>
+                    <div id="detail-avg-price" class="text-sm font-bold text-[#2F3440] mt-0.5">¥0</div>
+                </div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#858B98] font-semibold">最高 / 最低価格</div>
+                    <div id="detail-minmax-price" class="text-xs font-bold text-[#2F3440] mt-1">¥0 / ¥0</div>
+                </div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#858B98] font-semibold">直近販売価格</div>
+                    <div id="detail-latest-price" class="text-sm font-bold text-[#2F3440] mt-0.5">¥0</div>
+                </div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#858B98] font-semibold">最終販売日</div>
+                    <div id="detail-last-date" class="text-xs font-bold text-[#2F3440] mt-1">--</div>
+                </div>
+            </div>
+
+            <div class="bg-[#F8F8F9] p-4 rounded-xl border border-[#ECEDEF]">
+                <h4 class="text-xs font-bold text-[#2F3440] mb-2 flex items-center gap-1.5">
+                    <i data-lucide="line-chart" class="w-3.5 h-3.5 text-[#EFA6B5]"></i>
+                    販売価格の推移
+                </h4>
+                <div class="h-44 relative">
+                    <canvas id="productDetailChart"></canvas>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h4 class="text-xs font-bold text-[#2F3440] flex items-center gap-1.5">
+                    <i data-lucide="history" class="w-3.5 h-3.5 text-[#858B98]"></i>
+                    販売履歴
+                </h4>
+                <div id="product-sales-timeline" class="max-h-40 overflow-y-auto bg-[#F8F8F9] rounded-xl p-3 border border-[#ECEDEF] text-xs space-y-1.5">
+                    <!-- JS描写 -->
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-2">
+                <button onclick="closeProductDetailModal()" class="px-5 py-2 bg-[#2F3440] hover:bg-black text-white rounded-xl text-xs font-bold transition-colors">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 初期在庫・警告設定モーダル -->
+    <div id="product-master-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 relative border border-[#ECEDEF]">
+            <button onclick="closeProductMasterModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-lg font-bold text-[#2F3440]">在庫・マスター設定</h3>
+
+            <form id="product-master-form" onsubmit="handleProductMasterSubmit(event)" class="space-y-4">
+                <input type="hidden" id="pm-id">
+                <div>
+                    <label class="block text-xs font-semibold text-[#858B98] mb-1">商品名</label>
+                    <input type="text" id="pm-title" required class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-bold text-[#2F3440]">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-[#858B98] mb-1">初期在庫数 (個)</label>
+                        <input type="number" id="pm-initial-stock" min="0" placeholder="未設定時は空欄" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-[#858B98] mb-1">在庫警告数 (個)</label>
+                        <input type="number" id="pm-alert-stock" min="0" value="5" required class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-semibold">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeProductMasterModal()" class="px-4 py-2 border border-[#ECEDEF] text-[#858B98] rounded-xl text-sm font-medium">キャンセル</button>
+                    <button type="submit" class="px-4 py-2 bg-[#EFA6B5] hover:bg-[#E395A6] text-white rounded-xl text-sm font-medium">保存する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 新規商品作成ダイアログ -->
+    <div id="new-product-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl space-y-4 relative border border-[#ECEDEF]">
+            <button onclick="closeNewProductModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-base font-bold text-[#2F3440]">新しい商品をマスター追加</h3>
+
+            <form id="new-product-form" onsubmit="handleNewProductSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-[#858B98] mb-1">新商品名 <span class="text-[#EFA6B5]">*</span></label>
+                    <input type="text" id="new-prod-title" required placeholder="例: 商品ABC" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-semibold">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeNewProductModal()" class="px-3.5 py-2 border border-[#ECEDEF] text-[#858B98] rounded-xl text-xs font-medium">キャンセル</button>
+                    <button type="submit" class="px-4 py-2 bg-[#2F3440] hover:bg-black text-white rounded-xl text-xs font-medium">追加する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 編集モーダル（売上） -->
+    <div id="edit-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto border border-[#ECEDEF]">
+            <button onclick="closeEditModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-lg font-bold text-[#2F3440]">取引データの編集</h3>
+
+            <form id="edit-form" onsubmit="handleEditSubmit(event)" class="space-y-4">
+                <input type="hidden" id="edit-id">
+                <div>
+                    <label class="block text-xs font-semibold text-[#858B98] mb-1">日付</label>
+                    <input type="date" id="edit-date" required class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-[#858B98] mb-1.5">商品指定方法</label>
+                    <div class="grid grid-cols-2 gap-2 bg-[#F8F8F9] p-1 rounded-xl text-xs font-bold text-center border border-[#ECEDEF]">
+                        <button type="button" id="btn-edit-mode-master" onclick="setEditProductInputMode('master')" class="py-1.5 rounded-lg bg-white text-[#EFA6B5] shadow-sm transition-all">
+                            マスター商品
+                        </button>
+                        <button type="button" id="btn-edit-mode-single" onclick="setEditProductInputMode('single')" class="py-1.5 rounded-lg text-[#858B98] transition-all">
+                            単発商品
+                        </button>
+                    </div>
+                </div>
+
+                <div id="edit-section-master" class="space-y-2">
+                    <label class="block text-xs font-semibold text-[#858B98] mb-1">商品選択</label>
+                    <select id="edit-product-id" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-bold text-[#2F3440]">
+                        <!-- JS挿入 -->
+                    </select>
+                </div>
+
+                <div id="edit-section-single" class="hidden space-y-2">
+                    <label class="block text-xs font-semibold text-[#858B98] mb-1">単発商品名</label>
+                    <input type="text" id="edit-single-title" placeholder="例: rino様 リクエスト 2点まとめ" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-bold">
+                    <div>
+                        <label class="block text-xs font-semibold text-[#858B98] mb-1 mt-2">個別仕入原価 (円)</label>
+                        <input type="number" id="edit-single-cost" min="0" placeholder="例: 1500" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-[#858B98] mb-1">販売価格 (円)</label>
+                        <input type="number" id="edit-sell-price" required min="0" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-[#858B98] mb-1">発送送料 (円)</label>
+                        <input type="number" id="edit-shipping-fee" min="0" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-[#858B98] mb-1">メモ</label>
+                    <textarea id="edit-memo" rows="2" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-[#ECEDEF] text-[#858B98] rounded-xl text-sm font-medium">キャンセル</button>
+                    <button type="submit" class="px-4 py-2 bg-[#EFA6B5] hover:bg-[#E395A6] text-white rounded-xl text-sm font-medium">更新する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 仕入れ新規/編集モーダル -->
+    <div id="purchase-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto border border-[#ECEDEF]">
+            <button onclick="closePurchaseModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 id="purchase-modal-title" class="text-lg font-bold text-[#2F3440]">新規まとめ仕入れの登録</h3>
+
+            <form id="purchase-form" onsubmit="handlePurchaseSubmit(event)" class="space-y-4">
+                <input type="hidden" id="pur-id">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-[#858B98] mb-1">仕入日 <span class="text-[#EFA6B5]">*</span></label>
+                        <input type="date" id="pur-date" required class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-[#858B98] mb-1">仕入総額 (円) <span class="text-[#EFA6B5]">*</span></label>
+                        <input type="number" id="pur-amount" min="0" required placeholder="例: 30000" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-extrabold text-[#2F3440] focus:outline-none focus:border-[#EFA6B5]">
+                    </div>
+                </div>
+
+                <div class="space-y-2 border-t border-b border-[#ECEDEF] py-3">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-xs font-bold text-[#2F3440]">仕入れ商品内訳 (商品 & 数量)</label>
+                        <button type="button" onclick="addPurchaseItemRow()" class="text-xs text-[#EFA6B5] font-bold hover:underline flex items-center gap-1">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> 商品を追加
+                        </button>
+                    </div>
+
+                    <div id="purchase-items-container" class="space-y-2">
+                        <!-- JS動的行追加 -->
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-[#858B98] mb-1">メモ</label>
+                    <textarea id="pur-memo" rows="2" placeholder="例: 8月まとめ仕入れ" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closePurchaseModal()" class="px-4 py-2 border border-[#ECEDEF] text-[#858B98] rounded-xl text-sm font-medium">キャンセル</button>
+                    <button type="submit" class="px-4 py-2 bg-[#EFA6B5] hover:bg-[#E395A6] text-white rounded-xl text-sm font-medium">保存する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 単体削除確認モーダル（元に戻せない旨を明記） -->
+    <div id="delete-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4 text-center border border-[#ECEDEF]">
+            <div class="w-12 h-12 bg-[#FFF1F4] text-[#EFA6B5] rounded-full flex items-center justify-center mx-auto">
+                <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-[#2F3440]">データの削除</h3>
+                <p class="text-xs text-[#858B98] mt-1">「<span id="delete-item-name" class="font-bold text-[#2F3440]"></span>」を削除しますか？</p>
+                <p class="text-[11px] text-red-500 font-bold mt-2">※この操作は元に戻せません。</p>
+            </div>
+            <div class="flex justify-center gap-3 pt-2">
+                <button onclick="closeDeleteModal()" class="w-full py-2.5 border border-[#ECEDEF] text-[#858B98] rounded-xl text-sm font-medium">キャンセル</button>
+                <button onclick="confirmDelete()" class="w-full py-2.5 bg-[#EFA6B5] hover:bg-[#E395A6] text-white rounded-xl text-sm font-medium shadow-sm">削除する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 二段階全消去確認モーダル -->
+    <div id="clear-all-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 text-center border border-[#ECEDEF]">
+            <div class="w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto">
+                <i data-lucide="trash-2" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-[#2F3440]">【二段階確認】全データの初期化</h3>
+                <p class="text-xs text-[#858B98] mt-1">すべての登録データを消去します。<br>この操作は絶対に取り消せません。</p>
+            </div>
+
+            <div class="bg-[#FFF1F4] p-3 rounded-xl border border-[#FCDCE4] text-xs text-[#2F3440]">
+                消去前にバックアップのダウンロードをお勧めします。
+                <button onclick="exportAllJSON()" class="mt-2 block w-full py-1.5 bg-[#EFA6B5] hover:bg-[#E395A6] text-white font-bold rounded-lg transition-colors">
+                    JSONバックアップを保存
+                </button>
+            </div>
+
+            <div class="flex justify-center gap-3 pt-2">
+                <button onclick="closeClearAllModal()" class="w-full py-2.5 border border-[#ECEDEF] text-[#858B98] rounded-xl text-sm font-medium">キャンセル</button>
+                <button onclick="confirmClearAllExecution()" class="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-bold shadow-sm">全データを消去実行</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- トースト通知 -->
+    <div id="toast" class="fixed bottom-20 md:bottom-6 right-6 bg-[#2F3440] text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 text-sm z-50 transform translate-y-20 opacity-0 transition-all duration-300">
+        <i id="toast-icon" data-lucide="check-circle-2" class="w-5 h-5 text-[#EFA6B5]"></i>
+        <span id="toast-message">メッセージ</span>
+    </div>
+
+    <!-- Firebase Script & Engine -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // システム規定に基づきapiKeyは空文字とし、実行環境注入に依存
+        const apiKey = "";
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "",
+            authDomain: "default.firebaseapp.com",
+            projectId: "default",
+            storageBucket: "default.appspot.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'mercari-sales-app';
+
+        // マッチング判定のスコア閾値（定数化して保守性を維持）
+        const MATCH_THRESHOLDS = {
+            EXACT: 0.8,      // 完全/高精度一致（自動紐付け）
+            UNCERTAIN: 0.45, // 曖昧一致（ユーザー確認を推奨）
+            MIN: 0.3         // 検索対象とする最小類似度
+        };
+
+        let currentFeeRate = 10; // デフォルトの手数料率 (%)
+        let transactions = [];
+        let purchases = [];
+        let products = [];
+        let productAliasMap = {};
+        let monthlyChartInstance = null;
+        let productDetailChartInstance = null;
+        let pendingDeleteTarget = null;
+        let currentUser = null;
+        let currentDetailProductId = null;
+        let ocrCandidates = [];
+
+        let productInputMode = 'master';
+        let editProductInputMode = 'master';
+
+        // 【同時実行ガード】onSnapshotは商品/売上/仕入れそれぞれ独立して発火するため、
+        // ガード無しでは syncAndMigrateProductIDs が重なって実行され、
+        // 同じタイトルの商品マスターが重複作成される恐れがある
+        let isSyncingProductIDs = false;
+        let pendingResync = false;
+
+        // 【セキュリティ適用 (Rule 1)】 ユーザー別に独立したパスを使用してデータを分離
+        const getTransColRef = (uid) => collection(db, 'artifacts', appId, 'users', uid, 'transactions');
+        const getPurchasesColRef = (uid) => collection(db, 'artifacts', appId, 'users', uid, 'purchases');
+        const getProductsColRef = (uid) => collection(db, 'artifacts', appId, 'users', uid, 'products');
+        const getAliasColRef = (uid) => collection(db, 'artifacts', appId, 'users', uid, 'aliases');
+        const getSettingsDocRef = (uid) => doc(db, 'artifacts', appId, 'users', uid, 'settings', 'config');
+
+        function toggleBodyScroll(disable) {
+            document.body.style.overflow = disable ? 'hidden' : '';
+        }
+
+        // 汎用デバウンスヘルパー（検索入力など高頻度イベントの再描画コストを抑制）
+        function debounce(fn, delay = 250) {
+            let timer = null;
+            return (...args) => {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn(...args), delay);
+            };
+        }
+
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Auth Exception:", err);
+            }
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                startDataListeners(user.uid);
+            }
+        });
+
+        initAuth();
+
+        function startDataListeners(uid) {
+            if (!uid) return;
+
+            // 設定のロード
+            getDoc(getSettingsDocRef(uid)).then(docSnap => {
+                if (docSnap.exists() && docSnap.data().feeRate !== undefined) {
+                    currentFeeRate = Number(docSnap.data().feeRate);
+                    const inputEl = document.getElementById('setting-fee-rate');
+                    if (inputEl) inputEl.value = currentFeeRate;
+                    calculatePreview();
+                }
+            }).catch(err => console.error("Setting Load Error:", err));
+
+            // 1. マスター商品リスナー
+            onSnapshot(getProductsColRef(uid), (snapshot) => {
+                const list = [];
+                snapshot.forEach(docSnap => {
+                    list.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                products = list;
+                syncAndMigrateProductIDs();
+            }, (err) => console.error("Products Snapshot Error:", err));
+
+            // 2. 売上取引リスナー
+            onSnapshot(getTransColRef(uid), (snapshot) => {
+                const list = [];
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const sellPrice = Number(data.sellPrice) || 0;
+                    const shippingFee = Number(data.shippingFee) || 0;
+                    // 可変手数料率の適用
+                    const fee = data.fee !== undefined ? Number(data.fee) : Math.floor(sellPrice * (currentFeeRate / 100));
+                    const netProfit = sellPrice - fee - shippingFee;
+                    const margin = sellPrice > 0 ? Number(((netProfit / sellPrice) * 100).toFixed(1)) : 0;
+
+                    list.push({
+                        id: docSnap.id,
+                        ...data,
+                        sellPrice,
+                        shippingFee,
+                        fee,
+                        profit: netProfit,
+                        margin
+                    });
+                });
+
+                transactions = list;
+                syncAndMigrateProductIDs();
+            }, (err) => console.error("Trans Snapshot Error:", err));
+
+            // 3. 仕入れ注文リスナー
+            onSnapshot(getPurchasesColRef(uid), (snapshot) => {
+                const list = [];
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    list.push({
+                        id: docSnap.id,
+                        ...data,
+                        amount: Number(data.amount) || 0
+                    });
+                });
+
+                purchases = list;
+                syncAndMigrateProductIDs();
+            }, (err) => console.error("Purchases Snapshot Error:", err));
+
+            // 4. エイリアスマッピングリスナー
+            onSnapshot(getAliasColRef(uid), (snapshot) => {
+                const map = {};
+                snapshot.forEach(docSnap => {
+                    map[docSnap.id] = docSnap.data().productId;
+                });
+                productAliasMap = map;
+            }, (err) => console.error("Alias Snapshot Error:", err));
+        }
+
+        // 商品/売上/仕入れの3つのリスナーがほぼ同時に発火しても、
+        // 実処理(runProductIDSync)が重複実行されないようキューイングする
+        async function syncAndMigrateProductIDs() {
+            if (!currentUser) return;
+
+            if (isSyncingProductIDs) {
+                pendingResync = true;
+                return;
+            }
+
+            isSyncingProductIDs = true;
+            try {
+                await runProductIDSync();
+            } finally {
+                isSyncingProductIDs = false;
+                if (pendingResync) {
+                    pendingResync = false;
+                    syncAndMigrateProductIDs();
+                }
+            }
+        }
+
+        async function runProductIDSync() {
+            const uid = currentUser.uid;
+
+            const existingProductMap = {};
+            products.forEach(p => {
+                if (p.title) {
+                    existingProductMap[p.title.trim()] = p;
+                }
+            });
+
+            const missingTitles = new Set();
+
+            transactions.forEach(t => {
+                if (t.title && !t.productId && !t.isSingleItem) {
+                    missingTitles.add(t.title.trim());
+                } else if (t.title && t.productId && !t.isSingleItem && !existingProductMap[t.title.trim()]) {
+                    missingTitles.add(t.title.trim());
+                }
+            });
+
+            purchases.forEach(p => {
+                if (p.items && Array.isArray(p.items)) {
+                    p.items.forEach(it => {
+                        if (it.title && !it.productId) missingTitles.add(it.title.trim());
+                    });
+                } else if (p.title || p.product) {
+                    const title = (p.title || p.product).trim();
+                    if (!existingProductMap[title]) missingTitles.add(title);
+                }
+            });
+
+            if (missingTitles.size > 0) {
+                const batch = writeBatch(db);
+                let addedCount = 0;
+
+                missingTitles.forEach(title => {
+                    if (!existingProductMap[title]) {
+                        const newId = 'prod_' + Math.floor(1000 + Math.random() * 9000);
+                        const docRef = doc(db, 'artifacts', appId, 'users', uid, 'products', newId);
+                        const prodData = {
+                            title,
+                            initialStock: null,
+                            alertStock: 5,
+                            createdAt: Date.now()
+                        };
+                        batch.set(docRef, prodData);
+                        existingProductMap[title] = { id: newId, ...prodData };
+                        addedCount++;
+                    }
+                });
+
+                if (addedCount > 0) {
+                    await batch.commit();
+                }
+            }
+
+            const unlinkedTrans = transactions.filter(t => !t.productId && t.title && !t.isSingleItem);
+            if (unlinkedTrans.length > 0) {
+                const batch = writeBatch(db);
+                unlinkedTrans.forEach(t => {
+                    const matchedProd = existingProductMap[t.title.trim()];
+                    if (matchedProd) {
+                        const docRef = doc(db, 'artifacts', appId, 'users', uid, 'transactions', t.id);
+                        batch.update(docRef, { productId: matchedProd.id });
+                    }
+                });
+                await batch.commit();
+            }
+
+            updateDashboard();
+            renderTransactions();
+            renderPurchases();
+            renderProductStatsTable();
+            populateProductSelects();
+        }
+
+        function getProductMasterCalculated(periodFilter = 'all') {
+            const map = {};
+
+            products.forEach(p => {
+                map[p.id] = {
+                    id: p.id,
+                    title: p.title || '無題商品',
+                    initialStock: p.initialStock !== undefined ? p.initialStock : null,
+                    alertStock: p.alertStock !== undefined ? p.alertStock : 5,
+                    allTimeSoldQty: 0,
+                    allTimePurchasedQty: 0,
+                    periodSoldQty: 0,
+                    periodSalesTotal: 0,
+                    periodNetSalesTotal: 0,
+                    prices: [],
+                    lastDate: '',
+                    latestPrice: 0
+                };
+            });
+
+            transactions.forEach(t => {
+                if (t.isSingleItem || t.productId === 'SINGLE') return;
+                const pid = t.productId || ('title_' + (t.title || '').trim());
+                if (!map[pid]) {
+                    map[pid] = {
+                        id: pid,
+                        title: t.title || '無題商品',
+                        initialStock: null,
+                        alertStock: 5,
+                        allTimeSoldQty: 0,
+                        allTimePurchasedQty: 0,
+                        periodSoldQty: 0,
+                        periodSalesTotal: 0,
+                        periodNetSalesTotal: 0,
+                        prices: [],
+                        lastDate: '',
+                        latestPrice: 0
+                    };
+                }
+            });
+
+            purchases.forEach(p => {
+                if (p.items && Array.isArray(p.items)) {
+                    p.items.forEach(it => {
+                        const pid = it.productId || (it.title ? 'title_' + it.title.trim() : null);
+                        if (pid && map[pid]) {
+                            map[pid].allTimePurchasedQty += (Number(it.qty) || 0);
+                        }
+                    });
+                } else if (p.title || p.product) {
+                    const title = (p.title || p.product).trim();
+                    const matchedProd = products.find(prd => prd.title.trim() === title);
+                    const pid = matchedProd ? matchedProd.id : ('title_' + title);
+                    if (map[pid]) {
+                        map[pid].allTimePurchasedQty += (Number(p.qty) || 1);
+                    }
+                }
+            });
+
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+
+            transactions.forEach(t => {
+                if (t.isSingleItem || t.productId === 'SINGLE') return;
+                const pid = t.productId || ('title_' + (t.title || '').trim());
+                const item = map[pid];
+                if (!item) return;
+
+                item.allTimeSoldQty += 1;
+
+                let inPeriod = true;
+                if (t.date) {
+                    const d = new Date(t.date);
+                    if (periodFilter === 'this-month') {
+                        inPeriod = d.getFullYear() === currentYear && d.getMonth() === currentMonth;
+                    } else if (periodFilter === 'last-month') {
+                        const lm = currentMonth === 0 ? 11 : currentMonth - 1;
+                        const ly = currentMonth === 0 ? currentYear - 1 : currentYear;
+                        inPeriod = d.getFullYear() === ly && d.getMonth() === lm;
+                    } else if (periodFilter === 'this-year') {
+                        inPeriod = d.getFullYear() === currentYear;
+                    }
+                }
+
+                if (inPeriod) {
+                    item.periodSoldQty += 1;
+                    item.periodSalesTotal += (t.sellPrice || 0);
+                    item.periodNetSalesTotal += (t.profit || 0);
+                    item.prices.push(t.sellPrice || 0);
+                }
+
+                if (!item.lastDate || new Date(t.date) >= new Date(item.lastDate)) {
+                    item.lastDate = t.date;
+                    item.latestPrice = t.sellPrice;
+                }
+            });
+
+            return Object.values(map).map(p => {
+                let currentStock = null;
+                let isStockSet = false;
+
+                if (p.initialStock !== null && p.initialStock !== undefined) {
+                    currentStock = Number(p.initialStock) + p.allTimePurchasedQty - p.allTimeSoldQty;
+                    isStockSet = true;
+                } else if (p.allTimePurchasedQty > 0) {
+                    currentStock = p.allTimePurchasedQty - p.allTimeSoldQty;
+                    isStockSet = true;
+                } else {
+                    currentStock = null;
+                    isStockSet = false;
+                }
+
+                const avgPrice = p.prices.length > 0 ? Math.round(p.periodSalesTotal / p.prices.length) : 0;
+                const maxPrice = p.prices.length > 0 ? Math.max(...p.prices) : 0;
+                const minPrice = p.prices.length > 0 ? Math.min(...p.prices) : 0;
+
+                return {
+                    ...p,
+                    currentStock,
+                    isStockSet,
+                    avgPrice,
+                    maxPrice,
+                    minPrice
+                };
+            });
+        }
+
+        function populateProductSelects() {
+            const prods = getProductMasterCalculated('all');
+            prods.sort((a, b) => a.title.localeCompare(b.title, 'ja'));
+
+            const createOption = (p) => `<option value="${p.id}">${escapeHtml(p.title)}</option>`;
+            const options = prods.map(createOption).join('');
+
+            const saleSelect = document.getElementById('form-product-id');
+            const editSelect = document.getElementById('edit-product-id');
+
+            if (saleSelect) {
+                saleSelect.innerHTML = `<option value="">-- 商品を選択してください --</option>${options}<option value="NEW">+ 新規商品をマスター登録...</option>`;
+            }
+            if (editSelect) {
+                editSelect.innerHTML = options;
+            }
+        }
+
+        function filterProductDropdown() {
+            const keyword = document.getElementById('form-product-search').value.toLowerCase().trim();
+            const select = document.getElementById('form-product-id');
+            if (!select) return;
+
+            const prods = getProductMasterCalculated('all');
+            const filtered = prods.filter(p => p.title.toLowerCase().includes(keyword));
+
+            select.innerHTML = `<option value="">-- 商品を選択してください --</option>` +
+                filtered.map(p => `<option value="${p.id}">${escapeHtml(p.title)}</option>`).join('') +
+                `<option value="NEW">+ 新規商品をマスター登録...</option>`;
+        }
+
+        function setProductInputMode(mode) {
+            productInputMode = mode;
+            const btnMaster = document.getElementById('btn-mode-master');
+            const btnSingle = document.getElementById('btn-mode-single');
+            const secMaster = document.getElementById('section-master-select');
+            const secSingle = document.getElementById('section-single-input');
+            const descText = document.getElementById('mode-desc-text');
+
+            if (mode === 'master') {
+                btnMaster.className = 'py-2 rounded-lg bg-white text-[#EFA6B5] shadow-sm transition-all';
+                btnSingle.className = 'py-2 rounded-lg text-[#858B98] transition-all';
+                secMaster.classList.remove('hidden');
+                secSingle.classList.add('hidden');
+                if (descText) descText.textContent = '※登録済み商品から選択';
+            } else {
+                btnSingle.className = 'py-2 rounded-lg bg-white text-[#EFA6B5] shadow-sm transition-all';
+                btnMaster.className = 'py-2 rounded-lg text-[#858B98] transition-all';
+                secSingle.classList.remove('hidden');
+                secMaster.classList.add('hidden');
+                if (descText) descText.textContent = '※今回限りの専用出品・まとめ売り等を直接入力';
+                document.getElementById('product-ref-card').classList.add('hidden');
+            }
+        }
+
+        function setEditProductInputMode(mode) {
+            editProductInputMode = mode;
+            const btnMaster = document.getElementById('btn-edit-mode-master');
+            const btnSingle = document.getElementById('btn-edit-mode-single');
+            const secMaster = document.getElementById('edit-section-master');
+            const secSingle = document.getElementById('edit-section-single');
+
+            if (mode === 'master') {
+                btnMaster.className = 'py-1.5 rounded-lg bg-white text-[#EFA6B5] shadow-sm transition-all';
+                btnSingle.className = 'py-1.5 rounded-lg text-[#858B98] transition-all';
+                secMaster.classList.remove('hidden');
+                secSingle.classList.add('hidden');
+            } else {
+                btnSingle.className = 'py-1.5 rounded-lg bg-white text-[#EFA6B5] shadow-sm transition-all';
+                btnMaster.className = 'py-1.5 rounded-lg text-[#858B98] transition-all';
+                secSingle.classList.remove('hidden');
+                secMaster.classList.add('hidden');
+            }
+        }
+
+        function onSaleProductSelectChange() {
+            const select = document.getElementById('form-product-id');
+            if (select.value === 'NEW') {
+                select.value = '';
+                openNewProductModal();
+                return;
+            }
+
+            const pid = select.value;
+            const refCard = document.getElementById('product-ref-card');
+            if (!pid) {
+                refCard.classList.add('hidden');
+                return;
+            }
+
+            const prods = getProductMasterCalculated('all');
+            const p = prods.find(item => item.id === pid);
+            if (!p) return;
+
+            document.getElementById('ref-stock').textContent = p.isStockSet ? `${p.currentStock} 個` : '未設定';
+            document.getElementById('ref-latest-price').textContent = p.latestPrice ? `¥${p.latestPrice.toLocaleString()}` : '--';
+            document.getElementById('ref-avg-price').textContent = p.avgPrice ? `¥${p.avgPrice.toLocaleString()}` : '--';
+
+            refCard.classList.remove('hidden');
+        }
+
+        function openNewProductModal() {
+            toggleBodyScroll(true);
+            document.getElementById('new-product-modal').classList.remove('hidden');
+        }
+        function closeNewProductModal() {
+            toggleBodyScroll(false);
+            document.getElementById('new-product-modal').classList.add('hidden');
+        }
+
+        async function handleNewProductSubmit(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const title = cleanProductTitle(document.getElementById('new-prod-title').value);
+            if (!title) return;
+
+            const newId = 'prod_' + Date.now();
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'products', newId);
+                await setDoc(docRef, {
+                    title,
+                    initialStock: null,
+                    alertStock: 5,
+                    createdAt: Date.now()
+                });
+
+                closeNewProductModal();
+                document.getElementById('new-product-form').reset();
+                showToast(`「${title}」をマスターに登録しました`, 'success');
+
+                setTimeout(() => {
+                    setProductInputMode('master');
+                    const select = document.getElementById('form-product-id');
+                    if (select) {
+                        select.value = newId;
+                        onSaleProductSelectChange();
+                    }
+                }, 300);
+            } catch (err) {
+                console.error("Add Product Error:", err);
+                showToast('商品の登録に失敗しました', 'error');
+            }
+        }
+
+        function cleanProductTitle(rawTitle) {
+            if (!rawTitle) return '';
+            let title = rawTitle;
+            title = title.replace(/【.*?】/g, '');
+            title = title.replace(/\[.*?\]/g, '');
+            title = title.replace(/（.*?）/g, '');
+            title = title.replace(/\(.*?\)/g, '');
+
+            const noiseWords = [
+                /SOLD/gi, /取引完了/g, /発送待ち/g, /配送中/g, /売却済/g, /送料込み/g,
+                /送料込/g, /送料無料/g, /匿名配送/g, /\(税込\)/g, /（税込）/g, /税込/g
+            ];
+
+            noiseWords.forEach(pattern => {
+                title = title.replace(pattern, '');
+            });
+
+            title = title.replace(/¥\s*[\d,]+/g, '');
+            title = title.replace(/[\d,]+\s*円/g, '');
+
+            title = title.replace(/^[★☆●○◆◇■□▲▼◎!！♪✨📦\s\-_:：]+/g, '');
+            title = title.replace(/[★☆●○◆◇■□▲▼◎!！♪✨📦\s\-_:：]+$/g, '');
+
+            return title.replace(/\s+/g, ' ').trim();
+        }
+
+        /**
+         * 【ロジック解明・コメント化】
+         * メルカリの手取り額（手元残高）から、実際の出品価格（Gross Price）を逆算する関数
+         * @param {number} netProfit - 手取り額
+         * @param {number} shippingFee - 発送送料 (デフォルト215円)
+         * @param {number} feeRate - 手数料率 (%)
+         * @returns {number} 調整後のメルカリ出品価格
+         */
+        function calculateAdjustedGrossPrice(netProfit, shippingFee = 215, feeRate = 10) {
+            // Step 1: 手取り額 ＋ 送料 ＝ 手数料引去後の純売り上げ額
+            const netPlusShipping = netProfit + shippingFee;
+
+            // Step 2: 手数料率を差し引いた理論上の最少出品価格（切上げ計算）
+            // 計算式: 販売価格 × (1 - 手数料率/100) = 手取り＋送料
+            const rateMultiplier = (100 - feeRate) / 100;
+            let rawGross = Math.ceil(netPlusShipping / rateMultiplier);
+
+            // Step 3: メルカリの出品価格設定で一般的な「100円切り良さ」または「5円単位」に補正
+            // 例: 2,482円のような端数出品は稀なため、2,500円や2,485円のようなキリの良い数値に上方補正
+            let adjustedP = rawGross;
+            while (true) {
+                const isEndsWith00 = (adjustedP % 100 === 0);
+                const isMultipleOf5 = (adjustedP % 5 === 0);
+                if (isEndsWith00 || isMultipleOf5) {
+                    break;
+                }
+                adjustedP++;
+            }
+
+            return adjustedP;
+        }
+
+        function analyzeProductMatchThreeStages(cleanedTitle) {
+            const isSingleKeyword = /専用|リクエスト|まとめ|セット|1点物|一点物/.test(cleanedTitle);
+
+            if (isSingleKeyword) {
+                return {
+                    status: 'SINGLE',
+                    matchedProductId: 'SINGLE',
+                    matchedTitle: cleanedTitle,
+                    candidates: [],
+                    label: '単発商品'
+                };
+            }
+
+            const rawKey = cleanedTitle.toLowerCase().replace(/\s+/g, '');
+
+            if (productAliasMap[rawKey]) {
+                const learnedProd = products.find(p => p.id === productAliasMap[rawKey]);
+                if (learnedProd) {
+                    return {
+                        status: 'EXACT',
+                        matchedProductId: learnedProd.id,
+                        matchedTitle: learnedProd.title,
+                        candidates: [],
+                        label: 'マスター商品'
+                    };
+                }
+            }
+
+            const prods = getProductMasterCalculated('all');
+            let bestScore = 0;
+            let bestProd = null;
+            const scoredProds = [];
+
+            prods.forEach(p => {
+                const cleanMaster = cleanProductTitle(p.title).toLowerCase().replace(/\s+/g, '');
+                let score = 0;
+
+                if (rawKey === cleanMaster) score = 1.0;
+                else if (rawKey.includes(cleanMaster) || cleanMaster.includes(rawKey)) score = 0.85;
+                else {
+                    const commonChars = Array.from(new Set(rawKey)).filter(c => cleanMaster.includes(c)).length;
+                    score = commonChars / Math.max(rawKey.length, cleanMaster.length, 1);
+                }
+
+                if (score > MATCH_THRESHOLDS.MIN) {
+                    scoredProds.push({ prod: p, score });
+                }
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestProd = p;
+                }
+            });
+
+            scoredProds.sort((a, b) => b.score - a.score);
+            const topCandidates = scoredProds.slice(0, 3).map(s => s.prod);
+
+            // 定数化した閾値で分岐
+            if (bestScore >= MATCH_THRESHOLDS.EXACT && bestProd) {
+                return {
+                    status: 'EXACT',
+                    matchedProductId: bestProd.id,
+                    matchedTitle: bestProd.title,
+                    candidates: [],
+                    label: 'マスター商品'
+                };
+            } else if (bestScore >= MATCH_THRESHOLDS.UNCERTAIN && topCandidates.length > 0) {
+                return {
+                    status: 'UNCERTAIN',
+                    matchedProductId: topCandidates[0].id,
+                    matchedTitle: topCandidates[0].title,
+                    candidates: topCandidates,
+                    label: '要確認'
+                };
+            } else {
+                return {
+                    status: 'NEW',
+                    matchedProductId: 'NEW',
+                    matchedTitle: cleanedTitle,
+                    candidates: topCandidates,
+                    label: '新規マスター'
+                };
+            }
+        }
+
+        async function handleImageOcrUpload(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            const loadingEl = document.getElementById('ocr-loading');
+            const progressText = document.getElementById('ocr-progress-text');
+            loadingEl.classList.remove('hidden');
+            ocrCandidates = [];
+
+            try {
+                let total = files.length;
+                let current = 0;
+
+                for (let file of files) {
+                    current++;
+                    if (progressText) progressText.textContent = `読み取り中... (${current}/${total}枚目)`;
+
+                    const base64Data = await readFileAsBase64(file);
+                    const masterTitleList = products.map(p => p.title);
+
+                    // 指数バックオフ搭載のGemini呼び出し
+                    const analysisResult = await analyzeScreenshotWithGemini(base64Data, file.type, masterTitleList);
+
+                    if (analysisResult && analysisResult.items && Array.isArray(analysisResult.items)) {
+                        for (let item of analysisResult.items) {
+                            const isRefundOrCancel = /返金|キャンセル|取消|補償|調整|振込|ポイント|残高|返還/.test(item.rawTitle || '');
+                            if (isRefundOrCancel && item.isSaleItem === false) {
+                                continue;
+                            }
+
+                            const cleanedTitle = cleanProductTitle(item.rawTitle || '売却商品');
+                            const shippingFee = Number(item.shippingFee) || 215;
+                            let rawExtractedAmount = Number(item.extractedAmount) || 0;
+
+                            let sellPrice = 0;
+                            let netProfitDisplay = 0;
+
+                            if (analysisResult.isAppScreenshot) {
+                                sellPrice = calculateAdjustedGrossPrice(rawExtractedAmount, shippingFee, currentFeeRate);
+                                const fee = Math.floor(sellPrice * (currentFeeRate / 100));
+                                netProfitDisplay = sellPrice - fee - shippingFee;
+                            } else {
+                                sellPrice = rawExtractedAmount;
+                                const fee = Math.floor(sellPrice * (currentFeeRate / 100));
+                                netProfitDisplay = sellPrice - fee - shippingFee;
+                            }
+
+                            const match3Result = analyzeProductMatchThreeStages(cleanedTitle);
+                            const duplicateInfo = checkDuplicateOrUpdateTransaction(item.date, sellPrice, match3Result.matchedProductId);
+
+                            ocrCandidates.push({
+                                tempId: 'ocr_' + Math.random().toString(36).substr(2, 9),
+                                date: item.date || new Date().toISOString().split('T')[0],
+                                rawTitle: cleanedTitle,
+                                matchedProductId: match3Result.matchedProductId,
+                                matchedTitle: match3Result.matchedTitle,
+                                matchStatus: match3Result.status,
+                                matchLabel: match3Result.label,
+                                candidateProds: match3Result.candidates,
+                                isNewProduct: match3Result.status === 'NEW',
+                                isSingleItem: match3Result.status === 'SINGLE',
+                                singleCost: 0,
+                                extractedAmount: rawExtractedAmount,
+                                sellPrice,
+                                shippingFee,
+                                recalculatedFee: Math.floor(sellPrice * (currentFeeRate / 100)),
+                                recalculatedNetProfit: netProfitDisplay,
+                                isDuplicate: duplicateInfo.isDuplicate,
+                                existingTransId: duplicateInfo.existingTransId,
+                                memo: 'スクショから自動抽出'
+                            });
+                        }
+                    }
+                }
+
+                renderOcrCandidateCards();
+                showToast(`${ocrCandidates.length}件の登録候補を解析しました`, 'success');
+            } catch (err) {
+                console.error("OCR Process Error:", err);
+                showToast(`読み取りエラー: ${err.message || '画像の解析に失敗しました'}`, 'error');
+            } finally {
+                loadingEl.classList.add('hidden');
+                e.target.value = '';
+            }
+        }
+
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        /**
+         * Gemini API呼び出し (指数バックオフ 1s, 2s, 4s, 8s, 16s によるエラー耐性強化)
+         * APIキー未設定時や 4xx 系の恒久的エラーは、無意味なリトライで
+         * ユーザーを待たせないよう即座に失敗させる。
+         */
+        async function analyzeScreenshotWithGemini(base64Image, mimeType, masterTitleList = []) {
+            if (!apiKey) {
+                throw new Error('画像解析用のAPIキーが設定されていません');
+            }
+
+            const masterListText = masterTitleList.length > 0
+                ? `\n【登録済みの商品マスター参考リスト】:\n${masterTitleList.map(t => `- ${t}`).join('\n')}\n`
+                : '';
+
+            const promptText = `
+あなたはメルカリ画面解析のAIです。画像から「商品販売」のみを抽出し、返金・キャンセル・ポイント・振込・残高調整は除外してください。
+${masterListText}
+【判定ルール】
+1. 画像内に複数の商品・取引が並んでいる場合：
+   → isAppScreenshot: true (メルカリアプリ画面)
+   → extractedAmount は「手元に残った金額」です。
+
+2. 1商品のみで、メールの件名・差出人等の表示がある場合：
+   → isAppScreenshot: false (メール通知)
+   → extractedAmount は「販売価格」です。
+
+3. 商品名(rawTitle)は不自然な省略・文字化けなく精密に抽出し、UI文言(SOLD、取引完了等)を除外してください。
+
+【JSONフォーマット】:
+{
+  "isAppScreenshot": true,
+  "items": [
+    {
+      "isSaleItem": true,
+      "date": "2026-08-10",
+      "rawTitle": "商品ABC",
+      "extractedAmount": 2485,
+      "shippingFee": 215
+    }
+  ]
+}
+`;
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [
+                    {
+                        role: "user",
+                        parts: [
+                            { text: promptText },
+                            { inlineData: { mimeType: mimeType || "image/png", data: base64Image } }
+                        ]
+                    }
+                ],
+                generationConfig: { responseMimeType: "application/json" }
+            };
+
+            // HTTP 4xx はリクエスト自体が不正/権限不足であり、リトライしても結果は変わらないため
+            // 一覧に含まれる場合はバックオフを継続せず即座に打ち切る
+            const nonRetryableStatus = new Set([400, 401, 403, 404]);
+
+            let response = null;
+            let retries = 5;
+            let delay = 1000;
+
+            for (let i = 0; i < retries; i++) {
+                try {
+                    response = await fetch(url, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.ok) break;
+                    if (nonRetryableStatus.has(response.status)) break;
+                } catch (e) {}
+
+                if (i < retries - 1) {
+                    await new Promise(r => setTimeout(r, delay));
+                    delay *= 2;
+                }
+            }
+
+            if (!response || !response.ok) {
+                throw new Error(response ? `APIエラー (HTTP ${response.status})` : "通信エラー");
+            }
+
+            const result = await response.json();
+            const textResult = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!textResult) throw new Error("画像からデータを検出できませんでした");
+            return JSON.parse(textResult);
+        }
+
+        // 同一商品を同日に複数回販売するケースを誤って「重複」と判定しないよう、
+        // 日付と金額の一致のみを重複の必須条件とする（商品一致は使わない）
+        function checkDuplicateOrUpdateTransaction(date, sellPrice, productId) {
+            const found = transactions.find(t => {
+                const sameDate = t.date === date;
+                const samePrice = Math.abs((t.sellPrice || 0) - sellPrice) < 15;
+                return sameDate && samePrice;
+            });
+
+            return {
+                isDuplicate: !!found,
+                existingTransId: found ? found.id : null
+            };
+        }
+
+        function renderOcrCandidateCards() {
+            const container = document.getElementById('ocr-candidates-list');
+            const resultsBox = document.getElementById('ocr-results-container');
+            const countBadge = document.getElementById('ocr-candidate-count');
+
+            if (!container || !resultsBox) return;
+
+            if (ocrCandidates.length === 0) {
+                resultsBox.classList.add('hidden');
+                return;
+            }
+
+            countBadge.textContent = ocrCandidates.length;
+            resultsBox.classList.remove('hidden');
+
+            const prods = getProductMasterCalculated('all');
+
+            container.innerHTML = ocrCandidates.map((c, idx) => {
+                let badgeClass = 'bg-[#F8F8F9] text-[#858B98]';
+                if (c.matchStatus === 'EXACT') badgeClass = 'bg-emerald-100 text-emerald-800 font-bold';
+                else if (c.matchStatus === 'UNCERTAIN') badgeClass = 'bg-amber-100 text-amber-900 font-bold';
+                else if (c.matchStatus === 'NEW') badgeClass = 'bg-blue-100 text-blue-800 font-bold';
+                else if (c.matchStatus === 'SINGLE') badgeClass = 'bg-purple-100 text-purple-800 font-bold';
+
+                return `
+                    <div id="card_${c.tempId}" class="bg-white p-4 rounded-2xl border ${c.isDuplicate ? 'border-amber-300 bg-amber-50/40' : 'border-[#ECEDEF]'} shadow-sm space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 text-xs font-bold bg-[#2F3440] text-white rounded-md">${idx + 1}</span>
+                                <span class="px-2.5 py-0.5 text-xs rounded-md ${badgeClass}">${c.matchLabel}</span>
+                                ${c.isDuplicate ? '<span class="px-2 py-0.5 text-[10px] font-bold bg-amber-500 text-white rounded-md">重複の可能性あり</span>' : ''}
+                            </div>
+                            <button onclick="removeOcrCandidate('${c.tempId}')" class="text-[#858B98] hover:text-red-500 text-xs flex items-center gap-1 font-bold">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> 除外
+                            </button>
+                        </div>
+
+                        <div class="space-y-2 text-xs">
+                            <div>
+                                <label class="block font-semibold text-[#858B98] mb-1">商品名 (確認・手修正可能)</label>
+                                <input type="text" value="${escapeHtml(c.rawTitle)}" oninput="updateCandidateRawTitle('${c.tempId}', this.value)" class="w-full p-2 border border-[#ECEDEF] rounded-lg font-bold text-[#2F3440] focus:outline-none focus:border-[#EFA6B5]">
+                            </div>
+
+                            <div>
+                                <label class="block font-semibold text-[#858B98] mb-1">紐付け指定</label>
+                                <select onchange="updateCandidateProduct('${c.tempId}', this.value)" class="w-full p-2 border border-[#ECEDEF] rounded-lg bg-white font-bold text-[#2F3440]">
+                                    <option value="SINGLE" ${c.isSingleItem ? 'selected' : ''}>単発商品 (マスター非登録)</option>
+                                    <option value="NEW" ${c.isNewProduct ? 'selected' : ''}>＋ 新しい商品マスターを作成</option>
+                                    ${prods.map(p => `<option value="${p.id}" ${p.id === c.matchedProductId ? 'selected' : ''}>${escapeHtml(p.title)}</option>`).join('')}
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2 pt-1">
+                                <div>
+                                    <label class="block font-semibold text-[#858B98] mb-1">販売価格 (円)</label>
+                                    <input type="number" value="${c.sellPrice}" onchange="updateCandidateGrossPrice('${c.tempId}', this.value)" class="w-full p-1.5 border border-[#ECEDEF] rounded-lg text-xs font-extrabold text-[#2F3440] text-center">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-[#858B98] mb-1">送料 (円)</label>
+                                    <input type="number" value="${c.shippingFee}" onchange="updateCandidateShipping('${c.tempId}', this.value)" class="w-full p-1.5 border border-[#ECEDEF] rounded-lg text-xs font-bold text-center">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-[#858B98] mb-1">手取り額 (円)</label>
+                                    <div class="p-1.5 bg-[#FFF1F4] text-[#EFA6B5] font-bold rounded-lg text-center">¥${c.recalculatedNetProfit.toLocaleString()}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        function updateCandidateRawTitle(tempId, newTitle) {
+            const cand = ocrCandidates.find(c => c.tempId === tempId);
+            if (!cand) return;
+            const cleaned = cleanProductTitle(newTitle);
+            cand.rawTitle = cleaned;
+            const match3 = analyzeProductMatchThreeStages(cleaned);
+            cand.matchedProductId = match3.matchedProductId;
+            cand.matchedTitle = match3.matchedTitle;
+            cand.matchStatus = match3.status;
+            cand.matchLabel = match3.label;
+            cand.isNewProduct = match3.status === 'NEW';
+            cand.isSingleItem = match3.status === 'SINGLE';
+        }
+
+        function removeOcrCandidate(tempId) {
+            ocrCandidates = ocrCandidates.filter(c => c.tempId !== tempId);
+            renderOcrCandidateCards();
+        }
+
+        function updateCandidateProduct(tempId, selectedVal) {
+            const cand = ocrCandidates.find(c => c.tempId === tempId);
+            if (!cand) return;
+            if (selectedVal === 'SINGLE') {
+                cand.isSingleItem = true;
+                cand.isNewProduct = false;
+                cand.matchedProductId = 'SINGLE';
+            } else if (selectedVal === 'NEW') {
+                cand.isSingleItem = false;
+                cand.isNewProduct = true;
+                cand.matchedProductId = 'NEW';
+            } else {
+                cand.isSingleItem = false;
+                cand.isNewProduct = false;
+                cand.matchedProductId = selectedVal;
+
+                if (currentUser && cand.rawTitle) {
+                    const rawKey = cand.rawTitle.toLowerCase().replace(/\s+/g, '');
+                    const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'aliases', rawKey);
+                    setDoc(docRef, { productId: selectedVal, title: cand.rawTitle }, { merge: true });
+                }
+            }
+        }
+
+        function updateCandidateShipping(tempId, shippingVal) {
+            const cand = ocrCandidates.find(c => c.tempId === tempId);
+            if (!cand) return;
+            cand.shippingFee = Number(shippingVal) || 215;
+            cand.recalculatedFee = Math.floor(cand.sellPrice * (currentFeeRate / 100));
+            cand.recalculatedNetProfit = cand.sellPrice - cand.recalculatedFee - cand.shippingFee;
+            renderOcrCandidateCards();
+        }
+
+        function updateCandidateGrossPrice(tempId, grossVal) {
+            const cand = ocrCandidates.find(c => c.tempId === tempId);
+            if (!cand) return;
+            cand.sellPrice = Number(grossVal) || 0;
+            cand.recalculatedFee = Math.floor(cand.sellPrice * (currentFeeRate / 100));
+            cand.recalculatedNetProfit = cand.sellPrice - cand.recalculatedFee - cand.shippingFee;
+            renderOcrCandidateCards();
+        }
+
+        async function confirmAllOcrCandidates() {
+            if (ocrCandidates.length === 0 || !currentUser) return;
+            const uid = currentUser.uid;
+
+            try {
+                const batch = writeBatch(db);
+                let count = 0;
+
+                for (let c of ocrCandidates) {
+                    let targetProductId = c.matchedProductId;
+                    let isSingle = c.isSingleItem || targetProductId === 'SINGLE';
+
+                    if (!isSingle && (c.isNewProduct || targetProductId === 'NEW')) {
+                        targetProductId = 'prod_' + Math.floor(10000 + Math.random() * 90000);
+                        const pRef = doc(db, 'artifacts', appId, 'users', uid, 'products', targetProductId);
+                        batch.set(pRef, {
+                            title: c.rawTitle.trim(),
+                            initialStock: null,
+                            alertStock: 5,
+                            createdAt: Date.now()
+                        });
+                    }
+
+                    const matchedProd = !isSingle ? products.find(p => p.id === targetProductId) : null;
+                    const title = matchedProd ? matchedProd.title : c.rawTitle.trim();
+
+                    const sellPrice = Number(c.sellPrice) || 0;
+                    const shippingFee = Number(c.shippingFee) || 215;
+                    const fee = Math.floor(sellPrice * (currentFeeRate / 100));
+                    const profit = sellPrice - fee - shippingFee;
+                    const margin = sellPrice > 0 ? Number(((profit / sellPrice) * 100).toFixed(1)) : 0;
+
+                    const docId = c.existingTransId || ('tx_ocr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4));
+                    const docRef = doc(db, 'artifacts', appId, 'users', uid, 'transactions', docId);
+
+                    batch.set(docRef, {
+                        date: c.date,
+                        productId: isSingle ? null : targetProductId,
+                        isSingleItem: isSingle,
+                        singleCost: Number(c.singleCost) || 0,
+                        title,
+                        sellPrice,
+                        shippingFee,
+                        fee,
+                        profit,
+                        margin,
+                        memo: c.memo || '画像から登録',
+                        createdAt: Date.now() + count
+                    }, { merge: true });
+
+                    count++;
+                }
+
+                await batch.commit();
+                ocrCandidates = [];
+                renderOcrCandidateCards();
+                showToast(`${count}件の売上を登録しました！`, 'success');
+                switchTab('dashboard');
+            } catch (err) {
+                console.error("Confirm OCR Error:", err);
+                showToast('登録に失敗しました', 'error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            setDefaultDates();
+            calculatePreview();
+        });
+
+        async function saveFeeRateSetting() {
+            if (!currentUser) return;
+            const rateVal = Number(document.getElementById('setting-fee-rate').value) || 10;
+            currentFeeRate = rateVal;
+
+            try {
+                await setDoc(getSettingsDocRef(currentUser.uid), { feeRate: rateVal }, { merge: true });
+                document.getElementById('preview-fee-rate-label').textContent = rateVal;
+                calculatePreview();
+                showToast(`販売手数料率を ${rateVal}% に保存しました`, 'success');
+            } catch (err) {
+                console.error("Save Fee Rate Error:", err);
+                showToast('手数料率の保存に失敗しました', 'error');
+            }
+        }
+
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('form-date').value = today;
+            document.getElementById('pur-date').value = today;
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-[#EFA6B5]', 'bg-white', 'shadow-sm');
+                btn.classList.add('text-[#858B98]');
+            });
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.classList.remove('text-[#858B98]');
+                activeNav.classList.add('text-[#EFA6B5]', 'bg-white', 'shadow-sm');
+            }
+
+            document.querySelectorAll('[id^="mobile-nav-"]').forEach(btn => {
+                btn.classList.remove('text-[#EFA6B5]');
+                btn.classList.add('text-[#858B98]');
+            });
+            const activeMobileNav = document.getElementById(`mobile-nav-${tabId}`);
+            if (activeMobileNav) {
+                activeMobileNav.classList.remove('text-[#858B98]');
+                activeMobileNav.classList.add('text-[#EFA6B5]');
+            }
+
+            if (tabId === 'dashboard') {
+                setTimeout(() => updateDashboard(), 50);
+            } else if (tabId === 'product-stats') {
+                renderProductStatsTable();
+            }
+        }
+
+        function openAddModal() {
+            switchTab('add');
+        }
+
+        function calculatePreview() {
+            const sellPrice = Number(document.getElementById('form-sell-price').value) || 0;
+            const shippingFee = Number(document.getElementById('form-shipping-fee').value) || 0;
+
+            const fee = Math.floor(sellPrice * (currentFeeRate / 100));
+            const profit = sellPrice - fee - shippingFee;
+
+            document.getElementById('preview-fee').textContent = `¥${fee.toLocaleString()}`;
+            document.getElementById('preview-shipping').textContent = `¥${shippingFee.toLocaleString()}`;
+            document.getElementById('preview-profit').textContent = `¥${profit.toLocaleString()}`;
+
+            const profitEl = document.getElementById('preview-profit');
+            if (profit < 0) {
+                profitEl.className = 'font-bold text-red-500 mt-0.5';
+            } else {
+                profitEl.className = 'font-bold text-[#EFA6B5] mt-0.5';
+            }
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            let productId = null;
+            let title = '';
+            let isSingleItem = false;
+            let singleCost = 0;
+
+            if (productInputMode === 'master') {
+                productId = document.getElementById('form-product-id').value;
+                if (!productId) {
+                    showToast('商品を選択してください', 'warning');
+                    return;
+                }
+                const matchedProd = products.find(p => p.id === productId);
+                title = matchedProd ? matchedProd.title : '売上商品';
+            } else {
+                title = document.getElementById('form-single-title').value.trim();
+                if (!title) {
+                    showToast('商品名を入力してください', 'warning');
+                    return;
+                }
+                isSingleItem = true;
+                singleCost = Number(document.getElementById('form-single-cost').value) || 0;
+            }
+
+            const sellPrice = Number(document.getElementById('form-sell-price').value) || 0;
+            const shippingFee = Number(document.getElementById('form-shipping-fee').value) || 0;
+            const fee = Math.floor(sellPrice * (currentFeeRate / 100));
+            const profit = sellPrice - fee - shippingFee;
+            const margin = sellPrice > 0 ? Number(((profit / sellPrice) * 100).toFixed(1)) : 0;
+
+            const docId = 'tx_' + Date.now();
+            const newTransaction = {
+                date: document.getElementById('form-date').value,
+                productId: isSingleItem ? null : productId,
+                isSingleItem,
+                singleCost,
+                title,
+                sellPrice,
+                shippingFee,
+                fee,
+                profit,
+                margin,
+                memo: document.getElementById('form-memo').value,
+                createdAt: Date.now()
+            };
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions', docId);
+                await setDoc(docRef, newTransaction);
+
+                document.getElementById('add-transaction-form').reset();
+                setDefaultDates();
+                document.getElementById('form-shipping-fee').value = 215;
+                document.getElementById('product-ref-card').classList.add('hidden');
+                calculatePreview();
+
+                showToast('売上データを登録しました！', 'success');
+                switchTab('dashboard');
+            } catch (err) {
+                console.error("Save failed:", err);
+                showToast('保存に失敗しました', 'error');
+            }
+        }
+
+        function openEditModal(id) {
+            const tx = transactions.find(t => t.id === id);
+            if (!tx) return;
+
+            document.getElementById('edit-id').value = tx.id;
+            document.getElementById('edit-date').value = tx.date;
+
+            if (tx.isSingleItem) {
+                setEditProductInputMode('single');
+                document.getElementById('edit-single-title').value = tx.title || '';
+                document.getElementById('edit-single-cost').value = tx.singleCost || '';
+            } else {
+                setEditProductInputMode('master');
+                document.getElementById('edit-product-id').value = tx.productId || '';
+            }
+
+            document.getElementById('edit-sell-price').value = tx.sellPrice;
+            document.getElementById('edit-shipping-fee').value = tx.shippingFee;
+            document.getElementById('edit-memo').value = tx.memo || '';
+
+            toggleBodyScroll(true);
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            toggleBodyScroll(false);
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
+
+        async function handleEditSubmit(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const id = document.getElementById('edit-id').value;
+            let productId = null;
+            let title = '';
+            let isSingleItem = false;
+            let singleCost = 0;
+
+            if (editProductInputMode === 'master') {
+                productId = document.getElementById('edit-product-id').value;
+                const matchedProd = products.find(p => p.id === productId);
+                title = matchedProd ? matchedProd.title : '売上商品';
+            } else {
+                title = document.getElementById('edit-single-title').value.trim();
+                isSingleItem = true;
+                singleCost = Number(document.getElementById('edit-single-cost').value) || 0;
+            }
+
+            const sellPrice = Number(document.getElementById('edit-sell-price').value) || 0;
+            const shippingFee = Number(document.getElementById('edit-shipping-fee').value) || 0;
+            const fee = Math.floor(sellPrice * (currentFeeRate / 100));
+            const profit = sellPrice - fee - shippingFee;
+            const margin = sellPrice > 0 ? Number(((profit / sellPrice) * 100).toFixed(1)) : 0;
+
+            const updatedData = {
+                date: document.getElementById('edit-date').value,
+                productId: isSingleItem ? null : productId,
+                isSingleItem,
+                singleCost,
+                title,
+                sellPrice,
+                shippingFee,
+                fee,
+                profit,
+                margin,
+                memo: document.getElementById('edit-memo').value,
+                updatedAt: Date.now()
+            };
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions', id);
+                await setDoc(docRef, updatedData, { merge: true });
+                closeEditModal();
+                showToast('売上データを更新しました', 'success');
+            } catch (err) {
+                console.error("Update error:", err);
+                showToast('更新に失敗しました', 'error');
+            }
+        }
+
+        let purchaseItemRowCount = 0;
+
+        function openAddPurchaseModal() {
+            document.getElementById('pur-id').value = '';
+            document.getElementById('purchase-modal-title').textContent = '新規まとめ仕入れの登録';
+            document.getElementById('purchase-form').reset();
+            setDefaultDates();
+
+            const container = document.getElementById('purchase-items-container');
+            container.innerHTML = '';
+            purchaseItemRowCount = 0;
+            addPurchaseItemRow();
+
+            toggleBodyScroll(true);
+            document.getElementById('purchase-modal').classList.remove('hidden');
+        }
+
+        function addPurchaseItemRow(selectedProductId = '', defaultQty = 10) {
+            const container = document.getElementById('purchase-items-container');
+            const rowId = 'pur_row_' + (++purchaseItemRowCount);
+
+            const prods = getProductMasterCalculated('all');
+            prods.sort((a, b) => a.title.localeCompare(b.title, 'ja'));
+
+            const options = prods.map(p => `<option value="${p.id}" ${p.id === selectedProductId ? 'selected' : ''}>${escapeHtml(p.title)}</option>`).join('');
+
+            const rowHtml = `
+                <div id="${rowId}" class="flex items-center gap-2">
+                    <select class="pur-row-product flex-grow px-3 py-1.5 border border-[#ECEDEF] rounded-lg text-xs font-semibold bg-white text-[#2F3440] focus:outline-none focus:border-[#EFA6B5]">
+                        <option value="">-- 商品を選択 --</option>
+                        ${options}
+                    </select>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <span class="text-xs text-[#858B98]">数量:</span>
+                        <input type="number" min="1" value="${defaultQty}" class="pur-row-qty w-20 px-2 py-1.5 border border-[#ECEDEF] rounded-lg text-xs font-bold text-center">
+                    </div>
+                    <button type="button" onclick="removePurchaseItemRow('${rowId}')" aria-label="この行を削除" class="p-1 text-[#858B98] hover:text-red-500">
+                        <i data-lucide="x-circle" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', rowHtml);
+            lucide.createIcons();
+        }
+
+        function removePurchaseItemRow(rowId) {
+            const row = document.getElementById(rowId);
+            if (row) row.remove();
+        }
+
+        function openEditPurchaseModal(id) {
+            const pur = purchases.find(p => p.id === id);
+            if (!pur) return;
+
+            document.getElementById('pur-id').value = pur.id;
+            document.getElementById('purchase-modal-title').textContent = '仕入れ注文の編集';
+            document.getElementById('pur-date').value = pur.date;
+            document.getElementById('pur-amount').value = pur.amount;
+            document.getElementById('pur-memo').value = pur.memo || '';
+
+            const container = document.getElementById('purchase-items-container');
+            container.innerHTML = '';
+            purchaseItemRowCount = 0;
+
+            if (pur.items && Array.isArray(pur.items) && pur.items.length > 0) {
+                pur.items.forEach(it => {
+                    addPurchaseItemRow(it.productId, it.qty || 1);
+                });
+            } else {
+                const matchedProd = products.find(prd => prd.title.trim() === (pur.title || pur.product || '').trim());
+                addPurchaseItemRow(matchedProd ? matchedProd.id : '', pur.qty || 1);
+            }
+
+            toggleBodyScroll(true);
+            document.getElementById('purchase-modal').classList.remove('hidden');
+        }
+
+        function closePurchaseModal() {
+            toggleBodyScroll(false);
+            document.getElementById('purchase-modal').classList.add('hidden');
+        }
+
+        async function handlePurchaseSubmit(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const id = document.getElementById('pur-id').value || ('pur_' + Date.now());
+            const amount = Number(document.getElementById('pur-amount').value) || 0;
+
+            const itemRows = document.querySelectorAll('#purchase-items-container > div');
+            const items = [];
+
+            itemRows.forEach(row => {
+                const prodSelect = row.querySelector('.pur-row-product');
+                const qtyInput = row.querySelector('.pur-row-qty');
+                if (prodSelect && prodSelect.value) {
+                    const pid = prodSelect.value;
+                    const matchedProd = products.find(p => p.id === pid);
+                    items.push({
+                        productId: pid,
+                        title: matchedProd ? matchedProd.title : '',
+                        qty: Number(qtyInput.value) || 1
+                    });
+                }
+            });
+
+            if (items.length === 0) {
+                showToast('仕入れる商品を少なくとも1つ選択してください', 'warning');
+                return;
+            }
+
+            const data = {
+                date: document.getElementById('pur-date').value,
+                amount,
+                items,
+                memo: document.getElementById('pur-memo').value,
+                updatedAt: Date.now()
+            };
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'purchases', id);
+                await setDoc(docRef, data, { merge: true });
+                closePurchaseModal();
+                showToast('仕入れ注文を保存しました！', 'success');
+            } catch (err) {
+                console.error("Purchase save error:", err);
+                showToast('仕入れ保存に失敗しました', 'error');
+            }
+        }
+
+        function openDeleteModal(type, id) {
+            pendingDeleteTarget = { type, id };
+            let itemName = '';
+            if (type === 'transaction') {
+                const tx = transactions.find(t => t.id === id);
+                itemName = tx ? tx.title : '売上データ';
+            } else {
+                const pur = purchases.find(p => p.id === id);
+                itemName = pur ? `仕入れ (¥${pur.amount.toLocaleString()})` : '仕入れデータ';
+            }
+            document.getElementById('delete-item-name').textContent = itemName;
+            toggleBodyScroll(true);
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            pendingDeleteTarget = null;
+            toggleBodyScroll(false);
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        async function confirmDelete() {
+            if (pendingDeleteTarget && currentUser) {
+                try {
+                    const colName = pendingDeleteTarget.type === 'transaction' ? 'transactions' : 'purchases';
+                    const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, colName, pendingDeleteTarget.id);
+                    await deleteDoc(docRef);
+                    closeDeleteModal();
+                    showToast('データを削除しました', 'success');
+                } catch (err) {
+                    console.error("Delete error:", err);
+                    showToast('削除に失敗しました', 'error');
+                }
+            }
+        }
+
+        function openClearAllModal() {
+            toggleBodyScroll(true);
+            document.getElementById('clear-all-modal').classList.remove('hidden');
+        }
+
+        function closeClearAllModal() {
+            toggleBodyScroll(false);
+            document.getElementById('clear-all-modal').classList.add('hidden');
+        }
+
+        async function confirmClearAllExecution() {
+            if (!currentUser) return;
+            const uid = currentUser.uid;
+
+            try {
+                const batch = writeBatch(db);
+                const tSnap = await getDocs(getTransColRef(uid));
+                tSnap.forEach(d => batch.delete(d.ref));
+
+                const pSnap = await getDocs(getPurchasesColRef(uid));
+                pSnap.forEach(d => batch.delete(d.ref));
+
+                const prdSnap = await getDocs(getProductsColRef(uid));
+                prdSnap.forEach(d => batch.delete(d.ref));
+
+                const aliasSnap = await getDocs(getAliasColRef(uid));
+                aliasSnap.forEach(d => batch.delete(d.ref));
+
+                await batch.commit();
+
+                closeClearAllModal();
+                showToast('すべてのデータを完全消去しました', 'success');
+            } catch (err) {
+                console.error("Clear error:", err);
+                showToast('全消去に失敗しました', 'error');
+            }
+        }
+
+        function updateDashboard() {
+            const filterValue = document.getElementById('dashboard-filter').value;
+            const rankingSortType = document.getElementById('ranking-sort-type')?.value || 'qty';
+
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+
+            let filteredTrans = transactions.filter(t => {
+                if (!t.date) return true;
+                const d = new Date(t.date);
+                if (filterValue === 'this-month') {
+                    return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
+                } else if (filterValue === 'last-month') {
+                    const lm = currentMonth === 0 ? 11 : currentMonth - 1;
+                    const ly = currentMonth === 0 ? currentYear - 1 : currentYear;
+                    return d.getFullYear() === ly && d.getMonth() === lm;
+                } else if (filterValue === 'this-year') {
+                    return d.getFullYear() === currentYear;
+                }
+                return true;
+            });
+
+            filteredTrans.sort((a, b) => {
+                const dateDiff = new Date(b.date || 0) - new Date(a.date || 0);
+                if (dateDiff !== 0) return dateDiff;
+                return (b.createdAt || 0) - (a.createdAt || 0);
+            });
+
+            let filteredPurchases = purchases.filter(p => {
+                if (!p.date) return true;
+                const d = new Date(p.date);
+                if (filterValue === 'this-month') {
+                    return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
+                } else if (filterValue === 'last-month') {
+                    const lm = currentMonth === 0 ? 11 : currentMonth - 1;
+                    const ly = currentMonth === 0 ? currentYear - 1 : currentYear;
+                    return d.getFullYear() === ly && d.getMonth() === lm;
+                } else if (filterValue === 'this-year') {
+                    return d.getFullYear() === currentYear;
+                }
+                return true;
+            });
+
+            const totalSales = filteredTrans.reduce((acc, t) => acc + t.sellPrice, 0);
+            const totalFee = filteredTrans.reduce((acc, t) => acc + t.fee, 0);
+            const totalShipping = filteredTrans.reduce((acc, t) => acc + t.shippingFee, 0);
+            const totalSalesNet = totalSales - totalFee - totalShipping;
+
+            const singleItemsCostSum = filteredTrans.filter(t => t.isSingleItem).reduce((acc, t) => acc + (t.singleCost || 0), 0);
+            const totalPurchasesAmount = filteredPurchases.reduce((acc, p) => acc + p.amount, 0) + singleItemsCostSum;
+
+            const finalProfit = totalSalesNet - totalPurchasesAmount;
+
+            const prods = getProductMasterCalculated('all');
+            const totalStockItems = prods.reduce((acc, p) => acc + (p.isStockSet ? p.currentStock : 0), 0);
+            const alertProds = prods.filter(p => p.isStockSet && p.currentStock <= p.alertStock);
+
+            document.getElementById('kpi-sales').textContent = `¥${totalSales.toLocaleString()}`;
+            document.getElementById('kpi-sales-net').textContent = `¥${totalSalesNet.toLocaleString()}`;
+            document.getElementById('kpi-purchases').textContent = `¥${totalPurchasesAmount.toLocaleString()}`;
+            document.getElementById('kpi-net-profit').textContent = `¥${finalProfit.toLocaleString()}`;
+
+            document.getElementById('kpi-count').textContent = filteredTrans.length;
+            document.getElementById('kpi-total-stock').textContent = `${totalStockItems} 個`;
+            document.getElementById('kpi-product-type-count').textContent = `${prods.length} 種類`;
+
+            const alertSection = document.getElementById('stock-alert-section');
+            const alertList = document.getElementById('stock-alert-list');
+            if (alertProds.length > 0) {
+                alertList.innerHTML = alertProds.map(p => `
+                    <span onclick="openProductDetailModal('${p.id}')" class="px-2.5 py-1 rounded-xl text-xs font-bold cursor-pointer transition-transform hover:scale-105 ${p.currentStock <= 0 ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-amber-100 text-amber-800 border border-amber-200'}">
+                        ${escapeHtml(p.title)}: ${p.currentStock <= 0 ? '【在庫切れ】' : `残り${p.currentStock}個`}
+                    </span>
+                `).join('');
+                alertSection.classList.remove('hidden');
+            } else {
+                alertSection.classList.add('hidden');
+            }
+
+            renderRecentTable(filteredTrans.slice(0, 5));
+            renderCharts(filteredTrans, filteredPurchases);
+            renderProductRanking(filterValue, rankingSortType);
+        }
+
+        function renderProductRanking(periodFilter, sortType) {
+            const products = getProductMasterCalculated(periodFilter);
+
+            if (sortType === 'qty') {
+                products.sort((a, b) => b.periodSoldQty - a.periodSoldQty);
+            } else if (sortType === 'sales') {
+                products.sort((a, b) => b.periodSalesTotal - a.periodSalesTotal);
+            } else if (sortType === 'profit') {
+                products.sort((a, b) => b.periodNetSalesTotal - a.periodNetSalesTotal);
+            }
+
+            const container = document.getElementById('product-ranking-list');
+            if (!container) return;
+
+            const topProducts = products.filter(p => p.periodSoldQty > 0).slice(0, 5);
+
+            if (topProducts.length === 0) {
+                container.innerHTML = '<div class="text-center text-[#858B98] text-xs py-8">この期間の販売データはありません</div>';
+                return;
+            }
+
+            const badges = ['🥇', '🥈', '🥉', '4位', '5位'];
+            const badgeBg = ['bg-[#FFF1F4] text-[#EFA6B5]', 'bg-[#F8F8F9] text-[#2F3440]', 'bg-[#F8F8F9] text-[#2F3440]', 'bg-[#F8F8F9] text-[#858B98]', 'bg-[#F8F8F9] text-[#858B98]'];
+
+            container.innerHTML = topProducts.map((p, idx) => `
+                <div onclick="openProductDetailModal('${p.id}')" class="flex items-center justify-between p-2 hover:bg-[#F8F8F9] rounded-xl cursor-pointer transition-colors border border-[#ECEDEF]">
+                    <div class="flex items-center gap-2 truncate">
+                        <span class="px-2 py-0.5 text-xs font-bold rounded-lg ${badgeBg[idx]} shrink-0">${badges[idx]}</span>
+                        <div class="truncate">
+                            <div class="font-bold text-[#2F3440] text-xs truncate">${escapeHtml(p.title)}</div>
+                            <div class="text-[10px] text-[#858B98]">売上: ¥${p.periodSalesTotal.toLocaleString()} | 手取り: ¥${p.periodNetSalesTotal.toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0 pl-2">
+                        <span class="font-extrabold text-[#EFA6B5] text-sm">${p.periodSoldQty}</span> <span class="text-[10px] text-[#858B98]">個</span>
+                        <div class="text-[10px] ${p.isStockSet && p.currentStock <= p.alertStock ? 'text-red-500 font-bold' : 'text-[#858B98]'}">在庫: ${p.isStockSet ? p.currentStock + '個' : '未設定'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderRecentTable(list) {
+            const tbody = document.getElementById('recent-transactions-list');
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-[#858B98] text-xs">売上データがありません</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = list.map(t => `
+                <tr class="hover:bg-[#F8F8F9] transition-colors">
+                    <td class="p-3 pl-4 text-[#858B98] whitespace-nowrap text-xs">${t.date || ''}</td>
+                    <td class="p-3 font-medium text-[#2F3440]">
+                        ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[#FFF1F4] text-[#EFA6B5] font-bold rounded mr-1.5 border border-[#FCDCE4]">単発</span>' : ''}
+                        ${escapeHtml(t.title || '')}
+                    </td>
+                    <td class="p-3 text-right font-semibold text-[#2F3440]">¥${(t.sellPrice || 0).toLocaleString()}</td>
+                    <td class="p-3 text-right pr-4 font-bold text-teal-600">¥${(t.profit || 0).toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderCharts(filteredTrans, filteredPurchases) {
+            const months = {};
+            const now = new Date();
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                months[key] = { sales: 0, salesNet: 0, purchases: 0 };
+            }
+
+            transactions.forEach(t => {
+                const key = t.date ? t.date.substring(0, 7) : '';
+                if (months[key]) {
+                    months[key].sales += t.sellPrice;
+                    months[key].salesNet += t.profit;
+                }
+            });
+
+            purchases.forEach(p => {
+                const key = p.date ? p.date.substring(0, 7) : '';
+                if (months[key]) {
+                    months[key].purchases += p.amount;
+                }
+            });
+
+            const labels = Object.keys(months);
+            const salesData = labels.map(k => months[k].sales);
+            const salesNetData = labels.map(k => months[k].salesNet);
+            const finalProfitData = labels.map(k => months[k].salesNet - months[k].purchases);
+
+            const ctx1 = document.getElementById('monthlyChart').getContext('2d');
+            if (monthlyChartInstance) monthlyChartInstance.destroy();
+
+            monthlyChartInstance = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: '売上高',
+                            data: salesData,
+                            backgroundColor: 'rgba(133, 139, 152, 0.3)',
+                            borderRadius: 4
+                        },
+                        {
+                            label: '手取り額',
+                            data: salesNetData,
+                            backgroundColor: 'rgba(239, 166, 181, 0.6)',
+                            borderRadius: 4
+                        },
+                        {
+                            label: '最終利益',
+                            data: finalProfitData,
+                            type: 'line',
+                            borderColor: '#EFA6B5',
+                            backgroundColor: '#EFA6B5',
+                            borderWidth: 2,
+                            pointRadius: 4,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { family: 'Noto Sans JP', size: 11 } } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#ECEDEF' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderProductStatsTable() {
+            const periodFilter = document.getElementById('product-stats-filter')?.value || 'all';
+            const products = getProductMasterCalculated(periodFilter);
+            products.sort((a, b) => b.periodSalesTotal - a.periodSalesTotal);
+
+            const tbody = document.getElementById('product-stats-list');
+            const emptyEl = document.getElementById('product-stats-empty');
+            if (!tbody) return;
+
+            if (products.length === 0) {
+                tbody.innerHTML = '';
+                if (emptyEl) emptyEl.classList.remove('hidden');
+                return;
+            }
+
+            if (emptyEl) emptyEl.classList.add('hidden');
+            tbody.innerHTML = products.map(p => `
+                <tr class="hover:bg-[#F8F8F9] transition-colors">
+                    <td class="p-3 pl-4 font-bold text-[#2F3440]">
+                        <button onclick="openProductDetailModal('${p.id}')" class="hover:text-[#EFA6B5] underline text-left flex items-center gap-1">
+                            <i data-lucide="package" class="w-3.5 h-3.5 text-[#858B98]"></i>
+                            ${escapeHtml(p.title)}
+                        </button>
+                    </td>
+                    <td class="p-3 text-right font-extrabold text-[#EFA6B5]">${p.periodSoldQty} 個</td>
+                    <td class="p-3 text-right font-bold text-[#2F3440]">¥${p.periodSalesTotal.toLocaleString()}</td>
+                    <td class="p-3 text-right text-xs text-[#858B98] font-semibold">¥${p.avgPrice.toLocaleString()}</td>
+                    <td class="p-3 text-right text-xs text-[#2F3440] font-bold">¥${p.latestPrice.toLocaleString()}</td>
+                    <td class="p-3 text-right text-[11px] text-[#858B98]">¥${p.maxPrice.toLocaleString()} / ¥${p.minPrice.toLocaleString()}</td>
+                    <td class="p-3 text-right font-bold text-teal-600">¥${p.periodNetSalesTotal.toLocaleString()}</td>
+                    <td class="p-3 text-right text-xs text-[#2F3440] font-semibold">${p.allTimePurchasedQty} 個</td>
+                    <td class="p-3 text-right font-bold ${!p.isStockSet ? 'text-[#858B98] font-normal' : p.currentStock <= p.alertStock ? 'text-red-500' : 'text-[#2F3440]'}">
+                        ${p.isStockSet ? (p.currentStock <= 0 ? '【在庫切れ】' : p.currentStock + ' 個') : '未設定'}
+                    </td>
+                    <td class="p-3 text-center text-xs text-[#858B98] pr-4">${p.lastDate || '--'}</td>
+                </tr>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function openProductDetailModal(productId) {
+            currentDetailProductId = productId;
+            const prods = getProductMasterCalculated('all');
+            const p = prods.find(item => item.id === productId);
+            if (!p) return;
+
+            document.getElementById('detail-product-id').textContent = p.id;
+            document.getElementById('detail-product-title').textContent = p.title;
+
+            document.getElementById('detail-total-sold').textContent = `${p.allTimeSoldQty} 個`;
+            document.getElementById('detail-total-sales').textContent = `¥${p.periodSalesTotal.toLocaleString()}`;
+            document.getElementById('detail-sales-net').textContent = `¥${p.periodNetSalesTotal.toLocaleString()}`;
+            document.getElementById('detail-purchased-qty').textContent = `${p.allTimePurchasedQty} 個`;
+            document.getElementById('detail-stock').textContent = p.isStockSet ? `${p.currentStock} 個` : '未設定';
+
+            document.getElementById('detail-avg-price').textContent = `¥${p.avgPrice.toLocaleString()}`;
+            document.getElementById('detail-minmax-price').textContent = `¥${p.maxPrice.toLocaleString()} / ¥${p.minPrice.toLocaleString()}`;
+            document.getElementById('detail-latest-price').textContent = `¥${(p.latestPrice || 0).toLocaleString()}`;
+            document.getElementById('detail-last-date').textContent = p.lastDate || '--';
+
+            const pTrans = transactions.filter(t => t.productId === productId || (t.title && t.title.trim() === p.title.trim()));
+            pTrans.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            const timelineEl = document.getElementById('product-sales-timeline');
+            if (pTrans.length === 0) {
+                timelineEl.innerHTML = '<div class="text-[#858B98] text-center py-2">販売履歴がありません</div>';
+            } else {
+                timelineEl.innerHTML = pTrans.map(t => `
+                    <div class="flex items-center justify-between py-1 border-b border-[#ECEDEF] last:border-0">
+                        <span class="font-semibold text-[#858B98]">${t.date || ''}</span>
+                        <span class="font-bold text-[#2F3440]">売上: ¥${(t.sellPrice || 0).toLocaleString()}</span>
+                        <span class="text-[11px] text-[#EFA6B5] font-bold">手取り: ¥${(t.profit || 0).toLocaleString()}</span>
+                    </div>
+                `).join('');
+            }
+
+            pTrans.sort((a, b) => new Date(a.date) - new Date(b.date));
+            const labels = pTrans.map(t => t.date);
+            const prices = pTrans.map(t => t.sellPrice);
+
+            const ctx = document.getElementById('productDetailChart').getContext('2d');
+            if (productDetailChartInstance) productDetailChartInstance.destroy();
+
+            productDetailChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: '販売価格 (円)',
+                            data: prices,
+                            borderColor: '#EFA6B5',
+                            backgroundColor: 'rgba(239, 166, 181, 0.15)',
+                            borderWidth: 2,
+                            pointRadius: 4,
+                            fill: true,
+                            tension: 0.2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: false, grid: { color: '#ECEDEF' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            toggleBodyScroll(true);
+            document.getElementById('product-detail-modal').classList.remove('hidden');
+        }
+
+        function closeProductDetailModal() {
+            toggleBodyScroll(false);
+            document.getElementById('product-detail-modal').classList.add('hidden');
+            currentDetailProductId = null;
+        }
+
+        function openEditProductMasterModal() {
+            if (!currentDetailProductId) return;
+            const p = products.find(item => item.id === currentDetailProductId);
+            if (!p) return;
+
+            document.getElementById('pm-id').value = p.id;
+            document.getElementById('pm-title').value = p.title;
+            document.getElementById('pm-initial-stock').value = p.initialStock !== null && p.initialStock !== undefined ? p.initialStock : '';
+            document.getElementById('pm-alert-stock').value = p.alertStock !== undefined ? p.alertStock : 5;
+
+            toggleBodyScroll(true);
+            document.getElementById('product-master-modal').classList.remove('hidden');
+        }
+
+        function closeProductMasterModal() {
+            toggleBodyScroll(false);
+            document.getElementById('product-master-modal').classList.add('hidden');
+        }
+
+        async function handleProductMasterSubmit(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const id = document.getElementById('pm-id').value;
+            const title = cleanProductTitle(document.getElementById('pm-title').value);
+            const initVal = document.getElementById('pm-initial-stock').value;
+            const alertVal = Number(document.getElementById('pm-alert-stock').value) || 5;
+
+            const initialStock = initVal !== '' ? Number(initVal) : null;
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'products', id);
+                await setDoc(docRef, {
+                    title,
+                    initialStock,
+                    alertStock: alertVal,
+                    updatedAt: Date.now()
+                }, { merge: true });
+
+                closeProductMasterModal();
+                showToast('設定を保存しました！', 'success');
+                if (currentDetailProductId) {
+                    openProductDetailModal(currentDetailProductId);
+                }
+            } catch (err) {
+                console.error("Master save error:", err);
+                showToast('設定の保存に失敗しました', 'error');
+            }
+        }
+
+        function renderTransactions() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const sortOrder = document.getElementById('sort-order').value;
+
+            let filtered = transactions.filter(t => {
+                return (t.title && t.title.toLowerCase().includes(search)) || (t.memo && t.memo.toLowerCase().includes(search));
+            });
+
+            filtered.sort((a, b) => {
+                if (sortOrder === 'date-desc') {
+                    const dateDiff = new Date(b.date || 0) - new Date(a.date || 0);
+                    if (dateDiff !== 0) return dateDiff;
+                    return (b.createdAt || 0) - (a.createdAt || 0);
+                }
+                if (sortOrder === 'date-asc') {
+                    const dateDiff = new Date(a.date || 0) - new Date(b.date || 0);
+                    if (dateDiff !== 0) return dateDiff;
+                    return (a.createdAt || 0) - (b.createdAt || 0);
+                }
+                if (sortOrder === 'profit-desc') return (b.profit || 0) - (a.profit || 0);
+                if (sortOrder === 'price-desc') return (b.sellPrice || 0) - (a.sellPrice || 0);
+                return 0;
+            });
+
+            const container = document.getElementById('transactions-container');
+            const emptyState = document.getElementById('empty-state');
+
+            if (filtered.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            container.innerHTML = `
+                <div class="hidden sm:block bg-white rounded-2xl border border-[#ECEDEF] shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#F8F8F9] text-[#858B98] text-xs font-semibold uppercase tracking-wider border-b border-[#ECEDEF]">
+                                    <th class="p-3 pl-4">日付</th>
+                                    <th class="p-3">商品名</th>
+                                    <th class="p-3 text-right">販売価格</th>
+                                    <th class="p-3 text-right">手数料</th>
+                                    <th class="p-3 text-right">送料</th>
+                                    <th class="p-3 text-right">手取り額</th>
+                                    <th class="p-3 text-center pr-4">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-[#ECEDEF] text-sm">
+                                ${filtered.map(t => `
+                                    <tr class="hover:bg-[#F8F8F9] transition-colors">
+                                        <td class="p-3 pl-4 text-xs text-[#858B98] whitespace-nowrap">${t.date || ''}</td>
+                                        <td class="p-3 font-semibold text-[#2F3440]">
+                                            ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[#FFF1F4] text-[#EFA6B5] font-bold rounded mr-1.5 border border-[#FCDCE4]">単発</span>' : ''}
+                                            ${escapeHtml(t.title || '')}
+                                        </td>
+                                        <td class="p-3 text-right font-medium text-[#2F3440]">¥${(t.sellPrice || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right text-xs text-[#858B98]">¥${(t.fee || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right text-xs text-[#858B98]">¥${(t.shippingFee || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right font-bold text-[#EFA6B5]">¥${(t.profit || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-center pr-4">
+                                            <div class="flex items-center justify-center gap-1">
+                                                <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1.5 text-[#858B98] hover:text-[#2F3440]"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                                                <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1.5 text-[#858B98] hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="sm:hidden space-y-2.5">
+                    ${filtered.map(t => `
+                        <div class="bg-white p-3.5 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-2">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <span class="text-[10px] font-semibold text-[#858B98]">${t.date || ''}</span>
+                                    <h4 class="font-bold text-[#2F3440] text-sm leading-tight flex items-center gap-1">
+                                        ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[9px] bg-[#FFF1F4] text-[#EFA6B5] font-bold rounded shrink-0">単発</span>' : ''}
+                                        ${escapeHtml(t.title || '')}
+                                    </h4>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1 text-[#858B98]"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                                    <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1 text-[#858B98]"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 bg-[#F8F8F9] p-2 rounded-xl text-center text-xs">
+                                <div>
+                                    <div class="text-[10px] text-[#858B98]">販売価格</div>
+                                    <div class="font-bold text-[#2F3440]">¥${(t.sellPrice || 0).toLocaleString()}</div>
+                                </div>
+                                <div>
+                                    <div class="text-[10px] text-[#EFA6B5] font-semibold">手取り額</div>
+                                    <div class="font-extrabold text-[#EFA6B5]">¥${(t.profit || 0).toLocaleString()}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            lucide.createIcons();
+        }
+
+        function renderPurchases() {
+            const tbody = document.getElementById('purchases-list');
+            const emptyState = document.getElementById('purchases-empty-state');
+
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+
+            let monthTotal = 0;
+            let yearTotal = 0;
+            let total = 0;
+
+            purchases.sort((a, b) => {
+                const dateDiff = new Date(b.date || 0) - new Date(a.date || 0);
+                if (dateDiff !== 0) return dateDiff;
+                return (b.updatedAt || b.createdAt || 0) - (a.createdAt || 0);
+            });
+
+            purchases.forEach(p => {
+                const amt = p.amount || 0;
+                total += amt;
+                if (p.date) {
+                    const d = new Date(p.date);
+                    if (d.getFullYear() === currentYear) {
+                        yearTotal += amt;
+                        if (d.getMonth() === currentMonth) {
+                            monthTotal += amt;
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('kpi-pur-month').textContent = `¥${monthTotal.toLocaleString()}`;
+            document.getElementById('kpi-pur-year').textContent = `¥${yearTotal.toLocaleString()}`;
+            document.getElementById('kpi-pur-total').textContent = `¥${total.toLocaleString()}`;
+
+            if (purchases.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            tbody.innerHTML = purchases.map(p => {
+                let itemsSummary = '';
+                if (p.items && Array.isArray(p.items) && p.items.length > 0) {
+                    itemsSummary = p.items.map(it => `${escapeHtml(it.title || '商品')} (${it.qty}個)`).join(', ');
+                } else {
+                    itemsSummary = `${escapeHtml(p.title || p.product || 'まとめ仕入れ')} (${p.qty || 1}個)`;
+                }
+
+                return `
+                    <tr class="hover:bg-[#F8F8F9] transition-colors">
+                        <td class="p-3 pl-4 text-xs font-semibold text-[#858B98] whitespace-nowrap">${p.date || ''}</td>
+                        <td class="p-3 font-semibold text-[#2F3440] text-xs">${itemsSummary}</td>
+                        <td class="p-3 text-right font-extrabold text-[#EFA6B5] whitespace-nowrap">¥${(p.amount || 0).toLocaleString()}</td>
+                        <td class="p-3 text-[#2F3440] text-xs">${escapeHtml(p.memo || '-')}</td>
+                        <td class="p-3 text-center pr-4 whitespace-nowrap">
+                            <div class="flex items-center justify-center gap-1">
+                                <button onclick="openEditPurchaseModal('${p.id}')" aria-label="編集" class="p-2 text-[#858B98] hover:text-[#2F3440]"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                                <button onclick="openDeleteModal('purchase', '${p.id}')" aria-label="削除" class="p-2 text-[#858B98] hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        function exportAllJSON() {
+            const exportData = {
+                version: 'v12.0',
+                exportedAt: new Date().toISOString(),
+                products,
+                transactions,
+                purchases,
+                productAliasMap,
+                feeRate: currentFeeRate
+            };
+
+            const jsonStr = JSON.stringify(exportData, null, 2);
+            downloadFile(jsonStr, `mercari_full_backup_${new Date().toISOString().split('T')[0]}.json`, 'application/json');
+            showToast('JSONバックアップを出力しました', 'success');
+        }
+
+        function exportCSV(type = 'sales') {
+            if (type === 'sales') {
+                if (transactions.length === 0) return showToast('売上データがありません', 'warning');
+                const headers = ['日付', '商品名', '販売価格', '発送送料', '販売手数料', '手取り額', '利益率(%)', 'メモ'];
+                const rows = transactions.map(t => [
+                    t.date,
+                    `"${(t.title || '').replace(/"/g, '""')}"`,
+                    t.sellPrice,
+                    t.shippingFee,
+                    t.fee,
+                    t.profit,
+                    t.margin,
+                    `"${(t.memo || '').replace(/"/g, '""')}"`
+                ]);
+                downloadFile("﻿" + [headers.join(','), ...rows.map(e => e.join(','))].join('\n'), `mercari_sales_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+            }
+        }
+
+        function downloadFile(content, fileName, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ダブルクォートで囲まれた項目内のカンマ・エスケープされた "" を正しく扱うCSV行パーサー
+        // (String.split(',') は exportCSV が出力するタイトル/メモ内のカンマを誤分割してしまうため)
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const ch = line[i];
+                if (inQuotes) {
+                    if (ch === '"') {
+                        if (line[i + 1] === '"') {
+                            current += '"';
+                            i++;
+                        } else {
+                            inQuotes = false;
+                        }
+                    } else {
+                        current += ch;
+                    }
+                } else {
+                    if (ch === '"') {
+                        inQuotes = true;
+                    } else if (ch === ',') {
+                        result.push(current);
+                        current = '';
+                    } else {
+                        current += ch;
+                    }
+                }
+            }
+            result.push(current);
+            return result.map(c => c.trim());
+        }
+
+        /**
+         * CSV / JSONのインポート復元（CSV読み込み時にも商品マスターの自動照合・結び付けを実行）
+         */
+        async function handleBackupFileImport(e) {
+            const file = e.target.files[0];
+            if (!file || !currentUser) return;
+            const uid = currentUser.uid;
+
+            const importMode = document.querySelector('input[name="import-mode"]:checked')?.value || 'append';
+            const reader = new FileReader();
+
+            reader.onload = async function(evt) {
+                try {
+                    const text = evt.target.result;
+                    const batch = writeBatch(db);
+
+                    if (importMode === 'replace') {
+                        const tSnap = await getDocs(getTransColRef(uid));
+                        tSnap.forEach(d => batch.delete(d.ref));
+                        const pSnap = await getDocs(getPurchasesColRef(uid));
+                        pSnap.forEach(d => batch.delete(d.ref));
+                        const prdSnap = await getDocs(getProductsColRef(uid));
+                        prdSnap.forEach(d => batch.delete(d.ref));
+                        // 商品マスターを初期化する際は、古いエイリアス（商品名 → 旧ID）も
+                        // 一緒に消さないと復元後の自動紐付けが壊れたIDを指し続けてしまう
+                        const aliasSnap = await getDocs(getAliasColRef(uid));
+                        aliasSnap.forEach(d => batch.delete(d.ref));
+                    }
+
+                    if (file.name.endsWith('.json')) {
+                        const data = JSON.parse(text);
+                        if (data.products && Array.isArray(data.products)) {
+                            data.products.forEach((p, i) => {
+                                const docRef = doc(db, 'artifacts', appId, 'users', uid, 'products', p.id || ('imp_prod_' + i));
+                                batch.set(docRef, p, { merge: true });
+                            });
+                        }
+                        if (data.transactions && Array.isArray(data.transactions)) {
+                            data.transactions.forEach((t, i) => {
+                                const docRef = doc(db, 'artifacts', appId, 'users', uid, 'transactions', t.id || ('imp_t_' + Date.now() + '_' + i));
+                                batch.set(docRef, t, { merge: true });
+                            });
+                        }
+                        if (data.purchases && Array.isArray(data.purchases)) {
+                            data.purchases.forEach((p, i) => {
+                                const docRef = doc(db, 'artifacts', appId, 'users', uid, 'purchases', p.id || ('imp_p_' + Date.now() + '_' + i));
+                                batch.set(docRef, p, { merge: true });
+                            });
+                        }
+                    } else {
+                        // CSVインポート時の商品マスター自動照合ロジック
+                        const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                        if (lines.length > 1) {
+                            for (let i = 1; i < lines.length; i++) {
+                                const cols = parseCSVLine(lines[i]);
+                                if (cols.length >= 3) {
+                                    const rawTitle = cols[1] || 'インポート商品';
+                                    const cleanedTitle = cleanProductTitle(rawTitle);
+
+                                    // 既存マスターからマッチングを試みる
+                                    const matchRes = analyzeProductMatchThreeStages(cleanedTitle);
+                                    let targetProductId = matchRes.matchedProductId;
+                                    let isSingle = matchRes.status === 'SINGLE';
+
+                                    const sellPrice = Number(cols[2]) || 0;
+                                    const shippingFee = Number(cols[3]) || 215;
+                                    const fee = cols[4] !== undefined ? Number(cols[4]) : Math.floor(sellPrice * (currentFeeRate / 100));
+                                    const profit = sellPrice - fee - shippingFee;
+                                    const margin = sellPrice > 0 ? Number(((profit / sellPrice) * 100).toFixed(1)) : 0;
+
+                                    const docRef = doc(db, 'artifacts', appId, 'users', uid, 'transactions', 'csv_' + Date.now() + '_' + i);
+                                    batch.set(docRef, {
+                                        date: cols[0] || new Date().toISOString().split('T')[0],
+                                        title: cleanedTitle,
+                                        productId: isSingle ? null : targetProductId,
+                                        isSingleItem: isSingle,
+                                        sellPrice,
+                                        shippingFee,
+                                        fee,
+                                        profit,
+                                        margin,
+                                        memo: cols[7] || 'CSVインポート',
+                                        createdAt: Date.now() + i
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    await batch.commit();
+                    e.target.value = '';
+                    showToast('バックアップデータを復元しました！', 'success');
+                } catch (err) {
+                    console.error("Import error:", err);
+                    showToast('ファイルの読み込みに失敗しました', 'error');
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        function showToast(msg, type = 'info') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            document.getElementById('toast-message').textContent = msg;
+
+            if (type === 'error') {
+                icon.setAttribute('data-lucide', 'alert-circle');
+                icon.className = 'w-5 h-5 text-red-400';
+            } else if (type === 'warning') {
+                icon.setAttribute('data-lucide', 'alert-triangle');
+                icon.className = 'w-5 h-5 text-amber-400';
+            } else if (type === 'success') {
+                icon.setAttribute('data-lucide', 'check-circle-2');
+                icon.className = 'w-5 h-5 text-emerald-400';
+            } else {
+                icon.setAttribute('data-lucide', 'info');
+                icon.className = 'w-5 h-5 text-[#EFA6B5]';
+            }
+            lucide.createIcons();
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        const debouncedRenderTransactions = debounce(() => renderTransactions(), 200);
+
+        // グローバル公開関数
+        window.switchTab = switchTab;
+        window.openAddModal = openAddModal;
+        window.calculatePreview = calculatePreview;
+        window.handleFormSubmit = handleFormSubmit;
+        window.openEditModal = openEditModal;
+        window.closeEditModal = closeEditModal;
+        window.handleEditSubmit = handleEditSubmit;
+        window.openAddPurchaseModal = openAddPurchaseModal;
+        window.addPurchaseItemRow = addPurchaseItemRow;
+        window.removePurchaseItemRow = removePurchaseItemRow;
+        window.openEditPurchaseModal = openEditPurchaseModal;
+        window.closePurchaseModal = closePurchaseModal;
+        window.handlePurchaseSubmit = handlePurchaseSubmit;
+        window.openDeleteModal = openDeleteModal;
+        window.closeDeleteModal = closeDeleteModal;
+        window.confirmDelete = confirmDelete;
+        window.openClearAllModal = openClearAllModal;
+        window.closeClearAllModal = closeClearAllModal;
+        window.confirmClearAllExecution = confirmClearAllExecution;
+        window.exportCSV = exportCSV;
+        window.exportAllJSON = exportAllJSON;
+        window.handleBackupFileImport = handleBackupFileImport;
+        window.updateDashboard = updateDashboard;
+        window.renderTransactions = renderTransactions;
+        window.debouncedRenderTransactions = debouncedRenderTransactions;
+        window.renderPurchases = renderPurchases;
+        window.renderProductStatsTable = renderProductStatsTable;
+        window.openProductDetailModal = openProductDetailModal;
+        window.closeProductDetailModal = closeProductDetailModal;
+        window.openEditProductMasterModal = openEditProductMasterModal;
+        window.closeProductMasterModal = closeProductMasterModal;
+        window.handleProductMasterSubmit = handleProductMasterSubmit;
+        window.onSaleProductSelectChange = onSaleProductSelectChange;
+        window.openNewProductModal = openNewProductModal;
+        window.closeNewProductModal = closeNewProductModal;
+        window.handleNewProductSubmit = handleNewProductSubmit;
+        window.handleImageOcrUpload = handleImageOcrUpload;
+        window.removeOcrCandidate = removeOcrCandidate;
+        window.updateCandidateProduct = updateCandidateProduct;
+        window.updateCandidateShipping = updateCandidateShipping;
+        window.updateCandidateGrossPrice = updateCandidateGrossPrice;
+        window.updateCandidateRawTitle = updateCandidateRawTitle;
+        window.confirmAllOcrCandidates = confirmAllOcrCandidates;
+        window.setProductInputMode = setProductInputMode;
+        window.setEditProductInputMode = setEditProductInputMode;
+        window.filterProductDropdown = filterProductDropdown;
+        window.saveFeeRateSetting = saveFeeRateSetting;
+    </script>
+</body>
+</html>
