@@ -8,8 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
 
@@ -50,7 +48,7 @@
         <div class="max-w-sm w-full bg-white rounded-2xl border border-[#ECEDEF] shadow-sm p-6 space-y-5">
             <div class="text-center space-y-1">
                 <div class="inline-flex bg-[#EFA6B5] text-white p-2.5 rounded-xl shadow-sm">
-                    <i data-lucide="package-check" class="w-6 h-6"></i>
+                    <span class="text-2xl leading-none" role="img" aria-hidden="true">📦</span>
                 </div>
                 <h1 class="font-bold text-base text-[#2F3440] mt-2">メルカリ売上・在庫管理</h1>
                 <p class="text-xs text-[#858B98]">この端末には保存されたデータがありません</p>
@@ -81,7 +79,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                 <div class="flex items-center space-x-2">
                     <div class="bg-[#EFA6B5] text-white p-1.5 sm:p-2 rounded-xl shadow-sm shrink-0">
-                        <i data-lucide="package-check" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                        <span class="text-xl sm:text-2xl leading-none" role="img" aria-hidden="true">📦</span>
                     </div>
                     <h1 class="font-bold text-base sm:text-lg text-[#2F3440] leading-tight whitespace-nowrap">メルカリ売上・在庫管理</h1>
                 </div>
@@ -96,34 +94,34 @@
             <!-- デスクトップ ナビゲーション -->
             <nav class="hidden xl:flex items-center space-x-1 bg-[#F8F8F9] p-1 rounded-xl border border-[#ECEDEF]">
                 <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#EFA6B5] bg-white shadow-sm">
-                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span class="text-base leading-none" role="img" aria-hidden="true">🏠</span>
                     ダッシュボード
                 </button>
                 <button onclick="switchTab('product-stats')" id="nav-product-stats" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
-                    <i data-lucide="boxes" class="w-4 h-4"></i>
+                    <span class="text-base leading-none" role="img" aria-hidden="true">📦</span>
                     商品別実績
                 </button>
                 <button onclick="switchTab('transactions')" id="nav-transactions" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
-                    <i data-lucide="list" class="w-4 h-4"></i>
+                    <span class="text-base leading-none" role="img" aria-hidden="true">📋</span>
                     取引一覧
                 </button>
                 <button onclick="switchTab('add')" id="nav-add" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
-                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span class="text-base leading-none" role="img" aria-hidden="true">➕</span>
                     新規登録
                 </button>
                 <button onclick="switchTab('purchases')" id="nav-purchases" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
-                    <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                    <span class="text-base leading-none" role="img" aria-hidden="true">🛍️</span>
                     仕入れ管理
                 </button>
                 <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#858B98] hover:text-[#2F3440]">
-                    <i data-lucide="settings" class="w-4 h-4"></i>
+                    <span class="text-base leading-none" role="img" aria-hidden="true">⚙️</span>
                     設定・データ管理
                 </button>
             </nav>
 
             <!-- クイック売上登録ボタン -->
             <button onclick="openAddModal()" class="bg-[#EFA6B5] hover:bg-[#E395A6] text-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-colors flex items-center gap-1 whitespace-nowrap shrink-0 ml-auto sm:ml-0">
-                <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
+                <span class="text-base shrink-0 leading-none" role="img" aria-hidden="true">➕</span>
                 <span>売上記録</span>
             </button>
         </div>
@@ -156,7 +154,7 @@
                     <div class="flex items-center justify-between text-[#858B98] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">総売上</span>
                         <div class="p-1.5 bg-[#F8F8F9] text-[#2F3440] rounded-lg">
-                            <i data-lucide="japanese-yen" class="w-4 h-4"></i>
+                            <span class="text-base leading-none" role="img" aria-hidden="true">💴</span>
                         </div>
                     </div>
                     <div id="kpi-sales" class="text-lg sm:text-2xl font-extrabold text-[#2F3440]">¥0</div>
@@ -169,7 +167,7 @@
                     <div class="flex items-center justify-between text-[#858B98] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">手取り額</span>
                         <div class="p-1.5 bg-[#FFF1F4] text-[#EFA6B5] rounded-lg">
-                            <i data-lucide="hand-coins" class="w-4 h-4"></i>
+                            <span class="text-base leading-none" role="img" aria-hidden="true">💰</span>
                         </div>
                     </div>
                     <div id="kpi-sales-net" class="text-lg sm:text-2xl font-extrabold text-[#EFA6B5]">¥0</div>
@@ -179,7 +177,7 @@
                     <div class="flex items-center justify-between text-[#858B98] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">仕入総額</span>
                         <div class="p-1.5 bg-[#F8F8F9] text-[#858B98] rounded-lg">
-                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            <span class="text-base leading-none" role="img" aria-hidden="true">🛍️</span>
                         </div>
                     </div>
                     <div id="kpi-purchases" class="text-lg sm:text-2xl font-extrabold text-[#2F3440]">¥0</div>
@@ -189,7 +187,7 @@
                     <div class="flex items-center justify-between text-[#858B98] mb-1">
                         <span class="text-xs font-bold uppercase tracking-wider text-[#2F3440]">最終利益</span>
                         <div class="p-1.5 bg-[#FFF1F4] text-[#EFA6B5] rounded-lg">
-                            <i data-lucide="coins" class="w-4 h-4"></i>
+                            <span class="text-base leading-none" role="img" aria-hidden="true">🪙</span>
                         </div>
                     </div>
                     <div id="kpi-net-profit" class="text-lg sm:text-2xl font-extrabold text-[#EFA6B5]">¥0</div>
@@ -199,7 +197,7 @@
                     <div class="flex items-center justify-between text-[#858B98] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">現在庫総数</span>
                         <div class="p-1.5 bg-[#F8F8F9] text-[#2F3440] rounded-lg">
-                            <i data-lucide="boxes" class="w-4 h-4"></i>
+                            <span class="text-base leading-none" role="img" aria-hidden="true">📦</span>
                         </div>
                     </div>
                     <div id="kpi-total-stock" class="text-lg sm:text-2xl font-extrabold text-[#2F3440]">0 個</div>
@@ -209,7 +207,7 @@
                     <div class="flex items-center justify-between text-[#858B98] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">在庫商品種類数</span>
                         <div class="p-1.5 bg-[#F8F8F9] text-[#858B98] rounded-lg">
-                            <i data-lucide="layers" class="w-4 h-4"></i>
+                            <span class="text-base leading-none" role="img" aria-hidden="true">🏷️</span>
                         </div>
                     </div>
                     <div id="kpi-product-type-count" class="text-lg sm:text-2xl font-extrabold text-[#2F3440]">0 種類</div>
@@ -220,7 +218,7 @@
             <div id="stock-alert-section" class="hidden bg-[#FFF1F4] border border-[#FCDCE4] p-4 rounded-2xl space-y-2">
                 <div class="flex items-center justify-between">
                     <h3 class="font-bold text-[#2F3440] text-xs sm:text-sm flex items-center gap-1.5">
-                        <i data-lucide="alert-triangle" class="w-4 h-4 text-[#EFA6B5]"></i>
+                        <span class="text-base text-[#EFA6B5] leading-none" role="img" aria-hidden="true">⚠️</span>
                         在庫注意・在庫切れ
                     </h3>
                     <button onclick="switchTab('purchases')" class="text-xs font-bold text-[#EFA6B5] hover:underline">仕入れ登録 →</button>
@@ -236,7 +234,7 @@
                 <div class="lg:col-span-2 bg-white p-4 sm:p-5 rounded-2xl border border-[#ECEDEF] shadow-sm">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-bold text-[#2F3440] flex items-center gap-2 text-sm sm:text-base">
-                            <i data-lucide="line-chart" class="w-4 h-4 text-[#EFA6B5]"></i>
+                            <span class="text-base text-[#EFA6B5] leading-none" role="img" aria-hidden="true">📈</span>
                             月別推移 (売上 / 手取り額 / 最終利益)
                         </h3>
                     </div>
@@ -250,7 +248,7 @@
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="font-bold text-[#2F3440] flex items-center gap-1.5 text-sm">
-                                <i data-lucide="trophy" class="w-4 h-4 text-[#EFA6B5]"></i>
+                                <span class="text-base text-[#EFA6B5] leading-none" role="img" aria-hidden="true">🏆</span>
                                 商品ランキング
                             </h3>
                             <select id="ranking-sort-type" onchange="updateDashboard()" class="text-xs font-semibold border border-[#ECEDEF] rounded-lg p-1 bg-white focus:outline-none">
@@ -265,7 +263,7 @@
                     </div>
                     <div class="pt-3 border-t border-[#ECEDEF] text-center mt-3">
                         <button onclick="switchTab('product-stats')" class="text-xs font-bold text-[#EFA6B5] hover:text-[#E395A6] flex items-center justify-center gap-1 mx-auto">
-                            商品別実績を詳しく見る <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                            商品別実績を詳しく見る <span class="text-sm leading-none" role="img" aria-hidden="true">➡️</span>
                         </button>
                     </div>
                 </div>
@@ -275,11 +273,11 @@
             <div class="bg-white rounded-2xl border border-[#ECEDEF] shadow-sm overflow-hidden">
                 <div class="p-4 border-b border-[#ECEDEF] flex items-center justify-between">
                     <h3 class="font-bold text-[#2F3440] flex items-center gap-2 text-sm">
-                        <i data-lucide="history" class="w-4 h-4 text-[#858B98]"></i>
+                        <span class="text-base text-[#858B98] leading-none" role="img" aria-hidden="true">🕓</span>
                         最近売れた商品
                     </h3>
                     <button onclick="switchTab('transactions')" class="text-xs font-semibold text-[#EFA6B5] hover:text-[#E395A6] flex items-center gap-1">
-                        すべて見る <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                        すべて見る <span class="text-xs leading-none" role="img" aria-hidden="true">➡️</span>
                     </button>
                 </div>
                 <div class="overflow-x-auto">
@@ -340,7 +338,7 @@
                 </div>
                 <div id="product-stats-empty" class="hidden p-12 text-center">
                     <div class="inline-flex p-4 bg-[#F8F8F9] text-[#858B98] rounded-full mb-3">
-                        <i data-lucide="boxes" class="w-8 h-8"></i>
+                        <span class="text-4xl leading-none" role="img" aria-hidden="true">📦</span>
                     </div>
                     <p class="text-[#858B98] font-medium">登録されている商品データがありません</p>
                 </div>
@@ -351,7 +349,7 @@
         <section id="tab-transactions" class="tab-content hidden space-y-4">
             <div class="bg-white p-4 rounded-2xl border border-[#ECEDEF] shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between">
                 <div class="relative w-full md:w-80">
-                    <i data-lucide="search" class="w-4 h-4 text-[#858B98] absolute left-3 top-3"></i>
+                    <span class="text-base text-[#858B98] absolute left-3 top-3 leading-none" role="img" aria-hidden="true">🔍</span>
                     <input type="text" id="search-input" oninput="debouncedRenderTransactions()" placeholder="商品名・メモで検索..." class="w-full pl-9 pr-4 py-2 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]">
                 </div>
 
@@ -370,7 +368,7 @@
             </div>
             <div id="empty-state" class="hidden p-12 text-center bg-white rounded-2xl border border-[#ECEDEF] shadow-sm">
                 <div class="inline-flex p-4 bg-[#F8F8F9] text-[#858B98] rounded-full mb-3">
-                    <i data-lucide="package-open" class="w-8 h-8"></i>
+                    <span class="text-4xl leading-none" role="img" aria-hidden="true">📭</span>
                 </div>
                 <p class="text-[#858B98] font-medium">該当する取引データがありません</p>
             </div>
@@ -472,7 +470,7 @@
 
                     <div class="pt-2">
                         <button type="submit" class="w-full bg-[#EFA6B5] hover:bg-[#E395A6] text-white font-bold py-3 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2">
-                            <i data-lucide="check" class="w-5 h-5"></i>
+                            <span class="text-xl leading-none" role="img" aria-hidden="true">✅</span>
                             登録する
                         </button>
                     </div>
@@ -487,7 +485,7 @@
                     <h2 class="text-xl font-bold text-[#2F3440]">仕入れ管理</h2>
                 </div>
                 <button onclick="openAddPurchaseModal()" class="bg-[#EFA6B5] hover:bg-[#E395A6] text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition-colors flex items-center gap-1.5">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span class="text-base leading-none" role="img" aria-hidden="true">➕</span>
                     新規仕入れ登録
                 </button>
             </div>
@@ -527,7 +525,7 @@
                 </div>
                 <div id="purchases-empty-state" class="hidden p-12 text-center">
                     <div class="inline-flex p-4 bg-[#F8F8F9] text-[#858B98] rounded-full mb-3">
-                        <i data-lucide="shopping-bag" class="w-8 h-8"></i>
+                        <span class="text-4xl leading-none" role="img" aria-hidden="true">🛍️</span>
                     </div>
                     <p class="text-[#858B98] font-medium">仕入れデータがありません</p>
                 </div>
@@ -539,7 +537,7 @@
             <!-- Gmail自動取込みの状態カード -->
             <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-3">
                 <h2 class="text-xl font-bold text-[#2F3440] flex items-center gap-2">
-                    <i data-lucide="mail-check" class="w-5 h-5 text-[#EFA6B5]"></i>
+                    <span class="text-xl text-[#EFA6B5] leading-none" role="img" aria-hidden="true">📬</span>
                     Gmail自動取込みの状態
                 </h2>
                 <div id="gmail-import-status" class="text-xs space-y-2">まだ一度も実行されていません</div>
@@ -548,7 +546,7 @@
             <!-- システム設定カード -->
             <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-4">
                 <h2 class="text-xl font-bold text-[#2F3440] flex items-center gap-2">
-                    <i data-lucide="sliders" class="w-5 h-5 text-[#EFA6B5]"></i>
+                    <span class="text-xl text-[#EFA6B5] leading-none" role="img" aria-hidden="true">🎚️</span>
                     計算設定
                 </h2>
                 <div>
@@ -570,7 +568,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <button onclick="exportAllJSON()" class="p-4 border border-[#FCDCE4] bg-[#FFF1F4]/60 rounded-xl text-left hover:border-[#EFA6B5] transition-all flex items-start gap-3">
                         <div class="p-2.5 bg-white text-[#EFA6B5] rounded-lg shrink-0 border border-[#FCDCE4]">
-                            <i data-lucide="file-json" class="w-5 h-5"></i>
+                            <span class="text-xl leading-none" role="img" aria-hidden="true">📄</span>
                         </div>
                         <div>
                             <div class="font-bold text-[#2F3440] text-sm">全データ一括バックアップ (JSON)</div>
@@ -580,7 +578,7 @@
 
                     <button onclick="exportCSV('sales')" class="p-4 border border-[#ECEDEF] rounded-xl text-left hover:border-[#EFA6B5] hover:bg-[#FFF1F4]/30 transition-all flex items-start gap-3">
                         <div class="p-2.5 bg-[#F8F8F9] text-[#2F3440] rounded-lg shrink-0 border border-[#ECEDEF]">
-                            <i data-lucide="download" class="w-5 h-5"></i>
+                            <span class="text-xl leading-none" role="img" aria-hidden="true">📥</span>
                         </div>
                         <div>
                             <div class="font-bold text-[#2F3440] text-sm">売上CSVダウンロード</div>
@@ -591,7 +589,7 @@
 
                 <div class="p-4 border border-[#ECEDEF] rounded-xl space-y-3 bg-[#F8F8F9]">
                     <div class="font-bold text-sm text-[#2F3440] flex items-center gap-2">
-                        <i data-lucide="upload-cloud" class="w-4 h-4 text-[#EFA6B5]"></i>
+                        <span class="text-base text-[#EFA6B5] leading-none" role="img" aria-hidden="true">📤</span>
                         バックアップから復元 (JSON / CSV)
                     </div>
 
@@ -661,7 +659,7 @@
                 <h3 class="font-bold text-[#2F3440] text-base">データ初期化</h3>
                 <div class="flex flex-wrap gap-3">
                     <button onclick="openClearAllModal()" class="px-4 py-2 bg-red-50 text-red-600 border border-red-100 rounded-xl text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-1.5">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        <span class="text-base leading-none" role="img" aria-hidden="true">🗑️</span>
                         全データを消去
                     </button>
                 </div>
@@ -673,27 +671,27 @@
     <!-- モバイルボトムナビゲーション -->
     <div id="app-mobile-nav" class="hidden xl:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEDEF] z-40 px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex justify-around shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
         <button onclick="switchTab('dashboard')" id="mobile-nav-dashboard" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#EFA6B5]">
-            <i data-lucide="layout-dashboard" class="w-4 h-4 mb-0.5"></i>
+            <span class="text-base mb-0.5 leading-none" role="img" aria-hidden="true">🏠</span>
             ホーム
         </button>
         <button onclick="switchTab('product-stats')" id="mobile-nav-product-stats" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
-            <i data-lucide="boxes" class="w-4 h-4 mb-0.5"></i>
+            <span class="text-base mb-0.5 leading-none" role="img" aria-hidden="true">📦</span>
             実績
         </button>
         <button onclick="switchTab('transactions')" id="mobile-nav-transactions" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
-            <i data-lucide="list" class="w-4 h-4 mb-0.5"></i>
+            <span class="text-base mb-0.5 leading-none" role="img" aria-hidden="true">📋</span>
             取引一覧
         </button>
         <button onclick="switchTab('add')" id="mobile-nav-add" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
-            <i data-lucide="plus-circle" class="w-4 h-4 mb-0.5"></i>
+            <span class="text-base mb-0.5 leading-none" role="img" aria-hidden="true">➕</span>
             登録
         </button>
         <button onclick="switchTab('purchases')" id="mobile-nav-purchases" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
-            <i data-lucide="shopping-bag" class="w-4 h-4 mb-0.5"></i>
+            <span class="text-base mb-0.5 leading-none" role="img" aria-hidden="true">🛍️</span>
             仕入れ
         </button>
         <button onclick="switchTab('settings')" id="mobile-nav-settings" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#858B98]">
-            <i data-lucide="settings" class="w-4 h-4 mb-0.5"></i>
+            <span class="text-base mb-0.5 leading-none" role="img" aria-hidden="true">⚙️</span>
             設定
         </button>
     </div>
@@ -702,7 +700,7 @@
     <div id="product-detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl space-y-5 relative max-h-[90vh] overflow-y-auto border border-[#ECEDEF]">
             <button onclick="closeProductDetailModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
-                <i data-lucide="x" class="w-5 h-5"></i>
+                <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
 
             <div class="flex items-center justify-between border-b border-[#ECEDEF] pb-3">
@@ -711,7 +709,7 @@
                     <h3 id="detail-product-title" class="text-xl font-bold text-[#2F3440] mt-1">商品名</h3>
                 </div>
                 <button onclick="openEditProductMasterModal()" class="px-3 py-1.5 bg-[#F8F8F9] hover:bg-[#ECEDEF] text-[#2F3440] text-xs font-bold rounded-xl transition-colors flex items-center gap-1 border border-[#ECEDEF]">
-                    <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
+                    <span class="text-sm leading-none" role="img" aria-hidden="true">🔧</span>
                     初期在庫設定
                 </button>
             </div>
@@ -761,7 +759,7 @@
 
             <div class="bg-[#F8F8F9] p-4 rounded-xl border border-[#ECEDEF]">
                 <h4 class="text-xs font-bold text-[#2F3440] mb-2 flex items-center gap-1.5">
-                    <i data-lucide="line-chart" class="w-3.5 h-3.5 text-[#EFA6B5]"></i>
+                    <span class="text-sm text-[#EFA6B5] leading-none" role="img" aria-hidden="true">📈</span>
                     販売価格の推移
                 </h4>
                 <div class="h-44 relative">
@@ -771,7 +769,7 @@
 
             <div class="space-y-2">
                 <h4 class="text-xs font-bold text-[#2F3440] flex items-center gap-1.5">
-                    <i data-lucide="history" class="w-3.5 h-3.5 text-[#858B98]"></i>
+                    <span class="text-sm text-[#858B98] leading-none" role="img" aria-hidden="true">🕓</span>
                     販売履歴
                 </h4>
                 <div id="product-sales-timeline" class="max-h-40 overflow-y-auto bg-[#F8F8F9] rounded-xl p-3 border border-[#ECEDEF] text-xs space-y-1.5">
@@ -789,7 +787,7 @@
     <div id="product-master-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 relative border border-[#ECEDEF]">
             <button onclick="closeProductMasterModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
-                <i data-lucide="x" class="w-5 h-5"></i>
+                <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
             <h3 class="text-lg font-bold text-[#2F3440]">在庫・マスター設定</h3>
 
@@ -823,7 +821,7 @@
     <div id="new-product-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl space-y-4 relative border border-[#ECEDEF]">
             <button onclick="closeNewProductModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
-                <i data-lucide="x" class="w-5 h-5"></i>
+                <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
             <h3 class="text-base font-bold text-[#2F3440]">新しい商品をマスター追加</h3>
 
@@ -844,7 +842,7 @@
     <div id="edit-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto border border-[#ECEDEF]">
             <button onclick="closeEditModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
-                <i data-lucide="x" class="w-5 h-5"></i>
+                <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
             <h3 class="text-lg font-bold text-[#2F3440]">取引データの編集</h3>
 
@@ -911,7 +909,7 @@
     <div id="purchase-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto border border-[#ECEDEF]">
             <button onclick="closePurchaseModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#858B98] hover:text-[#2F3440]">
-                <i data-lucide="x" class="w-5 h-5"></i>
+                <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
             <h3 id="purchase-modal-title" class="text-lg font-bold text-[#2F3440]">新規まとめ仕入れの登録</h3>
 
@@ -933,7 +931,7 @@
                     <div class="flex items-center justify-between">
                         <label class="block text-xs font-bold text-[#2F3440]">仕入れ商品内訳 (商品 & 数量)</label>
                         <button type="button" onclick="addPurchaseItemRow()" class="text-xs text-[#EFA6B5] font-bold hover:underline flex items-center gap-1">
-                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> 商品を追加
+                            <span class="text-sm leading-none" role="img" aria-hidden="true">➕</span> 商品を追加
                         </button>
                     </div>
 
@@ -959,7 +957,7 @@
     <div id="delete-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4 text-center border border-[#ECEDEF]">
             <div class="w-12 h-12 bg-[#FFF1F4] text-[#EFA6B5] rounded-full flex items-center justify-center mx-auto">
-                <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                <span class="text-2xl leading-none" role="img" aria-hidden="true">⚠️</span>
             </div>
             <div>
                 <h3 class="text-base font-bold text-[#2F3440]">データの削除</h3>
@@ -977,7 +975,7 @@
     <div id="clear-all-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 text-center border border-[#ECEDEF]">
             <div class="w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto">
-                <i data-lucide="trash-2" class="w-6 h-6"></i>
+                <span class="text-2xl leading-none" role="img" aria-hidden="true">🗑️</span>
             </div>
             <div>
                 <h3 class="text-base font-bold text-[#2F3440]">【二段階確認】全データの初期化</h3>
@@ -1000,7 +998,7 @@
 
     <!-- トースト通知 -->
     <div id="toast" class="fixed bottom-20 xl:bottom-6 right-6 bg-[#2F3440] text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 text-sm z-50 transform translate-y-20 opacity-0 transition-all duration-300">
-        <i id="toast-icon" data-lucide="check-circle-2" class="w-5 h-5 text-[#EFA6B5]"></i>
+        <span id="toast-icon" class="text-xl leading-none" role="img" aria-hidden="true">✅</span>
         <span id="toast-message">メッセージ</span>
     </div>
 
@@ -1110,7 +1108,6 @@
             if (header) header.classList.add('hidden');
             if (main) main.classList.add('hidden');
             if (mobileNav) mobileNav.classList.add('hidden');
-            lucide.createIcons();
         }
 
         function showAppShell() {
@@ -1411,24 +1408,23 @@
             if (data.lastSuccess === false) {
                 statusHtml = `
                     <div class="flex items-start gap-2 p-2.5 bg-red-50 border border-red-100 rounded-xl">
-                        <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 shrink-0 mt-0.5"></i>
+                        <span class="text-base text-red-500 shrink-0 mt-0.5 leading-none" role="img" aria-hidden="true">⚠️</span>
                         <div class="text-red-600 font-semibold">前回エラーが出ました: ${escapeHtml(data.lastError || '')}</div>
                     </div>`;
             } else if (isStale) {
                 statusHtml = `
                     <div class="flex items-start gap-2 p-2.5 bg-amber-50 border border-amber-100 rounded-xl">
-                        <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5"></i>
+                        <span class="text-base text-amber-500 shrink-0 mt-0.5 leading-none" role="img" aria-hidden="true">⚠️</span>
                         <div class="text-amber-700 font-semibold">${minutesAgo}分動きがありません。Apps Scriptのトリガーを確認してみてください</div>
                     </div>`;
             } else {
                 statusHtml = `
                     <div class="flex items-center gap-2 text-emerald-600 font-semibold">
-                        <i data-lucide="check-circle-2" class="w-4 h-4"></i> 正常に動作しています
+                        <span class="text-base leading-none" role="img" aria-hidden="true">✅</span> 正常に動作しています
                     </div>`;
             }
 
             el.innerHTML = statusHtml + `<div class="text-[#858B98] mt-2">最終チェック: ${dateStr}（前回 ${data.lastImportedCount || 0} 件取り込み）</div>`;
-            lucide.createIcons();
         }
 
         // 商品/売上/仕入れの3つのリスナーがほぼ同時に発火しても、
@@ -1915,7 +1911,6 @@
 
 
         document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
             setDefaultDates();
             calculatePreview();
         });
@@ -2181,13 +2176,12 @@
                         <input type="number" min="1" value="${defaultQty}" class="pur-row-qty w-20 px-2 py-1.5 border border-[#ECEDEF] rounded-lg text-xs font-bold text-center">
                     </div>
                     <button type="button" onclick="removePurchaseItemRow('${rowId}')" aria-label="この行を削除" class="p-1 text-[#858B98] hover:text-red-500">
-                        <i data-lucide="x-circle" class="w-4 h-4"></i>
+                        <span class="text-base leading-none" role="img" aria-hidden="true">✖️</span>
                     </button>
                 </div>
             `;
 
             container.insertAdjacentHTML('beforeend', rowHtml);
-            lucide.createIcons();
         }
 
         function removePurchaseItemRow(rowId) {
@@ -2590,7 +2584,7 @@
                 <tr class="hover:bg-[#F8F8F9] transition-colors">
                     <td class="p-3 pl-4 font-bold text-[#2F3440]">
                         <button onclick="openProductDetailModal('${p.id}')" class="hover:text-[#EFA6B5] underline text-left flex items-center gap-1">
-                            <i data-lucide="package" class="w-3.5 h-3.5 text-[#858B98]"></i>
+                            <span class="text-sm text-[#858B98] leading-none" role="img" aria-hidden="true">📦</span>
                             ${escapeHtml(p.title)}
                         </button>
                     </td>
@@ -2608,7 +2602,6 @@
                 </tr>
             `).join('');
 
-            lucide.createIcons();
         }
 
         function openProductDetailModal(productId) {
@@ -2805,8 +2798,8 @@
                                         <td class="p-3 text-right font-bold text-[#EFA6B5]">¥${(t.profit || 0).toLocaleString()}</td>
                                         <td class="p-3 text-center pr-4">
                                             <div class="flex items-center justify-center gap-1">
-                                                <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1.5 text-[#858B98] hover:text-[#2F3440]"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-                                                <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1.5 text-[#858B98] hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                                <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1.5 text-[#858B98] hover:text-[#2F3440]"><span class="text-base leading-none" role="img" aria-hidden="true">✏️</span></button>
+                                                <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1.5 text-[#858B98] hover:text-red-600"><span class="text-base leading-none" role="img" aria-hidden="true">🗑️</span></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -2828,8 +2821,8 @@
                                     </h4>
                                 </div>
                                 <div class="flex items-center gap-1 shrink-0">
-                                    <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1 text-[#858B98]"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
-                                    <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1 text-[#858B98]"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                                    <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1 text-[#858B98]"><span class="text-sm leading-none" role="img" aria-hidden="true">✏️</span></button>
+                                    <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1 text-[#858B98]"><span class="text-sm leading-none" role="img" aria-hidden="true">🗑️</span></button>
                                 </div>
                             </div>
 
@@ -2848,7 +2841,6 @@
                 </div>
             `;
 
-            lucide.createIcons();
         }
 
         function renderPurchases() {
@@ -2910,15 +2902,14 @@
                         <td class="p-3 text-[#2F3440] text-xs">${escapeHtml(p.memo || '-')}</td>
                         <td class="p-3 text-center pr-4 whitespace-nowrap">
                             <div class="flex items-center justify-center gap-1">
-                                <button onclick="openEditPurchaseModal('${p.id}')" aria-label="編集" class="p-2 text-[#858B98] hover:text-[#2F3440]"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-                                <button onclick="openDeleteModal('purchase', '${p.id}')" aria-label="削除" class="p-2 text-[#858B98] hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <button onclick="openEditPurchaseModal('${p.id}')" aria-label="編集" class="p-2 text-[#858B98] hover:text-[#2F3440]"><span class="text-base leading-none" role="img" aria-hidden="true">✏️</span></button>
+                                <button onclick="openDeleteModal('purchase', '${p.id}')" aria-label="削除" class="p-2 text-[#858B98] hover:text-red-600"><span class="text-base leading-none" role="img" aria-hidden="true">🗑️</span></button>
                             </div>
                         </td>
                     </tr>
                 `;
             }).join('');
 
-            lucide.createIcons();
         }
 
         function exportAllJSON() {
@@ -3108,19 +3099,14 @@
             document.getElementById('toast-message').textContent = msg;
 
             if (type === 'error') {
-                icon.setAttribute('data-lucide', 'alert-circle');
-                icon.className = 'w-5 h-5 text-red-400';
+                icon.textContent = '❌';
             } else if (type === 'warning') {
-                icon.setAttribute('data-lucide', 'alert-triangle');
-                icon.className = 'w-5 h-5 text-amber-400';
+                icon.textContent = '⚠️';
             } else if (type === 'success') {
-                icon.setAttribute('data-lucide', 'check-circle-2');
-                icon.className = 'w-5 h-5 text-emerald-400';
+                icon.textContent = '✅';
             } else {
-                icon.setAttribute('data-lucide', 'info');
-                icon.className = 'w-5 h-5 text-[#EFA6B5]';
+                icon.textContent = 'ℹ️';
             }
-            lucide.createIcons();
 
             toast.classList.remove('translate-y-20', 'opacity-0');
             setTimeout(() => {
