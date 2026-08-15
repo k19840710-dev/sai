@@ -397,7 +397,7 @@
                                 単発商品
                             </button>
                         </div>
-                        <p id="mode-desc-text" class="text-[11px] text-[#858B98] mt-1.5 pl-1">※登録済み商品から選択</p>
+                        <p id="mode-desc-text" class="text-[11px] text-[#858B98] mt-1.5 pl-1">登録済みの商品から選ぶ</p>
                     </div>
 
                     <!-- モード①: マスター商品 -->
@@ -559,7 +559,7 @@
                             保存する
                         </button>
                     </div>
-                    <p class="text-[11px] text-[#858B98] mt-1">※標準の手数料率は10%です。カテゴリ等で変更がある場合に指定してください。</p>
+                    <p class="text-[11px] text-[#858B98] mt-1">通常は10%。カテゴリによって違う場合はここで変更できます。</p>
                 </div>
             </div>
 
@@ -634,8 +634,8 @@
                     </div>
 
                     <div class="space-y-2 pt-3 border-t border-dashed border-[#ECEDEF]">
-                        <p class="text-[11px] text-[#858B98] font-semibold">今この端末にあるデータに、メールアドレスを設定する</p>
-                        <p class="text-[11px] text-[#858B98]">設定すると、他の端末からも今のデータにログインできるようになります。</p>
+                        <p class="text-[11px] text-[#858B98] font-semibold">今のデータにメールアドレスを設定する</p>
+                        <p class="text-[11px] text-[#858B98]">設定すると、他の端末からもこのデータにログインできます。</p>
                         <input type="email" id="link-email" placeholder="メールアドレス" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
                         <input type="password" id="link-password" placeholder="パスワード（6文字以上）" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
                         <button onclick="handleLinkEmailAccount()" class="w-full bg-[#EFA6B5] hover:bg-[#E395A6] text-white text-xs font-bold py-2.5 rounded-xl">このデータに設定する</button>
@@ -964,7 +964,7 @@
             <div>
                 <h3 class="text-base font-bold text-[#2F3440]">データの削除</h3>
                 <p class="text-xs text-[#858B98] mt-1">「<span id="delete-item-name" class="font-bold text-[#2F3440]"></span>」を削除しますか？</p>
-                <p class="text-[11px] text-red-500 font-bold mt-2">※この操作は元に戻せません。</p>
+                <p class="text-[11px] text-red-500 font-bold mt-2">この操作は元に戻せません。</p>
             </div>
             <div class="flex justify-center gap-3 pt-2">
                 <button onclick="closeDeleteModal()" class="w-full py-2.5 border border-[#ECEDEF] text-[#858B98] rounded-xl text-sm font-medium">キャンセル</button>
@@ -1412,13 +1412,13 @@
                 statusHtml = `
                     <div class="flex items-start gap-2 p-2.5 bg-red-50 border border-red-100 rounded-xl">
                         <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 shrink-0 mt-0.5"></i>
-                        <div class="text-red-600 font-semibold">前回の実行でエラーが発生しました: ${escapeHtml(data.lastError || '')}</div>
+                        <div class="text-red-600 font-semibold">前回エラーが出ました: ${escapeHtml(data.lastError || '')}</div>
                     </div>`;
             } else if (isStale) {
                 statusHtml = `
                     <div class="flex items-start gap-2 p-2.5 bg-amber-50 border border-amber-100 rounded-xl">
                         <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5"></i>
-                        <div class="text-amber-700 font-semibold">${minutesAgo}分間実行されていません。Apps Scriptのトリガー設定を確認してください</div>
+                        <div class="text-amber-700 font-semibold">${minutesAgo}分動きがありません。Apps Scriptのトリガーを確認してみてください</div>
                     </div>`;
             } else {
                 statusHtml = `
@@ -1701,13 +1701,13 @@
                 btnSingle.className = 'py-2 rounded-lg text-[#858B98] transition-all';
                 secMaster.classList.remove('hidden');
                 secSingle.classList.add('hidden');
-                if (descText) descText.textContent = '※登録済み商品から選択';
+                if (descText) descText.textContent = '登録済みの商品から選ぶ';
             } else {
                 btnSingle.className = 'py-2 rounded-lg bg-white text-[#EFA6B5] shadow-sm transition-all';
                 btnMaster.className = 'py-2 rounded-lg text-[#858B98] transition-all';
                 secSingle.classList.remove('hidden');
                 secMaster.classList.add('hidden');
-                if (descText) descText.textContent = '※今回限りの専用出品・まとめ売り等を直接入力';
+                if (descText) descText.textContent = '専用出品やまとめ売りなど、1回限りの商品はこちら';
                 document.getElementById('product-ref-card').classList.add('hidden');
             }
         }
