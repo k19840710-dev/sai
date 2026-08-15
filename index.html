@@ -379,16 +379,12 @@
         <!-- 4. 新規売上登録 タブ -->
         <section id="tab-add" class="tab-content hidden max-w-2xl mx-auto space-y-6">
 
-            <!-- 手動登録フォーム -->
+            <!-- 登録フォーム -->
             <div class="bg-white p-6 sm:p-8 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-6">
-                <div>
-                    <h2 class="text-lg font-bold text-[#2F3440]">手動で登録</h2>
-                </div>
-
                 <form id="add-transaction-form" onsubmit="handleFormSubmit(event)" class="space-y-5">
                     <div>
                         <label class="block text-xs font-semibold text-[#858B98] mb-1">取引日付 <span class="text-[#EFA6B5]">*</span></label>
-                        <input type="date" id="form-date" required class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]">
+                        <input type="date" id="form-date" required class="w-full max-w-full box-border appearance-none px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]">
                     </div>
 
                     <!-- 商品指定方法選択 -->
@@ -847,7 +843,7 @@
                 <input type="hidden" id="edit-id">
                 <div>
                     <label class="block text-xs font-semibold text-[#858B98] mb-1">日付</label>
-                    <input type="date" id="edit-date" required class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
+                    <input type="date" id="edit-date" required class="w-full max-w-full box-border appearance-none px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
                 </div>
 
                 <div>
@@ -916,7 +912,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-[#858B98] mb-1">仕入日 <span class="text-[#EFA6B5]">*</span></label>
-                        <input type="date" id="pur-date" required class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
+                        <input type="date" id="pur-date" required class="w-full max-w-full box-border appearance-none px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-[#858B98] mb-1">仕入総額 (円) <span class="text-[#EFA6B5]">*</span></label>
