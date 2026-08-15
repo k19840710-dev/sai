@@ -26,8 +26,11 @@
         body {
             font-family: 'Noto Sans JP', sans-serif;
             background-color: var(--bg-main);
-            background-image: radial-gradient(rgba(133, 139, 152, 0.35) 2.5px, transparent 2.5px);
-            background-size: 32px 32px;
+            background-image:
+                radial-gradient(circle, rgba(133, 139, 152, 0.3) 5px, transparent 5px),
+                radial-gradient(circle, rgba(133, 139, 152, 0.3) 5px, transparent 5px);
+            background-size: 28px 28px;
+            background-position: 0 0, 14px 14px;
             color: var(--text-main);
         }
         ::-webkit-scrollbar {
