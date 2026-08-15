@@ -2582,9 +2582,9 @@
             tbody.innerHTML = products.map(p => `
                 <tr class="hover:bg-[#F8F8F9] transition-colors">
                     <td class="p-3 pl-4 font-bold text-[#2F3440]">
-                        <button onclick="openProductDetailModal('${p.id}')" class="hover:text-[#EFA6B5] underline text-left flex items-center gap-1">
-                            <span class="text-sm text-[#858B98] leading-none" role="img" aria-hidden="true">📦</span>
-                            ${escapeHtml(p.title)}
+                        <button onclick="openProductDetailModal('${p.id}')" class="hover:text-[#EFA6B5] text-left flex items-center gap-1">
+                            <span class="text-sm text-[#858B98] leading-none no-underline" role="img" aria-hidden="true">📦</span>
+                            <span class="underline">${escapeHtml(p.title)}</span>
                         </button>
                     </td>
                     <td class="p-3 text-right font-extrabold text-[#EFA6B5]">${p.periodSoldQty} 個</td>
