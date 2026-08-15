@@ -45,8 +45,36 @@
 </head>
 <body class="text-[#2F3440] antialiased min-h-screen flex flex-col bg-[#FFFDFD]">
 
+    <!-- ログインゲート（この端末に保存済みのセッションが無い場合に表示） -->
+    <div id="auth-gate" class="hidden fixed inset-0 z-[60] bg-[#FFFDFD] flex items-center justify-center p-4">
+        <div class="max-w-sm w-full bg-white rounded-2xl border border-[#ECEDEF] shadow-sm p-6 space-y-5">
+            <div class="text-center space-y-1">
+                <div class="inline-flex bg-[#EFA6B5] text-white p-2.5 rounded-xl shadow-sm">
+                    <i data-lucide="package-check" class="w-6 h-6"></i>
+                </div>
+                <h1 class="font-bold text-base text-[#2F3440] mt-2">メルカリ売上・在庫管理</h1>
+                <p class="text-xs text-[#858B98]">この端末には保存されたデータがありません</p>
+            </div>
+
+            <div class="space-y-3">
+                <h2 class="text-xs font-bold text-[#858B98]">他の端末で設定済みのメールアドレスがあればログイン</h2>
+                <input type="email" id="gate-login-email" placeholder="メールアドレス" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]">
+                <input type="password" id="gate-login-password" placeholder="パスワード" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#EFA6B5]">
+                <button onclick="handleGateLogin()" class="w-full bg-[#EFA6B5] hover:bg-[#E395A6] text-white font-bold py-2.5 rounded-xl text-sm">ログイン</button>
+                <p id="gate-login-error" class="hidden text-xs text-red-500"></p>
+            </div>
+
+            <div class="relative py-1 text-center">
+                <span class="text-[10px] text-[#858B98] bg-white px-2 relative z-10">または</span>
+                <div class="absolute left-0 right-0 top-1/2 border-t border-[#ECEDEF]"></div>
+            </div>
+
+            <button onclick="handleGateStartFresh()" class="w-full border border-[#ECEDEF] hover:bg-[#F8F8F9] text-[#2F3440] font-bold py-2.5 rounded-xl text-sm">この端末で新しく始める</button>
+        </div>
+    </div>
+
     <!-- ヘッダー -->
-    <header class="bg-white border-b border-[#ECEDEF] sticky top-0 z-30 pt-[env(safe-area-inset-top,0px)]">
+    <header id="app-header" class="hidden bg-white border-b border-[#ECEDEF] sticky top-0 z-30 pt-[env(safe-area-inset-top,0px)]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-0 sm:min-h-16 flex flex-wrap items-center justify-between gap-y-2">
 
             <!-- アプリタイトル & 同期バッジ -->
@@ -102,7 +130,7 @@
     </header>
 
     <!-- メインコンテンツ -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 xl:pb-8">
+    <main id="app-main" class="hidden flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 xl:pb-8">
 
         <!-- 1. ダッシュボード タブ -->
         <section id="tab-dashboard" class="tab-content space-y-6">
@@ -621,10 +649,26 @@
             <!-- アカウント情報 -->
             <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-3">
                 <h3 class="font-bold text-[#2F3440] text-base">アカウント情報</h3>
-                <p class="text-xs text-[#858B98]">Gmail自動取り込みなど、外部連携の設定で必要になるIDです。今このブラウザで使っているデータのIDはこちらです。</p>
-                <div class="flex items-center gap-2 bg-[#F8F8F9] border border-[#ECEDEF] rounded-xl p-3">
-                    <code id="account-uid-display" class="flex-1 text-xs font-mono text-[#2F3440] break-all select-all">読み込み中...</code>
-                    <button onclick="copyUidToClipboard()" class="shrink-0 px-3 py-1.5 bg-white border border-[#ECEDEF] rounded-lg text-xs font-bold text-[#2F3440] hover:bg-[#ECEDEF]">コピー</button>
+                <div id="account-status-display" class="text-xs text-[#858B98]">確認中...</div>
+
+                <div class="bg-[#F8F8F9] border border-[#ECEDEF] rounded-xl p-3 space-y-1.5">
+                    <div class="text-[10px] text-[#858B98] font-semibold">ID（外部連携の設定で使用）</div>
+                    <div class="flex items-center gap-2">
+                        <code id="account-uid-display" class="flex-1 text-xs font-mono text-[#2F3440] break-all select-all">読み込み中...</code>
+                        <button onclick="copyUidToClipboard()" class="shrink-0 px-3 py-1.5 bg-white border border-[#ECEDEF] rounded-lg text-xs font-bold text-[#2F3440] hover:bg-[#ECEDEF]">コピー</button>
+                    </div>
+                </div>
+
+                <div id="account-link-section" class="hidden space-y-2 pt-2 border-t border-[#ECEDEF]">
+                    <p class="text-[11px] text-[#858B98]">メールアドレスとパスワードを設定すると、他の端末（iPhoneなど）からも同じデータにログインできるようになります。</p>
+                    <input type="email" id="link-email" placeholder="メールアドレス" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
+                    <input type="password" id="link-password" placeholder="パスワード（6文字以上）" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#EFA6B5]">
+                    <button onclick="handleLinkEmailAccount()" class="w-full bg-[#EFA6B5] hover:bg-[#E395A6] text-white text-xs font-bold py-2.5 rounded-xl">他の端末からもログインできるようにする</button>
+                    <p id="link-account-error" class="hidden text-xs text-red-500"></p>
+                </div>
+
+                <div id="account-logout-section" class="hidden pt-2 border-t border-[#ECEDEF]">
+                    <button onclick="handleLogout()" class="w-full border border-[#ECEDEF] hover:bg-[#F8F8F9] text-[#2F3440] text-xs font-bold py-2.5 rounded-xl">ログアウト</button>
                 </div>
             </div>
 
@@ -643,7 +687,7 @@
     </main>
 
     <!-- モバイルボトムナビゲーション -->
-    <div class="xl:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEDEF] z-40 px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex justify-around shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
+    <div id="app-mobile-nav" class="hidden xl:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEDEF] z-40 px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex justify-around shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
         <button onclick="switchTab('dashboard')" id="mobile-nav-dashboard" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#EFA6B5]">
             <i data-lucide="layout-dashboard" class="w-4 h-4 mb-0.5"></i>
             ホーム
@@ -979,7 +1023,7 @@
     <!-- Firebase Script & Engine -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged, signInWithEmailAndPassword, EmailAuthProvider, linkWithCredential, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // 画像OCR解析 (Gemini API) 用のキー。未設定のため、スクリーンショットからの自動登録機能は
@@ -1056,9 +1100,11 @@
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
                 }
+                // それ以外の場合はここで匿名ログインを自動実行しない。
+                // 既にこの端末で使ったことがあれば onAuthStateChanged が既存セッションを
+                // 自動復元するし、初めての端末なら auth-gate 側でユーザーに選ばせる
+                // （自動で毎回新しい匿名アカウントが増えるのを防ぐため）。
             } catch (err) {
                 console.error("Auth Exception:", err);
             }
@@ -1067,14 +1113,139 @@
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             if (user) {
+                showAppShell();
                 startDataListeners(user.uid);
                 updateAccountUidDisplay(user.uid);
+                updateAccountStatusDisplay(user);
+            } else {
+                showAuthGate();
             }
         });
+
+        function showAuthGate() {
+            const gate = document.getElementById('auth-gate');
+            const header = document.getElementById('app-header');
+            const main = document.getElementById('app-main');
+            const mobileNav = document.getElementById('app-mobile-nav');
+            if (gate) gate.classList.remove('hidden');
+            if (header) header.classList.add('hidden');
+            if (main) main.classList.add('hidden');
+            if (mobileNav) mobileNav.classList.add('hidden');
+            lucide.createIcons();
+        }
+
+        function showAppShell() {
+            const gate = document.getElementById('auth-gate');
+            const header = document.getElementById('app-header');
+            const main = document.getElementById('app-main');
+            const mobileNav = document.getElementById('app-mobile-nav');
+            if (gate) gate.classList.add('hidden');
+            if (header) header.classList.remove('hidden');
+            if (main) main.classList.remove('hidden');
+            if (mobileNav) mobileNav.classList.remove('hidden');
+        }
+
+        async function handleGateLogin() {
+            const email = document.getElementById('gate-login-email').value.trim();
+            const password = document.getElementById('gate-login-password').value;
+            const errEl = document.getElementById('gate-login-error');
+            errEl.classList.add('hidden');
+
+            if (!email || !password) {
+                errEl.textContent = 'メールアドレスとパスワードを入力してください';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (err) {
+                console.error('Gate login error:', err);
+                errEl.textContent = 'ログインに失敗しました。メールアドレスかパスワードが正しくありません';
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        async function handleGateStartFresh() {
+            try {
+                await signInAnonymously(auth);
+            } catch (err) {
+                console.error('Anonymous sign-in error:', err);
+                showToast('開始に失敗しました', 'error');
+            }
+        }
 
         function updateAccountUidDisplay(uid) {
             const el = document.getElementById('account-uid-display');
             if (el) el.textContent = uid;
+        }
+
+        function updateAccountStatusDisplay(user) {
+            const statusEl = document.getElementById('account-status-display');
+            const linkSection = document.getElementById('account-link-section');
+            const logoutSection = document.getElementById('account-logout-section');
+            if (!statusEl) return;
+
+            if (user.isAnonymous) {
+                statusEl.textContent = 'この端末専用のデータです（未ログイン）';
+                if (linkSection) linkSection.classList.remove('hidden');
+                if (logoutSection) logoutSection.classList.add('hidden');
+            } else {
+                statusEl.textContent = 'ログイン中: ' + (user.email || '');
+                if (linkSection) linkSection.classList.add('hidden');
+                if (logoutSection) logoutSection.classList.remove('hidden');
+            }
+        }
+
+        async function handleLinkEmailAccount() {
+            if (!currentUser) return;
+            const email = document.getElementById('link-email').value.trim();
+            const password = document.getElementById('link-password').value;
+            const errEl = document.getElementById('link-account-error');
+            errEl.classList.add('hidden');
+
+            if (!email || !password) {
+                errEl.textContent = 'メールアドレスとパスワードを入力してください';
+                errEl.classList.remove('hidden');
+                return;
+            }
+            if (password.length < 6) {
+                errEl.textContent = 'パスワードは6文字以上にしてください';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const cred = EmailAuthProvider.credential(email, password);
+                await linkWithCredential(currentUser, cred);
+                currentUser = auth.currentUser || currentUser;
+                updateAccountStatusDisplay(currentUser);
+                document.getElementById('link-email').value = '';
+                document.getElementById('link-password').value = '';
+                showToast('設定が完了しました。他の端末でもこのメールアドレスでログインできます', 'success');
+            } catch (err) {
+                console.error('Link account error:', err);
+                if (err.code === 'auth/email-already-in-use') {
+                    errEl.textContent = 'このメールアドレスは既に他のアカウントで使われています';
+                } else if (err.code === 'auth/invalid-email') {
+                    errEl.textContent = 'メールアドレスの形式が正しくありません';
+                } else if (err.code === 'auth/weak-password') {
+                    errEl.textContent = 'パスワードが簡単すぎます。別のパスワードにしてください';
+                } else {
+                    errEl.textContent = '設定に失敗しました。時間をおいて再度お試しください';
+                }
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await signOut(auth);
+                showToast('ログアウトしました', 'success');
+            } catch (err) {
+                console.error('Logout error:', err);
+                showToast('ログアウトに失敗しました', 'error');
+            }
         }
 
         function copyUidToClipboard() {
@@ -3358,6 +3529,10 @@ ${masterListText}
         window.filterProductDropdown = filterProductDropdown;
         window.saveFeeRateSetting = saveFeeRateSetting;
         window.copyUidToClipboard = copyUidToClipboard;
+        window.handleGateLogin = handleGateLogin;
+        window.handleGateStartFresh = handleGateStartFresh;
+        window.handleLinkEmailAccount = handleLinkEmailAccount;
+        window.handleLogout = handleLogout;
     </script>
 </body>
 </html>
