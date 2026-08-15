@@ -536,6 +536,15 @@
 
         <!-- 6. 設定・データ管理 タブ -->
         <section id="tab-settings" class="tab-content hidden max-w-2xl mx-auto space-y-6">
+            <!-- Gmail自動取込みの状態カード -->
+            <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-3">
+                <h2 class="text-xl font-bold text-[#2F3440] flex items-center gap-2">
+                    <i data-lucide="mail-check" class="w-5 h-5 text-[#EFA6B5]"></i>
+                    Gmail自動取込みの状態
+                </h2>
+                <div id="gmail-import-status" class="text-xs space-y-2">まだ一度も実行されていません</div>
+            </div>
+
             <!-- システム設定カード -->
             <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-4">
                 <h2 class="text-xl font-bold text-[#2F3440] flex items-center gap-2">
@@ -1051,6 +1060,7 @@
         const getProductsColRef = (uid) => collection(db, 'artifacts', appId, 'users', uid, 'products');
         const getAliasColRef = (uid) => collection(db, 'artifacts', appId, 'users', uid, 'aliases');
         const getSettingsDocRef = (uid) => doc(db, 'artifacts', appId, 'users', uid, 'settings', 'config');
+        const getGmailImportStatusDocRef = (uid) => doc(db, 'artifacts', appId, 'users', uid, 'settings', 'gmailImportStatus');
 
         function toggleBodyScroll(disable) {
             document.body.style.overflow = disable ? 'hidden' : '';
@@ -1374,6 +1384,51 @@
                 });
                 productAliasMap = map;
             }, (err) => console.error("Alias Snapshot Error:", err));
+
+            // 5. Gmail自動取込みの実行状況リスナー（Apps Script側が実行のたびに書き込む）
+            onSnapshot(getGmailImportStatusDocRef(uid), (docSnap) => {
+                renderGmailImportStatus(docSnap.exists() ? docSnap.data() : null);
+            }, (err) => console.error("Gmail Import Status Snapshot Error:", err));
+        }
+
+        function renderGmailImportStatus(data) {
+            const el = document.getElementById('gmail-import-status');
+            if (!el) return;
+
+            if (!data || !data.lastRunAt) {
+                el.innerHTML = '<span class="text-[#858B98]">まだ一度も実行されていません</span>';
+                return;
+            }
+
+            const lastRunAt = Number(data.lastRunAt);
+            const lastRunDate = new Date(lastRunAt);
+            const dateStr = lastRunDate.toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+            const minutesAgo = Math.floor((Date.now() - lastRunAt) / 60000);
+            // トリガー間隔(目安30分)の3倍以上、実行の形跡が無ければ止まっている可能性ありとみなす
+            const isStale = minutesAgo > 90;
+
+            let statusHtml = '';
+            if (data.lastSuccess === false) {
+                statusHtml = `
+                    <div class="flex items-start gap-2 p-2.5 bg-red-50 border border-red-100 rounded-xl">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 shrink-0 mt-0.5"></i>
+                        <div class="text-red-600 font-semibold">前回の実行でエラーが発生しました: ${escapeHtml(data.lastError || '')}</div>
+                    </div>`;
+            } else if (isStale) {
+                statusHtml = `
+                    <div class="flex items-start gap-2 p-2.5 bg-amber-50 border border-amber-100 rounded-xl">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5"></i>
+                        <div class="text-amber-700 font-semibold">${minutesAgo}分間実行されていません。Apps Scriptのトリガー設定を確認してください</div>
+                    </div>`;
+            } else {
+                statusHtml = `
+                    <div class="flex items-center gap-2 text-emerald-600 font-semibold">
+                        <i data-lucide="check-circle-2" class="w-4 h-4"></i> 正常に動作しています
+                    </div>`;
+            }
+
+            el.innerHTML = statusHtml + `<div class="text-[#858B98] mt-2">最終チェック: ${dateStr}（前回 ${data.lastImportedCount || 0} 件取り込み）</div>`;
+            lucide.createIcons();
         }
 
         // 商品/売上/仕入れの3つのリスナーがほぼ同時に発火しても、
