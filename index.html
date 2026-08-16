@@ -573,15 +573,15 @@
                     <div id="product-ref-card" class="hidden border border-[var(--border-color)] p-3.5 rounded-xl grid grid-cols-3 gap-2 text-center text-xs">
                         <div class="bg-[var(--stock-icon-bg)] rounded-lg p-1.5">
                             <div class="text-[10px] text-[var(--text-sub)] font-semibold">現在庫</div>
-                            <div id="ref-stock" class="font-bold text-[var(--stock-accent)] mt-0.5">--</div>
+                            <div id="ref-stock" class="font-bold text-[var(--text-main)] mt-0.5">--</div>
                         </div>
                         <div class="bg-[var(--sales-icon-bg)] rounded-lg p-1.5">
                             <div class="text-[10px] text-[var(--text-sub)] font-semibold">直近販売価格</div>
-                            <div id="ref-latest-price" class="font-bold text-[var(--sales-accent)] mt-0.5">--</div>
+                            <div id="ref-latest-price" class="font-bold text-[var(--text-main)] mt-0.5">--</div>
                         </div>
                         <div class="bg-[var(--sales-icon-bg)] rounded-lg p-1.5">
                             <div class="text-[10px] text-[var(--text-sub)] font-semibold">平均販売価格</div>
-                            <div id="ref-avg-price" class="font-bold text-[var(--sales-accent)] mt-0.5">--</div>
+                            <div id="ref-avg-price" class="font-bold text-[var(--text-main)] mt-0.5">--</div>
                         </div>
                     </div>
 
@@ -609,8 +609,8 @@
                                 <div id="preview-shipping" class="font-bold text-[var(--text-main)] mt-0.5">¥215</div>
                             </div>
                             <div class="bg-[var(--net-icon-bg)] p-2 rounded-lg border border-[var(--net-accent)]/20">
-                                <div class="text-[11px] text-[var(--net-accent)] font-semibold">手取り額</div>
-                                <div id="preview-profit" class="font-bold text-[var(--net-accent)] mt-0.5">¥0</div>
+                                <div class="text-[11px] text-[var(--text-main)] font-semibold">手取り額</div>
+                                <div id="preview-profit" class="font-bold text-[var(--text-main)] mt-0.5">¥0</div>
                             </div>
                         </div>
                     </div>
@@ -892,23 +892,23 @@
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center">
                 <div class="bg-[var(--count-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
                     <div class="text-[10px] text-[var(--text-sub)] font-semibold">累計販売数</div>
-                    <div id="detail-total-sold" class="text-base font-extrabold text-[var(--count-accent)] mt-0.5">0 個</div>
+                    <div id="detail-total-sold" class="text-base font-extrabold text-[var(--text-main)] mt-0.5">0 個</div>
                 </div>
                 <div class="bg-[var(--sales-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
                     <div class="text-[10px] text-[var(--text-sub)] font-semibold">累計売上</div>
-                    <div id="detail-total-sales" class="text-base font-extrabold text-[var(--sales-accent)] mt-0.5">¥0</div>
+                    <div id="detail-total-sales" class="text-base font-extrabold text-[var(--text-main)] mt-0.5">¥0</div>
                 </div>
                 <div class="bg-[var(--net-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
                     <div class="text-[10px] text-[var(--text-sub)] font-semibold">累計手取り</div>
-                    <div id="detail-sales-net" class="text-base font-extrabold text-[var(--net-accent)] mt-0.5">¥0</div>
+                    <div id="detail-sales-net" class="text-base font-extrabold text-[var(--text-main)] mt-0.5">¥0</div>
                 </div>
                 <div class="bg-[var(--purchase-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
                     <div class="text-[10px] text-[var(--text-sub)] font-semibold">累計仕入数</div>
-                    <div id="detail-purchased-qty" class="text-base font-extrabold text-[var(--purchase-accent)] mt-0.5">0 個</div>
+                    <div id="detail-purchased-qty" class="text-base font-extrabold text-[var(--text-main)] mt-0.5">0 個</div>
                 </div>
                 <div class="bg-[var(--stock-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
                     <div class="text-[10px] text-[var(--text-sub)] font-semibold">現在庫</div>
-                    <div id="detail-stock" class="text-base font-extrabold text-[var(--stock-accent)] mt-0.5">未設定</div>
+                    <div id="detail-stock" class="text-base font-extrabold text-[var(--text-main)] mt-0.5">未設定</div>
                 </div>
             </div>
 
@@ -2232,7 +2232,7 @@
             if (profit < 0) {
                 profitEl.className = 'font-bold text-red-500 mt-0.5';
             } else {
-                profitEl.className = 'font-bold text-[var(--net-accent)] mt-0.5';
+                profitEl.className = 'font-bold text-[var(--text-main)] mt-0.5';
             }
         }
 
@@ -2707,7 +2707,7 @@
                         </div>
                     </div>
                     <div class="text-right shrink-0 pl-2">
-                        <span class="font-extrabold text-[var(--count-accent)] text-sm">${p.periodSoldQty}</span> <span class="text-[10px] text-[var(--text-sub)]">個</span>
+                        <span class="font-extrabold text-[var(--text-main)] text-sm">${p.periodSoldQty}</span> <span class="text-[10px] text-[var(--text-sub)]">個</span>
                         <div class="text-[10px] ${p.isStockSet && p.currentStock <= p.alertStock ? 'text-red-500 font-bold' : 'text-[var(--text-sub)]'}">在庫: ${p.isStockSet ? p.currentStock + '個' : '未設定'}</div>
                     </div>
                 </div>
@@ -2728,8 +2728,8 @@
                         ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[var(--bg-subtle)] text-[var(--text-main)] font-bold rounded mr-1.5 border border-[var(--border-color)]">単発</span>' : ''}
                         ${escapeHtml(t.title || '')}
                     </td>
-                    <td class="p-3 text-right font-semibold text-[var(--sales-accent)]">¥${(t.sellPrice || 0).toLocaleString()}</td>
-                    <td class="p-3 text-right pr-4 font-bold text-[var(--net-accent)]">¥${(t.profit || 0).toLocaleString()}</td>
+                    <td class="p-3 text-right font-semibold text-[var(--text-main)]">¥${(t.sellPrice || 0).toLocaleString()}</td>
+                    <td class="p-3 text-right pr-4 font-bold text-[var(--text-main)]">¥${(t.profit || 0).toLocaleString()}</td>
                 </tr>
             `).join('');
         }
@@ -2833,14 +2833,14 @@
                             <span class="underline">${escapeHtml(p.title)}</span>
                         </button>
                     </td>
-                    <td class="p-3 text-right font-extrabold text-[var(--count-accent)]">${p.periodSoldQty} 個</td>
-                    <td class="p-3 text-right font-bold text-[var(--sales-accent)]">¥${p.periodSalesTotal.toLocaleString()}</td>
+                    <td class="p-3 text-right font-extrabold text-[var(--text-main)]">${p.periodSoldQty} 個</td>
+                    <td class="p-3 text-right font-bold text-[var(--text-main)]">¥${p.periodSalesTotal.toLocaleString()}</td>
                     <td class="p-3 text-right text-xs text-[var(--text-sub)] font-semibold">¥${p.avgPrice.toLocaleString()}</td>
                     <td class="p-3 text-right text-xs text-[var(--text-main)] font-bold">¥${p.latestPrice.toLocaleString()}</td>
                     <td class="p-3 text-right text-[11px] text-[var(--text-sub)]">¥${p.maxPrice.toLocaleString()} / ¥${p.minPrice.toLocaleString()}</td>
-                    <td class="p-3 text-right font-bold text-[var(--net-accent)]">¥${p.periodNetSalesTotal.toLocaleString()}</td>
-                    <td class="p-3 text-right text-xs text-[var(--purchase-accent)] font-semibold">${p.allTimePurchasedQty} 個</td>
-                    <td class="p-3 text-right font-bold ${!p.isStockSet ? 'text-[var(--text-sub)] font-normal' : p.currentStock <= p.alertStock ? 'text-red-500' : 'text-[var(--stock-accent)]'}">
+                    <td class="p-3 text-right font-bold text-[var(--text-main)]">¥${p.periodNetSalesTotal.toLocaleString()}</td>
+                    <td class="p-3 text-right text-xs text-[var(--text-main)] font-semibold">${p.allTimePurchasedQty} 個</td>
+                    <td class="p-3 text-right font-bold ${!p.isStockSet ? 'text-[var(--text-sub)] font-normal' : p.currentStock <= p.alertStock ? 'text-red-500' : 'text-[var(--text-main)]'}">
                         ${p.isStockSet ? (p.currentStock <= 0 ? '【在庫切れ】' : p.currentStock + ' 個') : '未設定'}
                     </td>
                     <td class="p-3 text-center text-xs text-[var(--text-sub)] pr-4">${p.lastDate || '--'}</td>
@@ -2879,8 +2879,8 @@
                 timelineEl.innerHTML = pTrans.map(t => `
                     <div class="flex items-center justify-between py-1 border-b border-[var(--border-color)] last:border-0">
                         <span class="font-semibold text-[var(--text-sub)]">${t.date || ''}</span>
-                        <span class="font-bold text-[var(--sales-accent)]">売上: ¥${(t.sellPrice || 0).toLocaleString()}</span>
-                        <span class="text-[11px] text-[var(--net-accent)] font-bold">手取り: ¥${(t.profit || 0).toLocaleString()}</span>
+                        <span class="font-bold text-[var(--text-main)]">売上: ¥${(t.sellPrice || 0).toLocaleString()}</span>
+                        <span class="text-[11px] text-[var(--text-main)] font-bold">手取り: ¥${(t.profit || 0).toLocaleString()}</span>
                     </div>
                 `).join('');
             }
@@ -3037,10 +3037,10 @@
                                             ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[var(--bg-subtle)] text-[var(--text-main)] font-bold rounded mr-1.5 border border-[var(--border-color)]">単発</span>' : ''}
                                             ${escapeHtml(t.title || '')}
                                         </td>
-                                        <td class="p-3 text-right font-medium text-[var(--sales-accent)]">¥${(t.sellPrice || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right font-medium text-[var(--text-main)]">¥${(t.sellPrice || 0).toLocaleString()}</td>
                                         <td class="p-3 text-right text-xs text-[var(--text-sub)]">¥${(t.fee || 0).toLocaleString()}</td>
                                         <td class="p-3 text-right text-xs text-[var(--text-sub)]">¥${(t.shippingFee || 0).toLocaleString()}</td>
-                                        <td class="p-3 text-right font-bold text-[var(--net-accent)]">¥${(t.profit || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right font-bold text-[var(--text-main)]">¥${(t.profit || 0).toLocaleString()}</td>
                                         <td class="p-3 text-center pr-4">
                                             <div class="flex items-center justify-center gap-1">
                                                 <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1.5 text-[var(--text-sub)] hover:text-[var(--text-main)]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
@@ -3074,11 +3074,11 @@
                             <div class="grid grid-cols-2 gap-2 text-center text-xs">
                                 <div class="bg-[var(--sales-icon-bg)] p-2 rounded-xl">
                                     <div class="text-[10px] text-[var(--text-sub)]">販売価格</div>
-                                    <div class="font-bold text-[var(--sales-accent)]">¥${(t.sellPrice || 0).toLocaleString()}</div>
+                                    <div class="font-bold text-[var(--text-main)]">¥${(t.sellPrice || 0).toLocaleString()}</div>
                                 </div>
                                 <div class="bg-[var(--net-icon-bg)] p-2 rounded-xl">
-                                    <div class="text-[10px] text-[var(--net-accent)] font-semibold">手取り額</div>
-                                    <div class="font-extrabold text-[var(--net-accent)]">¥${(t.profit || 0).toLocaleString()}</div>
+                                    <div class="text-[10px] text-[var(--text-main)] font-semibold">手取り額</div>
+                                    <div class="font-extrabold text-[var(--text-main)]">¥${(t.profit || 0).toLocaleString()}</div>
                                 </div>
                             </div>
                         </div>
@@ -3143,7 +3143,7 @@
                     <tr class="hover:bg-[var(--bg-subtle)] transition-colors">
                         <td class="p-3 pl-4 text-xs font-semibold text-[var(--text-sub)] whitespace-nowrap">${p.date || ''}</td>
                         <td class="p-3 font-semibold text-[var(--text-main)] text-xs">${itemsSummary}</td>
-                        <td class="p-3 text-right font-extrabold text-[var(--purchase-accent)] whitespace-nowrap">¥${(p.amount || 0).toLocaleString()}</td>
+                        <td class="p-3 text-right font-extrabold text-[var(--text-main)] whitespace-nowrap">¥${(p.amount || 0).toLocaleString()}</td>
                         <td class="p-3 text-[var(--text-main)] text-xs">${escapeHtml(p.memo || '-')}</td>
                         <td class="p-3 text-center pr-4 whitespace-nowrap">
                             <div class="flex items-center justify-center gap-1">
