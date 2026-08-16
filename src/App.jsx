@@ -666,7 +666,7 @@ export default function App() {
                     return (
                       <div
                         key={card.id}
-                        className={`rounded-2xl p-6 shadow-xl border ${theme.bg} ${theme.border} relative flex flex-col justify-center gap-5 h-60 transition-transform duration-200 hover:-translate-y-1`}
+                        className={`rounded-2xl p-5 shadow-xl border ${theme.bg} ${theme.border} relative flex flex-col justify-center gap-4 h-52 transition-transform duration-200 hover:-translate-y-1`}
                       >
                         {/* カード上部 */}
                         <div className="flex justify-between items-start">
