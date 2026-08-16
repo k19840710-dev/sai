@@ -1527,43 +1527,43 @@ export default function App() {
       {/* 3. メインコンテンツ領域 */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-6 space-y-6">
 
-        {/* ナビゲーションタブ */}
-        <div className="flex bg-slate-800/80 p-1.5 rounded-2xl border border-slate-700/50 max-w-md mx-auto sm:mx-0">
+        {/* ナビゲーションタブ（スマホは2×2グリッド、sm以上は横一列） */}
+        <div className="grid grid-cols-2 sm:flex gap-1.5 sm:gap-0 bg-slate-800/80 p-1.5 rounded-2xl border border-slate-700/50 max-w-md mx-auto sm:mx-0">
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`flex-1 py-2 px-1.5 sm:px-3 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1 sm:gap-2 ${
+            className={`min-w-0 sm:flex-1 py-2 px-1.5 sm:px-3 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1 sm:gap-2 ${
               activeTab === 'dashboard' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <PieChart className="w-4 h-4 shrink-0" />
-            <span className="whitespace-nowrap">ダッシュボード</span>
+            <span className="truncate">ダッシュボード</span>
           </button>
           <button
             onClick={() => setActiveTab('transactions')}
-            className={`flex-1 py-2 px-1.5 sm:px-3 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1 sm:gap-2 ${
+            className={`min-w-0 sm:flex-1 py-2 px-1.5 sm:px-3 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1 sm:gap-2 ${
               activeTab === 'transactions' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <List className="w-4 h-4 shrink-0" />
-            <span className="whitespace-nowrap">明細一覧 ({monthlyTransactions.length})</span>
+            <span className="truncate">明細一覧 ({monthlyTransactions.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('cards')}
-            className={`flex-1 py-2 px-1.5 sm:px-3 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1 sm:gap-2 ${
+            className={`min-w-0 sm:flex-1 py-2 px-1.5 sm:px-3 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1 sm:gap-2 ${
               activeTab === 'cards' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Wallet className="w-4 h-4 shrink-0" />
-            <span className="whitespace-nowrap">カード管理 ({cards.length})</span>
+            <span className="truncate">カード管理 ({cards.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('schedule')}
-            className={`flex-1 py-2 px-1.5 sm:px-3 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1 sm:gap-2 ${
+            className={`min-w-0 sm:flex-1 py-2 px-1.5 sm:px-3 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1 sm:gap-2 ${
               activeTab === 'schedule' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Calendar className="w-4 h-4 shrink-0" />
-            <span className="whitespace-nowrap">支払い予定</span>
+            <span className="truncate">支払い予定</span>
           </button>
         </div>
 
