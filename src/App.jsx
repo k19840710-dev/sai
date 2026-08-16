@@ -1929,27 +1929,27 @@ export default function App() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveTransaction} className="space-y-4">
+            <form onSubmit={handleSaveTransaction} className="space-y-5">
               {/* 利用金額 */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">利用金額 (円)</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-2">利用金額 (円)</label>
                 <input
                   type="number"
                   required
                   placeholder="例: 3500"
                   value={newTx.amount}
                   onChange={(e) => setNewTx({ ...newTx, amount: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-bold text-lg focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white font-bold text-lg focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               {/* クレジットカード選択 */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">利用したカード</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-2">利用したカード</label>
                 <select
                   value={newTx.cardId}
                   onChange={(e) => setNewTx({ ...newTx, cardId: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                 >
                   {cards.map((c) => (
                     <option key={c.id} value={c.id}>{c.name} ({c.brand})</option>
@@ -1958,23 +1958,23 @@ export default function App() {
               </div>
 
               {/* 利用日 & カテゴリ */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="min-w-0">
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">利用日</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-2">利用日</label>
                   <input
                     type="date"
                     required
                     value={newTx.date}
                     onChange={(e) => setNewTx({ ...newTx, date: e.target.value })}
-                    className="w-full min-w-0 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                    className="w-full min-w-0 bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div className="min-w-0">
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">カテゴリ</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-2">カテゴリ</label>
                   <select
                     value={newTx.category}
                     onChange={(e) => setNewTx({ ...newTx, category: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                   >
                     {CATEGORIES.map((cat) => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -1985,13 +1985,13 @@ export default function App() {
 
               {/* メモ */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">メモ / 店舗名</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-2">メモ / 店舗名</label>
                 <input
                   type="text"
                   placeholder="例: セブンイレブン、Amazonなど"
                   value={newTx.memo}
                   onChange={(e) => setNewTx({ ...newTx, memo: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -2032,25 +2032,25 @@ export default function App() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveCard} className="space-y-4">
+            <form onSubmit={handleSaveCard} className="space-y-5">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">カード名</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-2">カード名</label>
                 <input
                   type="text"
                   required
                   placeholder="例: 三井住友カード, 楽天ゴールドカード"
                   value={newCard.name}
                   onChange={(e) => setNewCard({ ...newCard, name: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">国際ブランド</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-2">国際ブランド</label>
                 <select
                   value={newCard.brand}
                   onChange={(e) => setNewCard({ ...newCard, brand: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                 >
                   <option value="VISA">VISA</option>
                   <option value="Mastercard">Mastercard</option>
@@ -2060,7 +2060,7 @@ export default function App() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">カード番号</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-2">カード番号</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -2068,24 +2068,24 @@ export default function App() {
                   placeholder="1234 5678 9012 3456"
                   value={newCard.number}
                   onChange={(e) => setNewCard({ ...newCard, number: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm font-mono tracking-wider focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm font-mono tracking-wider focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">名義人</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-2">名義人</label>
                 <input
                   type="text"
                   placeholder="例: TARO YAMADA"
                   value={newCard.holderName}
                   onChange={(e) => setNewCard({ ...newCard, holderName: e.target.value.toUpperCase() })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="min-w-0">
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">有効期限</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-2">有効期限</label>
                   <input
                     type="text"
                     inputMode="numeric"
@@ -2093,11 +2093,11 @@ export default function App() {
                     placeholder="MM/YY"
                     value={newCard.expiry}
                     onChange={(e) => setNewCard({ ...newCard, expiry: e.target.value })}
-                    className="w-full min-w-0 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm font-mono focus:outline-none focus:border-indigo-500"
+                    className="w-full min-w-0 bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm font-mono focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div className="min-w-0">
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">セキュリティコード</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-2">セキュリティコード</label>
                   <input
                     type="text"
                     inputMode="numeric"
@@ -2105,7 +2105,7 @@ export default function App() {
                     placeholder="123"
                     value={newCard.cvv}
                     onChange={(e) => setNewCard({ ...newCard, cvv: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm font-mono focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm font-mono focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -2129,35 +2129,35 @@ export default function App() {
 
               {/* 利用限度額 */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">月間利用限度額 (円)</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-2">月間利用限度額 (円)</label>
                 <input
                   type="number"
                   placeholder="300000"
                   value={newCard.limit}
                   onChange={(e) => setNewCard({ ...newCard, limit: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="min-w-0">
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">締め日</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-2">締め日</label>
                   <input
                     type="text"
                     placeholder="例: 末日, 15日"
                     value={newCard.billingDay}
                     onChange={(e) => setNewCard({ ...newCard, billingDay: e.target.value })}
-                    className="w-full min-w-0 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                    className="w-full min-w-0 bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div className="min-w-0">
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">引き落とし日</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-2">引き落とし日</label>
                   <input
                     type="text"
                     placeholder="例: 27日, 10日"
                     value={newCard.paymentDay}
                     onChange={(e) => setNewCard({ ...newCard, paymentDay: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
