@@ -20,6 +20,9 @@ import {
   Tv,
   HelpCircle,
   Sparkles,
+  Eye,
+  EyeOff,
+  User,
 } from 'lucide-react';
 import TrendChart from './components/TrendChart.jsx';
 
@@ -93,6 +96,10 @@ const DEFAULT_CARDS = [
     name: 'メインゴールドカード',
     brand: 'VISA',
     last4: '4821',
+    number: '4532 0151 1283 4821',
+    holderName: 'TARO YAMADA',
+    expiry: '08/29',
+    cvv: '412',
     theme: 'purple',
     limit: 300000,
     billingDay: '15',
@@ -103,6 +110,10 @@ const DEFAULT_CARDS = [
     name: '楽天カード',
     brand: 'Mastercard',
     last4: '9102',
+    number: '5412 7534 8890 9102',
+    holderName: 'TARO YAMADA',
+    expiry: '11/28',
+    cvv: '256',
     theme: 'sunset',
     limit: 200000,
     billingDay: '末日',
@@ -113,6 +124,10 @@ const DEFAULT_CARDS = [
     name: '交通系JCBカード',
     brand: 'JCB',
     last4: '3310',
+    number: '3528 1147 9902 3310',
+    holderName: 'TARO YAMADA',
+    expiry: '03/27',
+    cvv: '789',
     theme: 'blue',
     limit: 100000,
     billingDay: '末日',
@@ -179,6 +194,18 @@ function buildMonthlySeries(txs) {
   }));
 }
 
+function formatCardNumber(number) {
+  const digits = (number || '').replace(/\D/g, '');
+  if (!digits) return '未登録';
+  return digits.replace(/(.{4})(?=.)/g, '$1 ');
+}
+
+function maskCardNumber(number, last4) {
+  const digits = (number || '').replace(/\D/g, '');
+  const tail = digits ? digits.slice(-4) : (last4 || '0000');
+  return `•••• •••• •••• ${tail}`;
+}
+
 export default function App() {
   // 現在選択されている年月 (YYYY-MM) — 実際の今日の日付から算出
   const [currentMonth, setCurrentMonth] = useState(currentMonthKey);
@@ -223,12 +250,26 @@ export default function App() {
   const [newCard, setNewCard] = useState({
     name: '',
     brand: 'VISA',
-    last4: '',
+    number: '',
+    holderName: '',
+    expiry: '',
+    cvv: '',
     theme: 'purple',
     limit: 200000,
     billingDay: '末日',
     paymentDay: '27',
   });
+
+  // カード番号・有効期限・セキュリティコードを表示中のカードID
+  const [revealedCards, setRevealedCards] = useState(() => new Set());
+  const toggleCardReveal = (cardId) => {
+    setRevealedCards((prev) => {
+      const next = new Set(prev);
+      if (next.has(cardId)) next.delete(cardId);
+      else next.add(cardId);
+      return next;
+    });
+  };
 
   // --- 月の切り替え処理 ---
   const handleMonthChange = (offset) => {
@@ -356,11 +397,12 @@ export default function App() {
     e.preventDefault();
     if (!newCard.name) return;
 
+    const digits = newCard.number.replace(/\D/g, '');
     const createdCard = {
       id: `card-${Date.now()}`,
       ...newCard,
       limit: Number(newCard.limit) || 0,
-      last4: newCard.last4 || '0000',
+      last4: digits ? digits.slice(-4) : '0000',
     };
 
     setCards([...cards, createdCard]);
@@ -370,7 +412,10 @@ export default function App() {
     setNewCard({
       name: '',
       brand: 'VISA',
-      last4: '',
+      number: '',
+      holderName: '',
+      expiry: '',
+      cvv: '',
       theme: 'purple',
       limit: 200000,
       billingDay: '末日',
@@ -621,7 +666,7 @@ export default function App() {
                     return (
                       <div
                         key={card.id}
-                        className={`rounded-2xl p-4 shadow-xl border ${theme.bg} ${theme.border} relative flex flex-col justify-center gap-3.5 h-44 transition-transform duration-200 hover:-translate-y-1`}
+                        className={`rounded-2xl p-6 shadow-xl border ${theme.bg} ${theme.border} relative flex flex-col justify-center gap-5 h-60 transition-transform duration-200 hover:-translate-y-1`}
                       >
                         {/* カード上部 */}
                         <div className="flex justify-between items-start">
@@ -857,6 +902,53 @@ export default function App() {
                       </button>
                     </div>
 
+                    {/* カード番号・有効期限・セキュリティコード・名義 */}
+                    <div className="bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/40 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                          <User className="w-3.5 h-3.5" />
+                          {card.holderName || '名義未登録'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => toggleCardReveal(card.id)}
+                          className="flex items-center gap-1 text-[11px] font-medium text-indigo-400 hover:text-indigo-300"
+                        >
+                          {revealedCards.has(card.id) ? (
+                            <>
+                              <EyeOff className="w-3.5 h-3.5" /> 隠す
+                            </>
+                          ) : (
+                            <>
+                              <Eye className="w-3.5 h-3.5" /> 詳細を表示
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] text-slate-500 block mb-0.5">カード番号</span>
+                        <span className="font-mono text-sm text-slate-200 tracking-wider">
+                          {revealedCards.has(card.id) ? formatCardNumber(card.number) : maskCardNumber(card.number, card.last4)}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <span className="text-[10px] text-slate-500 block mb-0.5">有効期限</span>
+                          <span className="font-mono text-sm text-slate-200">
+                            {revealedCards.has(card.id) ? (card.expiry || '未登録') : '••/••'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-500 block mb-0.5">セキュリティコード</span>
+                          <span className="font-mono text-sm text-slate-200">
+                            {revealedCards.has(card.id) ? (card.cvv || '未登録') : '•••'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* 詳細設定情報 */}
                     <div className="grid grid-cols-3 gap-2 bg-slate-900/50 p-3 rounded-xl text-xs border border-slate-700/40">
                       <div>
@@ -886,7 +978,7 @@ export default function App() {
       {/* 4. モーダル: 利用明細の記録 */}
       {isAddTransactionOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-slate-800 border border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-4">
+          <div className="bg-slate-800 border border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-slate-700">
               <h3 className="font-bold text-lg text-white flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-indigo-400" />
@@ -989,7 +1081,7 @@ export default function App() {
       {/* 5. モーダル: 新規カードの登録 */}
       {isAddCardOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-slate-800 border border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-4">
+          <div className="bg-slate-800 border border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-slate-700">
               <h3 className="font-bold text-lg text-white flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-indigo-400" />
@@ -1016,29 +1108,67 @@ export default function App() {
                 />
               </div>
 
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">国際ブランド</label>
+                <select
+                  value={newCard.brand}
+                  onChange={(e) => setNewCard({ ...newCard, brand: e.target.value })}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="VISA">VISA</option>
+                  <option value="Mastercard">Mastercard</option>
+                  <option value="JCB">JCB</option>
+                  <option value="Amex">American Express</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">カード番号</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={19}
+                  placeholder="1234 5678 9012 3456"
+                  value={newCard.number}
+                  onChange={(e) => setNewCard({ ...newCard, number: e.target.value })}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm font-mono tracking-wider focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">名義人</label>
+                <input
+                  type="text"
+                  placeholder="例: TARO YAMADA"
+                  value={newCard.holderName}
+                  onChange={(e) => setNewCard({ ...newCard, holderName: e.target.value.toUpperCase() })}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">国際ブランド</label>
-                  <select
-                    value={newCard.brand}
-                    onChange={(e) => setNewCard({ ...newCard, brand: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
-                  >
-                    <option value="VISA">VISA</option>
-                    <option value="Mastercard">Mastercard</option>
-                    <option value="JCB">JCB</option>
-                    <option value="Amex">American Express</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">カード番号 (下4桁)</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">有効期限</label>
                   <input
                     type="text"
+                    inputMode="numeric"
+                    maxLength={5}
+                    placeholder="MM/YY"
+                    value={newCard.expiry}
+                    onChange={(e) => setNewCard({ ...newCard, expiry: e.target.value })}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm font-mono focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">セキュリティコード</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
                     maxLength={4}
-                    placeholder="1234"
-                    value={newCard.last4}
-                    onChange={(e) => setNewCard({ ...newCard, last4: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                    placeholder="123"
+                    value={newCard.cvv}
+                    onChange={(e) => setNewCard({ ...newCard, cvv: e.target.value })}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm font-mono focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
