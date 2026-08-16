@@ -284,6 +284,42 @@ const OCR_DATE_REGEX = /(\d{4}[/\-年]\d{1,2}[/\-月]\d{1,2}日?|\d{2}\.\d{1,2}\
 const OCR_AMOUNT_REGEX = /[¥￥]\s?[\d,]{2,}|[\d,]{3,}\s?円/;
 
 /**
+ * OCR前の画像前処理。スマホのスクリーンショットは見た目の解像度は高くても、
+ * 実際の文字の高さ（ピクセル数）が小さく、Tesseractの認識精度が落ちやすい。
+ * 十分な文字高さになるまで拡大し、グレースケール化＋コントラスト強調してから渡す。
+ * 失敗した場合は元のファイルをそのまま使う（呼び出し側でフォールバック）。
+ */
+async function preprocessImageForOcr(file) {
+  const img = await createImageBitmap(file);
+  const targetWidth = 1800;
+  const scale = Math.min(3, Math.max(1, targetWidth / img.width));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(img.width * scale);
+  canvas.height = Math.round(img.height * scale);
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  // グレースケール化 + 簡易コントラスト強調
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const { data } = imageData;
+  const contrast = 1.35;
+  for (let i = 0; i < data.length; i += 4) {
+    const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+    const adjusted = Math.min(255, Math.max(0, (gray - 128) * contrast + 128));
+    data[i] = adjusted;
+    data[i + 1] = adjusted;
+    data[i + 2] = adjusted;
+  }
+  ctx.putImageData(imageData, 0, 0);
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('toBlob failed'))), 'image/png');
+  });
+}
+
+/**
  * OCRの単語＋座標から、画面上の「行」を再構成する。
  * カード明細アプリは店名／金額が同じ横位置、日付／回数がその下の行、
  * というレイアウトが多く、素の認識テキストの並び順だけでは崩れやすいため、
@@ -714,9 +750,19 @@ export default function App() {
   const handleImportImageFile = async (file) => {
     setOcrLoading(true);
     try {
-      const { createWorker } = await import('tesseract.js');
+      let ocrInput = file;
+      try {
+        ocrInput = await preprocessImageForOcr(file);
+      } catch (preErr) {
+        console.warn('画像の前処理に失敗したため、元の画像のまま読み取ります', preErr);
+      }
+
+      const { createWorker, PSM } = await import('tesseract.js');
       const worker = await createWorker('jpn');
-      const { data } = await worker.recognize(file, {}, { text: true, blocks: true });
+      // カード明細は縦一列のリスト状レイアウトなので、単一段組みを仮定するPSMの方が
+      // デフォルト（自動レイアウト解析）より安定して読めることが多い。
+      await worker.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_COLUMN });
+      const { data } = await worker.recognize(ocrInput, {}, { text: true, blocks: true });
       await worker.terminate();
 
       // 単語の座標から画面上の行を再構成して読む（店名と金額が横並び、日付は
