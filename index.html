@@ -44,23 +44,31 @@
             --text-main: #293241;
             --text-sub: #6F7886;
 
-            --profit-bg: #E3F2EB;
-            --profit-accent: #3F7560;
-            --profit-icon-chip: rgba(63, 117, 96, 0.14);
-            --sales-icon-bg: #E4EFF8;
-            --sales-accent: #557A98;
-            --net-icon-bg: #F7E5EA;
-            --net-accent: #A56373;
-            --count-icon-bg: #E8F0FA;
-            --purchase-icon-bg: #F7EDDB;
-            --stock-icon-bg: #E8EEF5;
-            --types-icon-bg: #EEE8F6;
+            --profit-bg: #D7F2E3;
+            --profit-accent: #2E7D5B;
+            --profit-icon-chip: rgba(46, 125, 91, 0.16);
+            --sales-icon-bg: #DAEBFB;
+            --sales-accent: #3E7CB8;
+            --net-icon-bg: #FBDFEA;
+            --net-accent: #C15A82;
+            --count-icon-bg: #DCE7FB;
+            --count-accent: #4C6FB0;
+            --purchase-icon-bg: #FCEBC7;
+            --purchase-accent: #B8842E;
+            --stock-icon-bg: #DCEFF0;
+            --stock-accent: #2D8A93;
+            --types-icon-bg: #EBE0F9;
+            --types-accent: #8256C4;
 
-            --chart-sales: #BFD7EA;
-            --chart-net: #F1C6D0;
-            --chart-profit: #5F8F79;
+            --chart-sales: #A9D2F2;
+            --chart-net: #F5B8D0;
+            --chart-profit: #4FA37D;
             --chart-grid: #E4E8EE;
             --chart-legend-text: #6F7886;
+
+            --warn-bg: #FCE9D2;
+            --warn-accent: #B25E2A;
+            --danger-accent: #C1473F;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -74,23 +82,31 @@
                 --text-main: #F1F3F5;
                 --text-sub: #AEB6C2;
 
-                --profit-bg: #263D35;
-                --profit-accent: #8FC3A9;
-                --profit-icon-chip: rgba(143, 195, 169, 0.16);
-                --sales-icon-bg: #26313D;
-                --sales-accent: #8CB4D6;
-                --net-icon-bg: #332830;
-                --net-accent: #D0929F;
-                --count-icon-bg: #212B38;
-                --purchase-icon-bg: #332C1E;
-                --stock-icon-bg: #212832;
-                --types-icon-bg: #2A2333;
+                --profit-bg: #23413A;
+                --profit-accent: #83D9AE;
+                --profit-icon-chip: rgba(131, 217, 174, 0.18);
+                --sales-icon-bg: #233A52;
+                --sales-accent: #8FC4EF;
+                --net-icon-bg: #402A38;
+                --net-accent: #EB9FC0;
+                --count-icon-bg: #233150;
+                --count-accent: #93AEEA;
+                --purchase-icon-bg: #423420;
+                --purchase-accent: #E8BE72;
+                --stock-icon-bg: #1F3E41;
+                --stock-accent: #6FC9D2;
+                --types-icon-bg: #362C4C;
+                --types-accent: #C1A2EF;
 
-                --chart-sales: #6E93B0;
-                --chart-net: #C98A99;
-                --chart-profit: #6FAF93;
+                --chart-sales: #5D93C4;
+                --chart-net: #D583A8;
+                --chart-profit: #4FAE81;
                 --chart-grid: #2E3542;
                 --chart-legend-text: #AEB6C2;
+
+                --warn-bg: #4A3623;
+                --warn-accent: #E8A56B;
+                --danger-accent: #E27B72;
             }
         }
 
@@ -104,23 +120,31 @@
             --text-main: #F1F3F5;
             --text-sub: #AEB6C2;
 
-            --profit-bg: #263D35;
-            --profit-accent: #8FC3A9;
-            --profit-icon-chip: rgba(143, 195, 169, 0.16);
-            --sales-icon-bg: #26313D;
-            --sales-accent: #8CB4D6;
-            --net-icon-bg: #332830;
-            --net-accent: #D0929F;
-            --count-icon-bg: #212B38;
-            --purchase-icon-bg: #332C1E;
-            --stock-icon-bg: #212832;
-            --types-icon-bg: #2A2333;
+            --profit-bg: #23413A;
+            --profit-accent: #83D9AE;
+            --profit-icon-chip: rgba(131, 217, 174, 0.18);
+            --sales-icon-bg: #233A52;
+            --sales-accent: #8FC4EF;
+            --net-icon-bg: #402A38;
+            --net-accent: #EB9FC0;
+            --count-icon-bg: #233150;
+            --count-accent: #93AEEA;
+            --purchase-icon-bg: #423420;
+            --purchase-accent: #E8BE72;
+            --stock-icon-bg: #1F3E41;
+            --stock-accent: #6FC9D2;
+            --types-icon-bg: #362C4C;
+            --types-accent: #C1A2EF;
 
-            --chart-sales: #6E93B0;
-            --chart-net: #C98A99;
-            --chart-profit: #6FAF93;
+            --chart-sales: #5D93C4;
+            --chart-net: #D583A8;
+            --chart-profit: #4FAE81;
             --chart-grid: #2E3542;
             --chart-legend-text: #AEB6C2;
+
+            --warn-bg: #4A3623;
+            --warn-accent: #E8A56B;
+            --danger-accent: #E27B72;
         }
 
         body {
@@ -299,7 +323,7 @@
             <!-- 補助情報（コンパクト表示） -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                 <div class="bg-[var(--card-bg)] p-2.5 rounded-2xl border border-[var(--border-color)] app-card-shadow flex items-center gap-2">
-                    <div class="p-1.5 bg-[var(--count-icon-bg)] text-[var(--text-sub)] rounded-lg shrink-0">
+                    <div class="p-1.5 bg-[var(--count-icon-bg)] text-[var(--count-accent)] rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
                     </div>
                     <div class="min-w-0">
@@ -309,7 +333,7 @@
                 </div>
 
                 <div class="bg-[var(--card-bg)] p-2.5 rounded-2xl border border-[var(--border-color)] app-card-shadow flex items-center gap-2">
-                    <div class="p-1.5 bg-[var(--purchase-icon-bg)] text-[var(--text-sub)] rounded-lg shrink-0">
+                    <div class="p-1.5 bg-[var(--purchase-icon-bg)] text-[var(--purchase-accent)] rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg>
                     </div>
                     <div class="min-w-0">
@@ -319,7 +343,7 @@
                 </div>
 
                 <div class="bg-[var(--card-bg)] p-2.5 rounded-2xl border border-[var(--border-color)] app-card-shadow flex items-center gap-2">
-                    <div class="p-1.5 bg-[var(--stock-icon-bg)] text-[var(--text-sub)] rounded-lg shrink-0">
+                    <div class="p-1.5 bg-[var(--stock-icon-bg)] text-[var(--stock-accent)] rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z"/><path d="m7 16.5-4.74-2.85"/><path d="m7 16.5 5-3"/><path d="M7 16.5v5.17"/><path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z"/><path d="m17 16.5-5-3"/><path d="m17 16.5 4.74-2.85"/><path d="M17 16.5v5.17"/><path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z"/><path d="M12 8 7.26 5.15"/><path d="m12 8 4.74-2.85"/><path d="M12 13.5V8"/></svg>
                     </div>
                     <div class="min-w-0">
@@ -329,7 +353,7 @@
                 </div>
 
                 <div class="bg-[var(--card-bg)] p-2.5 rounded-2xl border border-[var(--border-color)] app-card-shadow flex items-center gap-2">
-                    <div class="p-1.5 bg-[var(--types-icon-bg)] text-[var(--text-sub)] rounded-lg shrink-0">
+                    <div class="p-1.5 bg-[var(--types-icon-bg)] text-[var(--types-accent)] rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg>
                     </div>
                     <div class="min-w-0">
@@ -340,13 +364,13 @@
             </div>
 
             <!-- 在庫注意アラートカード -->
-            <div id="stock-alert-section" class="hidden bg-[var(--bg-subtle)] border border-[var(--border-color)] p-3.5 rounded-2xl space-y-2">
+            <div id="stock-alert-section" class="hidden bg-[var(--warn-bg)] border border-[var(--warn-accent)]/25 p-3.5 rounded-2xl space-y-2">
                 <div class="flex items-center justify-between">
-                    <h3 class="font-bold text-[var(--text-main)] text-xs sm:text-sm flex items-center gap-1.5">
-                        <span class="text-base text-[var(--text-main)] leading-none" role="img" aria-hidden="true">⚠️</span>
+                    <h3 class="font-bold text-[var(--warn-accent)] text-xs sm:text-sm flex items-center gap-1.5">
+                        <span class="text-base text-[var(--warn-accent)] leading-none" role="img" aria-hidden="true">⚠️</span>
                         在庫注意・在庫切れ
                     </h3>
-                    <button onclick="switchTab('purchases')" class="text-xs font-bold text-[var(--text-main)] hover:underline">仕入れ登録 →</button>
+                    <button onclick="switchTab('purchases')" class="text-xs font-bold text-[var(--warn-accent)] hover:underline">仕入れ登録 →</button>
                 </div>
                 <div id="stock-alert-list" class="flex flex-wrap gap-2 pt-1">
                     <!-- JS挿入 -->
@@ -546,18 +570,18 @@
                     </div>
 
                     <!-- 参考カード -->
-                    <div id="product-ref-card" class="hidden bg-[var(--bg-subtle)] border border-[var(--border-color)] p-3.5 rounded-xl grid grid-cols-3 gap-2 text-center text-xs">
-                        <div>
+                    <div id="product-ref-card" class="hidden border border-[var(--border-color)] p-3.5 rounded-xl grid grid-cols-3 gap-2 text-center text-xs">
+                        <div class="bg-[var(--stock-icon-bg)] rounded-lg p-1.5">
                             <div class="text-[10px] text-[var(--text-sub)] font-semibold">現在庫</div>
-                            <div id="ref-stock" class="font-bold text-[var(--text-main)] mt-0.5">--</div>
+                            <div id="ref-stock" class="font-bold text-[var(--stock-accent)] mt-0.5">--</div>
                         </div>
-                        <div>
+                        <div class="bg-[var(--sales-icon-bg)] rounded-lg p-1.5">
                             <div class="text-[10px] text-[var(--text-sub)] font-semibold">直近販売価格</div>
-                            <div id="ref-latest-price" class="font-bold text-[var(--text-main)] mt-0.5">--</div>
+                            <div id="ref-latest-price" class="font-bold text-[var(--sales-accent)] mt-0.5">--</div>
                         </div>
-                        <div>
+                        <div class="bg-[var(--sales-icon-bg)] rounded-lg p-1.5">
                             <div class="text-[10px] text-[var(--text-sub)] font-semibold">平均販売価格</div>
-                            <div id="ref-avg-price" class="font-bold text-[var(--text-main)] mt-0.5">--</div>
+                            <div id="ref-avg-price" class="font-bold text-[var(--sales-accent)] mt-0.5">--</div>
                         </div>
                     </div>
 
@@ -584,9 +608,9 @@
                                 <div class="text-[11px] text-[var(--text-sub)]">送料</div>
                                 <div id="preview-shipping" class="font-bold text-[var(--text-main)] mt-0.5">¥215</div>
                             </div>
-                            <div class="bg-[var(--card-bg)] p-2 rounded-lg border border-[var(--border-color)]">
-                                <div class="text-[11px] text-[var(--text-main)] font-semibold">手取り額</div>
-                                <div id="preview-profit" class="font-bold text-[var(--text-main)] mt-0.5">¥0</div>
+                            <div class="bg-[var(--net-icon-bg)] p-2 rounded-lg border border-[var(--net-accent)]/20">
+                                <div class="text-[11px] text-[var(--net-accent)] font-semibold">手取り額</div>
+                                <div id="preview-profit" class="font-bold text-[var(--net-accent)] mt-0.5">¥0</div>
                             </div>
                         </div>
                     </div>
@@ -623,15 +647,20 @@
 
             <!-- 仕入れKPI -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-[var(--card-bg)] p-5 rounded-2xl border border-[var(--border-color)] app-card-shadow">
-                    <div class="text-xs text-[var(--text-sub)] font-semibold mb-1">今月の仕入額</div>
+                <div class="bg-[var(--card-bg)] p-5 rounded-2xl border border-[var(--border-color)] border-t-4 border-t-[var(--purchase-accent)] app-card-shadow">
+                    <div class="flex items-center justify-between text-[var(--text-sub)] mb-1">
+                        <span class="text-xs font-semibold">今月の仕入額</span>
+                        <div class="p-1.5 bg-[var(--purchase-icon-bg)] text-[var(--purchase-accent)] rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg>
+                        </div>
+                    </div>
                     <div id="kpi-pur-month" class="text-2xl font-extrabold text-[var(--text-main)]">¥0</div>
                 </div>
-                <div class="bg-[var(--card-bg)] p-5 rounded-2xl border border-[var(--border-color)] app-card-shadow">
+                <div class="bg-[var(--card-bg)] p-5 rounded-2xl border border-[var(--border-color)] border-t-4 border-t-[var(--purchase-accent)] app-card-shadow">
                     <div class="text-xs text-[var(--text-sub)] font-semibold mb-1">今年の仕入額</div>
                     <div id="kpi-pur-year" class="text-2xl font-extrabold text-[var(--text-main)]">¥0</div>
                 </div>
-                <div class="bg-[var(--card-bg)] p-5 rounded-2xl border border-[var(--border-color)] app-card-shadow">
+                <div class="bg-[var(--card-bg)] p-5 rounded-2xl border border-[var(--border-color)] border-t-4 border-t-[var(--purchase-accent)] app-card-shadow">
                     <div class="text-xs text-[var(--text-sub)] font-semibold mb-1">累計仕入額</div>
                     <div id="kpi-pur-total" class="text-2xl font-extrabold text-[var(--text-main)]">¥0</div>
                 </div>
@@ -861,25 +890,25 @@
 
             <!-- 数値サマリーグリッド -->
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center">
-                <div class="bg-[var(--bg-subtle)] p-2.5 rounded-xl border border-[var(--border-color)]">
+                <div class="bg-[var(--count-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
                     <div class="text-[10px] text-[var(--text-sub)] font-semibold">累計販売数</div>
-                    <div id="detail-total-sold" class="text-base font-extrabold text-[var(--text-main)] mt-0.5">0 個</div>
+                    <div id="detail-total-sold" class="text-base font-extrabold text-[var(--count-accent)] mt-0.5">0 個</div>
                 </div>
-                <div class="bg-[var(--bg-subtle)] p-2.5 rounded-xl border border-[var(--border-color)]">
+                <div class="bg-[var(--sales-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
                     <div class="text-[10px] text-[var(--text-sub)] font-semibold">累計売上</div>
-                    <div id="detail-total-sales" class="text-base font-extrabold text-[var(--text-main)] mt-0.5">¥0</div>
+                    <div id="detail-total-sales" class="text-base font-extrabold text-[var(--sales-accent)] mt-0.5">¥0</div>
                 </div>
-                <div class="bg-[var(--bg-subtle)] p-2.5 rounded-xl border border-[var(--border-color)]">
+                <div class="bg-[var(--net-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
                     <div class="text-[10px] text-[var(--text-sub)] font-semibold">累計手取り</div>
-                    <div id="detail-sales-net" class="text-base font-extrabold text-teal-600 mt-0.5">¥0</div>
+                    <div id="detail-sales-net" class="text-base font-extrabold text-[var(--net-accent)] mt-0.5">¥0</div>
                 </div>
-                <div class="bg-[var(--bg-subtle)] p-2.5 rounded-xl border border-[var(--border-color)]">
+                <div class="bg-[var(--purchase-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
                     <div class="text-[10px] text-[var(--text-sub)] font-semibold">累計仕入数</div>
-                    <div id="detail-purchased-qty" class="text-base font-extrabold text-[var(--text-main)] mt-0.5">0 個</div>
+                    <div id="detail-purchased-qty" class="text-base font-extrabold text-[var(--purchase-accent)] mt-0.5">0 個</div>
                 </div>
-                <div class="bg-[var(--bg-subtle)] p-2.5 rounded-xl border border-[var(--border-color)]">
+                <div class="bg-[var(--stock-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
                     <div class="text-[10px] text-[var(--text-sub)] font-semibold">現在庫</div>
-                    <div id="detail-stock" class="text-base font-extrabold text-amber-600 mt-0.5">未設定</div>
+                    <div id="detail-stock" class="text-base font-extrabold text-[var(--stock-accent)] mt-0.5">未設定</div>
                 </div>
             </div>
 
@@ -2203,7 +2232,7 @@
             if (profit < 0) {
                 profitEl.className = 'font-bold text-red-500 mt-0.5';
             } else {
-                profitEl.className = 'font-bold text-[var(--text-main)] mt-0.5';
+                profitEl.className = 'font-bold text-[var(--net-accent)] mt-0.5';
             }
         }
 
@@ -2630,7 +2659,7 @@
             const alertList = document.getElementById('stock-alert-list');
             if (alertProds.length > 0) {
                 alertList.innerHTML = alertProds.map(p => `
-                    <span onclick="openProductDetailModal('${p.id}')" class="px-2.5 py-1 rounded-xl text-xs font-bold cursor-pointer transition-transform hover:scale-105 ${p.currentStock <= 0 ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-amber-100 text-amber-800 border border-amber-200'}">
+                    <span onclick="openProductDetailModal('${p.id}')" class="px-2.5 py-1 rounded-xl text-xs font-bold cursor-pointer transition-transform hover:scale-105 bg-[var(--card-bg)] ${p.currentStock <= 0 ? 'text-[var(--danger-accent)] border border-[var(--danger-accent)]/30' : 'text-[var(--warn-accent)] border border-[var(--warn-accent)]/30'}">
                         ${escapeHtml(p.title)}: ${p.currentStock <= 0 ? '【在庫切れ】' : `残り${p.currentStock}個`}
                     </span>
                 `).join('');
@@ -2678,7 +2707,7 @@
                         </div>
                     </div>
                     <div class="text-right shrink-0 pl-2">
-                        <span class="font-extrabold text-[var(--text-main)] text-sm">${p.periodSoldQty}</span> <span class="text-[10px] text-[var(--text-sub)]">個</span>
+                        <span class="font-extrabold text-[var(--count-accent)] text-sm">${p.periodSoldQty}</span> <span class="text-[10px] text-[var(--text-sub)]">個</span>
                         <div class="text-[10px] ${p.isStockSet && p.currentStock <= p.alertStock ? 'text-red-500 font-bold' : 'text-[var(--text-sub)]'}">在庫: ${p.isStockSet ? p.currentStock + '個' : '未設定'}</div>
                     </div>
                 </div>
@@ -2699,8 +2728,8 @@
                         ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[var(--bg-subtle)] text-[var(--text-main)] font-bold rounded mr-1.5 border border-[var(--border-color)]">単発</span>' : ''}
                         ${escapeHtml(t.title || '')}
                     </td>
-                    <td class="p-3 text-right font-semibold text-[var(--text-main)]">¥${(t.sellPrice || 0).toLocaleString()}</td>
-                    <td class="p-3 text-right pr-4 font-bold text-teal-600">¥${(t.profit || 0).toLocaleString()}</td>
+                    <td class="p-3 text-right font-semibold text-[var(--sales-accent)]">¥${(t.sellPrice || 0).toLocaleString()}</td>
+                    <td class="p-3 text-right pr-4 font-bold text-[var(--net-accent)]">¥${(t.profit || 0).toLocaleString()}</td>
                 </tr>
             `).join('');
         }
@@ -2804,14 +2833,14 @@
                             <span class="underline">${escapeHtml(p.title)}</span>
                         </button>
                     </td>
-                    <td class="p-3 text-right font-extrabold text-[var(--text-main)]">${p.periodSoldQty} 個</td>
-                    <td class="p-3 text-right font-bold text-[var(--text-main)]">¥${p.periodSalesTotal.toLocaleString()}</td>
+                    <td class="p-3 text-right font-extrabold text-[var(--count-accent)]">${p.periodSoldQty} 個</td>
+                    <td class="p-3 text-right font-bold text-[var(--sales-accent)]">¥${p.periodSalesTotal.toLocaleString()}</td>
                     <td class="p-3 text-right text-xs text-[var(--text-sub)] font-semibold">¥${p.avgPrice.toLocaleString()}</td>
                     <td class="p-3 text-right text-xs text-[var(--text-main)] font-bold">¥${p.latestPrice.toLocaleString()}</td>
                     <td class="p-3 text-right text-[11px] text-[var(--text-sub)]">¥${p.maxPrice.toLocaleString()} / ¥${p.minPrice.toLocaleString()}</td>
-                    <td class="p-3 text-right font-bold text-teal-600">¥${p.periodNetSalesTotal.toLocaleString()}</td>
-                    <td class="p-3 text-right text-xs text-[var(--text-main)] font-semibold">${p.allTimePurchasedQty} 個</td>
-                    <td class="p-3 text-right font-bold ${!p.isStockSet ? 'text-[var(--text-sub)] font-normal' : p.currentStock <= p.alertStock ? 'text-red-500' : 'text-[var(--text-main)]'}">
+                    <td class="p-3 text-right font-bold text-[var(--net-accent)]">¥${p.periodNetSalesTotal.toLocaleString()}</td>
+                    <td class="p-3 text-right text-xs text-[var(--purchase-accent)] font-semibold">${p.allTimePurchasedQty} 個</td>
+                    <td class="p-3 text-right font-bold ${!p.isStockSet ? 'text-[var(--text-sub)] font-normal' : p.currentStock <= p.alertStock ? 'text-red-500' : 'text-[var(--stock-accent)]'}">
                         ${p.isStockSet ? (p.currentStock <= 0 ? '【在庫切れ】' : p.currentStock + ' 個') : '未設定'}
                     </td>
                     <td class="p-3 text-center text-xs text-[var(--text-sub)] pr-4">${p.lastDate || '--'}</td>
@@ -2850,8 +2879,8 @@
                 timelineEl.innerHTML = pTrans.map(t => `
                     <div class="flex items-center justify-between py-1 border-b border-[var(--border-color)] last:border-0">
                         <span class="font-semibold text-[var(--text-sub)]">${t.date || ''}</span>
-                        <span class="font-bold text-[var(--text-main)]">売上: ¥${(t.sellPrice || 0).toLocaleString()}</span>
-                        <span class="text-[11px] text-[var(--text-main)] font-bold">手取り: ¥${(t.profit || 0).toLocaleString()}</span>
+                        <span class="font-bold text-[var(--sales-accent)]">売上: ¥${(t.sellPrice || 0).toLocaleString()}</span>
+                        <span class="text-[11px] text-[var(--net-accent)] font-bold">手取り: ¥${(t.profit || 0).toLocaleString()}</span>
                     </div>
                 `).join('');
             }
@@ -3008,10 +3037,10 @@
                                             ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[var(--bg-subtle)] text-[var(--text-main)] font-bold rounded mr-1.5 border border-[var(--border-color)]">単発</span>' : ''}
                                             ${escapeHtml(t.title || '')}
                                         </td>
-                                        <td class="p-3 text-right font-medium text-[var(--text-main)]">¥${(t.sellPrice || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right font-medium text-[var(--sales-accent)]">¥${(t.sellPrice || 0).toLocaleString()}</td>
                                         <td class="p-3 text-right text-xs text-[var(--text-sub)]">¥${(t.fee || 0).toLocaleString()}</td>
                                         <td class="p-3 text-right text-xs text-[var(--text-sub)]">¥${(t.shippingFee || 0).toLocaleString()}</td>
-                                        <td class="p-3 text-right font-bold text-[var(--text-main)]">¥${(t.profit || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right font-bold text-[var(--net-accent)]">¥${(t.profit || 0).toLocaleString()}</td>
                                         <td class="p-3 text-center pr-4">
                                             <div class="flex items-center justify-center gap-1">
                                                 <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1.5 text-[var(--text-sub)] hover:text-[var(--text-main)]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
@@ -3042,14 +3071,14 @@
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-2 bg-[var(--bg-subtle)] p-2 rounded-xl text-center text-xs">
-                                <div>
+                            <div class="grid grid-cols-2 gap-2 text-center text-xs">
+                                <div class="bg-[var(--sales-icon-bg)] p-2 rounded-xl">
                                     <div class="text-[10px] text-[var(--text-sub)]">販売価格</div>
-                                    <div class="font-bold text-[var(--text-main)]">¥${(t.sellPrice || 0).toLocaleString()}</div>
+                                    <div class="font-bold text-[var(--sales-accent)]">¥${(t.sellPrice || 0).toLocaleString()}</div>
                                 </div>
-                                <div>
-                                    <div class="text-[10px] text-[var(--text-main)] font-semibold">手取り額</div>
-                                    <div class="font-extrabold text-[var(--text-main)]">¥${(t.profit || 0).toLocaleString()}</div>
+                                <div class="bg-[var(--net-icon-bg)] p-2 rounded-xl">
+                                    <div class="text-[10px] text-[var(--net-accent)] font-semibold">手取り額</div>
+                                    <div class="font-extrabold text-[var(--net-accent)]">¥${(t.profit || 0).toLocaleString()}</div>
                                 </div>
                             </div>
                         </div>
@@ -3114,7 +3143,7 @@
                     <tr class="hover:bg-[var(--bg-subtle)] transition-colors">
                         <td class="p-3 pl-4 text-xs font-semibold text-[var(--text-sub)] whitespace-nowrap">${p.date || ''}</td>
                         <td class="p-3 font-semibold text-[var(--text-main)] text-xs">${itemsSummary}</td>
-                        <td class="p-3 text-right font-extrabold text-[var(--text-main)] whitespace-nowrap">¥${(p.amount || 0).toLocaleString()}</td>
+                        <td class="p-3 text-right font-extrabold text-[var(--purchase-accent)] whitespace-nowrap">¥${(p.amount || 0).toLocaleString()}</td>
                         <td class="p-3 text-[var(--text-main)] text-xs">${escapeHtml(p.memo || '-')}</td>
                         <td class="p-3 text-center pr-4 whitespace-nowrap">
                             <div class="flex items-center justify-center gap-1">
