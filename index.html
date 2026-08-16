@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カード家計簿 - 月次クレジットカード利用管理</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="app-header">
+  <h1>💳 カード家計簿</h1>
+  <p class="subtitle">クレジットカードの利用額を毎月かんたん記録</p>
+</header>
+
+<main class="container">
+
+  <!-- 入力フォーム -->
+  <section class="card form-card">
+    <h2>利用を記録する</h2>
+    <form id="entry-form">
+      <input type="hidden" id="entry-id">
+
+      <div class="form-row">
+        <label for="date">利用日</label>
+        <input type="date" id="date" required>
+      </div>
+
+      <div class="form-row">
+        <label for="card">カード</label>
+        <div class="inline-input">
+          <select id="card" required></select>
+          <button type="button" id="manage-cards-btn" class="btn-ghost small" title="カードを管理">管理</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="amount">金額（円）</label>
+        <input type="number" id="amount" min="0" step="1" placeholder="0" required>
+      </div>
+
+      <div class="form-row">
+        <label for="category">カテゴリ</label>
+        <select id="category">
+          <option value="食費">食費</option>
+          <option value="日用品">日用品</option>
+          <option value="交通">交通</option>
+          <option value="娯楽">娯楽</option>
+          <option value="光熱費">光熱費</option>
+          <option value="通信費">通信費</option>
+          <option value="医療">医療</option>
+          <option value="衣服・美容">衣服・美容</option>
+          <option value="サブスク">サブスク</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label for="memo">メモ（任意）</label>
+        <input type="text" id="memo" placeholder="例）スーパーで食材購入">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" id="submit-btn" class="btn-primary">記録する</button>
+        <button type="button" id="cancel-edit-btn" class="btn-ghost" hidden>編集をキャンセル</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 月ナビゲーション & サマリー -->
+  <section class="card summary-card">
+    <div class="month-nav">
+      <button id="prev-month" class="btn-ghost" aria-label="前の月">‹</button>
+      <div class="month-label">
+        <input type="month" id="month-picker">
+      </div>
+      <button id="next-month" class="btn-ghost" aria-label="次の月">›</button>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-tile total">
+        <span class="tile-label">今月の合計利用額</span>
+        <span class="tile-value" id="month-total">¥0</span>
+        <span class="tile-sub" id="month-count">0件</span>
+      </div>
+      <div class="summary-tile">
+        <span class="tile-label">カード別内訳</span>
+        <div id="by-card" class="breakdown-list"></div>
+      </div>
+      <div class="summary-tile">
+        <span class="tile-label">カテゴリ別内訳</span>
+        <div id="by-category" class="breakdown-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 明細一覧 -->
+  <section class="card list-card">
+    <div class="list-header">
+      <h2>明細一覧</h2>
+      <div class="list-tools">
+        <input type="text" id="search" placeholder="メモ・カテゴリで検索">
+        <button id="export-btn" class="btn-ghost small">書き出し</button>
+        <button id="import-btn" class="btn-ghost small">読み込み</button>
+        <input type="file" id="import-file" accept="application/json" hidden>
+      </div>
+    </div>
+    <table class="entry-table">
+      <thead>
+        <tr>
+          <th>日付</th>
+          <th>カード</th>
+          <th>カテゴリ</th>
+          <th>メモ</th>
+          <th class="num">金額</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="entry-list"></tbody>
+    </table>
+    <p id="empty-state" class="empty-state" hidden>この月の記録はまだありません。</p>
+  </section>
+</main>
+
+<!-- カード管理モーダル -->
+<div id="card-modal" class="modal" hidden>
+  <div class="modal-content">
+    <h2>カードを管理</h2>
+    <ul id="card-manage-list" class="card-manage-list"></ul>
+    <div class="inline-input">
+      <input type="text" id="new-card-name" placeholder="例）楽天カード">
+      <button id="add-card-btn" class="btn-primary small">追加</button>
+    </div>
+    <div class="form-actions">
+      <button id="close-modal-btn" class="btn-ghost">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<footer class="app-footer">
+  <p>データはこの端末のブラウザ内（localStorage）のみに保存されます。定期的に「書き出し」でバックアップすることをおすすめします。</p>
+</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>
