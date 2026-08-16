@@ -240,11 +240,19 @@ function parseAmountToken(str) {
 }
 
 function parseDateToken(token, fallbackYear) {
+  // 2026/08/10, 2026-08-10, 2026年8月10日
   let m = token.match(/(\d{4})[/\-年](\d{1,2})[/\-月](\d{1,2})日?/);
   if (m) {
     const [, y, mo, d] = m;
     return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
   }
+  // 26.07.01 のような西暦下2桁・ドット区切り（クレジットカード明細アプリでよく見る表記）
+  m = token.match(/^(\d{2})\.(\d{1,2})\.(\d{1,2})$/);
+  if (m) {
+    const [, yy, mo, d] = m;
+    return `${2000 + Number(yy)}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  }
+  // 8/10, 8月10日（年なし）
   m = token.match(/^(\d{1,2})[/月](\d{1,2})日?$/);
   if (m) {
     const [, mo, d] = m;
@@ -253,36 +261,81 @@ function parseDateToken(token, fallbackYear) {
   return null;
 }
 
+const OCR_DATE_REGEX = /(\d{4}[/\-年]\d{1,2}[/\-月]\d{1,2}日?|\d{2}\.\d{1,2}\.\d{1,2}|\d{1,2}[/月]\d{1,2}日)/;
+const OCR_AMOUNT_REGEX = /[¥￥]\s?[\d,]{2,}|[\d,]{3,}\s?円/;
+
 /**
- * OCRで得た生テキストから、日付＋金額の組を推測して候補リストを作る。
- * あくまで「たたき台」— 呼び出し側で必ず確認・編集させる前提。
+ * OCRの単語＋座標から、画面上の「行」を再構成する。
+ * カード明細アプリは店名／金額が同じ横位置、日付／回数がその下の行、
+ * というレイアウトが多く、素の認識テキストの並び順だけでは崩れやすいため、
+ * 単語の縦位置でグルーピングし直してから読む。
  */
-function parseTransactionsFromOcrText(text) {
+function groupWordsIntoRows(words) {
+  const clean = (words || [])
+    .filter((w) => w.text && w.text.trim())
+    .map((w) => ({
+      text: w.text.trim(),
+      x: w.bbox.x0,
+      y: (w.bbox.y0 + w.bbox.y1) / 2,
+      h: Math.max(w.bbox.y1 - w.bbox.y0, 1),
+    }));
+  if (!clean.length) return [];
+
+  clean.sort((a, b) => a.y - b.y);
+  const avgH = clean.reduce((s, w) => s + w.h, 0) / clean.length;
+  const threshold = avgH * 0.6;
+
+  const rows = [];
+  let current = [clean[0]];
+  let currentY = clean[0].y;
+  for (let i = 1; i < clean.length; i++) {
+    const w = clean[i];
+    if (Math.abs(w.y - currentY) <= threshold) {
+      current.push(w);
+      currentY = current.reduce((s, x) => s + x.y, 0) / current.length;
+    } else {
+      rows.push(current);
+      current = [w];
+      currentY = w.y;
+    }
+  }
+  rows.push(current);
+
+  return rows.map((row) => row.sort((a, b) => a.x - b.x).map((w) => w.text).join(' '));
+}
+
+/**
+ * 行の配列から、日付＋金額の組を推測して候補リストを作る。
+ * あくまで「たたき台」— 呼び出し側で必ず確認・編集させる前提。
+ * 店名＋金額が同じ行、日付が別行（前後どちらもありうる）というレイアウトに対応する。
+ */
+function parseTransactionsFromRows(rawLines) {
   const year = new Date().getFullYear();
-  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
-  const dateRegex = /(\d{4}[/\-年]\d{1,2}[/\-月]\d{1,2}日?|\d{1,2}[/月]\d{1,2}日)/;
-  const amountRegex = /[¥￥]\s?[\d,]{2,}|[\d,]{3,}\s?円/;
+  const lines = rawLines.map((l) => l.trim()).filter(Boolean);
 
   const candidates = [];
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const dateMatch = line.match(dateRegex);
+    const dateMatch = line.match(OCR_DATE_REGEX);
     if (!dateMatch) continue;
     const date = parseDateToken(dateMatch[0], year);
     if (!date) continue;
 
     let amount = null;
-    let memoSource = line.replace(dateMatch[0], '').trim();
-    const amtMatch = line.match(amountRegex);
-    if (amtMatch) {
-      amount = parseAmountToken(amtMatch[0]);
-      memoSource = memoSource.replace(amtMatch[0], '').trim();
+    let memoSource = '';
+
+    const sameLineAmt = line.match(OCR_AMOUNT_REGEX);
+    if (sameLineAmt) {
+      amount = parseAmountToken(sameLineAmt[0]);
+      memoSource = line.replace(dateMatch[0], '').replace(sameLineAmt[0], '').trim();
     } else {
-      for (let j = i + 1; j <= Math.min(i + 2, lines.length - 1); j++) {
-        const nextAmt = lines[j].match(amountRegex);
-        if (nextAmt) {
-          amount = parseAmountToken(nextAmt[0]);
-          if (!memoSource) memoSource = lines[j].replace(nextAmt[0], '').trim();
+      // 店名＋金額は前の行にあることが多いレイアウトを優先しつつ、後ろの行も見る
+      for (const j of [i - 1, i + 1, i - 2, i + 2]) {
+        if (j < 0 || j >= lines.length) continue;
+        const amtMatch = lines[j].match(OCR_AMOUNT_REGEX);
+        if (amtMatch) {
+          amount = parseAmountToken(amtMatch[0]);
+          memoSource = lines[j].replace(amtMatch[0], '').trim();
           break;
         }
       }
@@ -290,7 +343,7 @@ function parseTransactionsFromOcrText(text) {
     if (!amount) continue;
 
     candidates.push({
-      id: `ocr-${i}-${Date.now()}`,
+      id: `ocr-${i}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       date,
       amount,
       category: 'other',
@@ -642,10 +695,26 @@ export default function App() {
     try {
       const { createWorker } = await import('tesseract.js');
       const worker = await createWorker('jpn');
-      const { data: { text } } = await worker.recognize(file);
+      const { data } = await worker.recognize(file, {}, { text: true, blocks: true });
       await worker.terminate();
 
-      const candidates = parseTransactionsFromOcrText(text);
+      // 単語の座標から画面上の行を再構成して読む（店名と金額が横並び、日付は
+      // その下の行、というカード明細アプリのレイアウト崩れに強くするため）。
+      // 座標データの形が想定と違っても、素の認識テキストの行分割に必ずフォールバックする。
+      let candidates = [];
+      try {
+        const words = (data.blocks || [])
+          .flatMap((b) => b.paragraphs || [])
+          .flatMap((p) => p.lines || [])
+          .flatMap((l) => l.words || []);
+        const rows = groupWordsIntoRows(words);
+        if (rows.length) candidates = parseTransactionsFromRows(rows);
+      } catch (rowErr) {
+        console.warn('行の再構成に失敗したため、通常のテキスト分割にフォールバックします', rowErr);
+      }
+      if (!candidates.length) {
+        candidates = parseTransactionsFromRows((data.text || '').split('\n'));
+      }
       if (!candidates.length) {
         alert('明細を検出できませんでした。文字がはっきり写ったスクリーンショットでお試しいただくか、JSONファイルの読み込みをご利用ください。');
         return;
