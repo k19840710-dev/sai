@@ -26,7 +26,6 @@ import {
   Download,
   Upload,
   Pencil,
-  AlertCircle,
   Cloud,
   LogOut,
   Loader2,
@@ -208,6 +207,8 @@ const DEFAULT_CARDS = [
     limit: 300000,
     billingDay: '15',
     paymentDay: '10',
+    weekendAdjustment: 'none',
+    bankAccount: '三井住友銀行',
   },
   {
     id: 'card-2',
@@ -222,6 +223,8 @@ const DEFAULT_CARDS = [
     limit: 200000,
     billingDay: '末日',
     paymentDay: '27',
+    weekendAdjustment: 'none',
+    bankAccount: '楽天銀行',
   },
   {
     id: 'card-3',
@@ -236,6 +239,8 @@ const DEFAULT_CARDS = [
     limit: 100000,
     billingDay: '末日',
     paymentDay: '10',
+    weekendAdjustment: 'none',
+    bankAccount: '',
   },
 ];
 
@@ -264,30 +269,101 @@ function currentMonthKey() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
+// ---------- 請求サイクル・支払いスケジュール計算 ----------
+// 「毎月○日締め・毎月○日払い」というカードの規則から、実際のカレンダー日付・
+// 請求対象期間・未払い分の合計額を求めるための純粋関数群。
+
+/** 「27」「末日」などの表記を日番号(1-31)または 'last' に変換。パースできなければ null。 */
+function parseDayNumber(text) {
+  if (!text) return null;
+  if (/末/.test(text)) return 'last';
+  const m = String(text).match(/\d+/);
+  if (!m) return null;
+  const n = parseInt(m[0], 10);
+  return n >= 1 && n <= 31 ? n : null;
+}
+
+/** 指定した年月（monthは0始まり、範囲外もOK＝自動でその前後の月に繰り上がる）の実日付を返す。 */
+function dateForDayInMonth(year, month, dayNum) {
+  if (dayNum === 'last') return new Date(year, month + 1, 0); // その月の最終日
+  const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+  return new Date(year, month, Math.min(dayNum, lastDayOfMonth));
+}
+
+function isWeekend(date) {
+  const day = date.getDay();
+  return day === 0 || day === 6;
+}
+
 /**
- * 「27日」「末日」「15」などの支払日表記から、今日以降でいちばん近い実際の日付を求める。
- * 数字が取れない場合は null を返す。
+ * 支払日が土日にあたる場合の調整（'next'=翌営業日 / 'prev'=前営業日 / 'none'=調整しない）。
+ * 祝日は正確に判定できないため対象外（誤った日付を生成しないための意図的な仕様）。
  */
-function resolveNextPaymentDate(paymentDayText, today = new Date()) {
-  if (!paymentDayText) return null;
-  const isLastDay = /末/.test(paymentDayText);
-  const digits = String(paymentDayText).match(/\d+/);
-  const day = isLastDay ? null : digits ? parseInt(digits[0], 10) : null;
-  if (!isLastDay && (!day || day < 1 || day > 31)) return null;
-
-  const base = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-  const dateForMonth = (year, month) => {
-    if (isLastDay) return new Date(year, month + 1, 0); // その月の最終日
-    const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
-    return new Date(year, month, Math.min(day, lastDayOfMonth));
-  };
-
-  let candidate = dateForMonth(base.getFullYear(), base.getMonth());
-  if (candidate < base) {
-    candidate = dateForMonth(base.getFullYear(), base.getMonth() + 1);
+function adjustPaymentDate(date, mode) {
+  if (!mode || mode === 'none') return date;
+  const result = new Date(date);
+  if (mode === 'next') {
+    while (isWeekend(result)) result.setDate(result.getDate() + 1);
+  } else if (mode === 'prev') {
+    while (isWeekend(result)) result.setDate(result.getDate() - 1);
   }
-  return candidate;
+  return result;
+}
+
+/**
+ * 締め日と支払日の日番号から、支払いが締め月と同じ月か翌月かを判定するヒューリスティック。
+ * 一般的なカードの規則（締め日の直後に来る日番号なら翌月払い）に基づく。
+ * 例: 締め日=末日, 支払日=27 → 27 <= 31.5 → 翌月払い（多くのカードの実態と一致）
+ */
+function isPaymentInNextMonth(billingDayNum, paymentDayNum) {
+  const b = billingDayNum === 'last' ? 31.5 : billingDayNum;
+  const p = paymentDayNum === 'last' ? 31.5 : paymentDayNum;
+  return p <= b;
+}
+
+function toDateKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+/**
+ * カードの支払日が指定した年月（payMonthは0始まり）に来る場合の、支払日・対象請求期間を求める。
+ * 締め日/支払日が未設定・不正な場合は null。
+ */
+function getCardCycleForPaymentMonth(card, payYear, payMonth) {
+  const billingNum = parseDayNumber(card.billingDay);
+  const paymentNum = parseDayNumber(card.paymentDay);
+  if (!billingNum || !paymentNum) return null;
+
+  const monthOffset = isPaymentInNextMonth(billingNum, paymentNum) ? 1 : 0;
+  const closingDate = dateForDayInMonth(payYear, payMonth - monthOffset, billingNum);
+  const prevClosingDate = dateForDayInMonth(payYear, payMonth - monthOffset - 1, billingNum);
+  const rawPaymentDate = dateForDayInMonth(payYear, payMonth, paymentNum);
+  const paymentDate = adjustPaymentDate(rawPaymentDate, card.weekendAdjustment);
+
+  return {
+    paymentDate,
+    cycleEnd: toDateKey(closingDate),
+    cycleStartExclusive: toDateKey(prevClosingDate),
+  };
+}
+
+/** 今日から見て、まだ支払日が来ていない直近の請求サイクルを求める。 */
+function findNextUnpaidCycle(card, today = new Date()) {
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  for (let offset = -1; offset <= 3; offset += 1) {
+    const cycle = getCardCycleForPaymentMonth(card, today.getFullYear(), today.getMonth() + offset);
+    if (cycle && cycle.paymentDate >= todayStart) return cycle;
+  }
+  return null;
+}
+
+/** 指定した請求サイクルに該当する明細の合計額。 */
+function sumTransactionsInCycle(transactions, cardId, cycle) {
+  if (!cycle) return 0;
+  return transactions
+    .filter((t) => t.cardId === cardId)
+    .filter((t) => (!cycle.cycleStartExclusive || t.date > cycle.cycleStartExclusive) && t.date <= cycle.cycleEnd)
+    .reduce((sum, t) => sum + Number(t.amount), 0);
 }
 
 function monthRange(startKey, endKey) {
@@ -522,7 +598,7 @@ function parseTransactionsFromRows(rawLines) {
 export default function App() {
   // 現在選択されている年月 (YYYY-MM) — 実際の今日の日付から算出
   const [currentMonth, setCurrentMonth] = useState(currentMonthKey);
-  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'transactions' | 'cards'
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'transactions' | 'cards' | 'schedule'
 
   // モーダルの状態
   const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false);
@@ -712,6 +788,8 @@ export default function App() {
     limit: 200000,
     billingDay: '末日',
     paymentDay: '27',
+    weekendAdjustment: 'none',
+    bankAccount: '',
   });
 
   // カード番号・有効期限・セキュリティコードを表示中のカードID
@@ -761,6 +839,50 @@ export default function App() {
     });
   }, [cards, monthlyTransactions]);
 
+  // カードごとの「今年の累計・月平均」（カード管理タブの詳細表示用）
+  const cardYearlyStats = useMemo(() => {
+    const year = new Date().getFullYear();
+    const map = {};
+    cards.forEach((card) => {
+      const relevant = transactions.filter((t) => t.cardId === card.id && t.date.startsWith(String(year)));
+      const total = relevant.reduce((sum, t) => sum + Number(t.amount), 0);
+      const monthsWithData = new Set(relevant.map((t) => t.date.slice(0, 7))).size;
+      map[card.id] = { total, average: monthsWithData ? total / monthsWithData : 0 };
+    });
+    return map;
+  }, [cards, transactions]);
+
+  // カードごとの「通常より高め/少なめ」の控えめな注記（直近3ヶ月平均との比較、±20%以上のみ）
+  const cardVarianceNotes = useMemo(() => {
+    const [y, m] = currentMonth.split('-').map(Number);
+    const map = {};
+    cards.forEach((card) => {
+      const thisMonthSpent = monthlyTransactions
+        .filter((t) => t.cardId === card.id)
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+      if (!thisMonthSpent) return;
+
+      let total = 0;
+      let count = 0;
+      for (let i = 1; i <= 3; i += 1) {
+        const d = new Date(y, m - 1 - i, 1);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const sum = transactions
+          .filter((t) => t.cardId === card.id && t.date.startsWith(key))
+          .reduce((s, t) => s + Number(t.amount), 0);
+        if (sum > 0) { total += sum; count += 1; }
+      }
+      if (!count) return;
+
+      const avg = total / count;
+      const diffPct = ((thisMonthSpent - avg) / avg) * 100;
+      if (Math.abs(diffPct) >= 20) {
+        map[card.id] = { diffPct, higher: diffPct > 0 };
+      }
+    });
+    return map;
+  }, [cards, monthlyTransactions, transactions, currentMonth]);
+
   // カテゴリ別支出集計
   const categoryStats = useMemo(() => {
     const map = {};
@@ -805,28 +927,75 @@ export default function App() {
     return { lastTotal, diff, pct: (diff / lastTotal) * 100 };
   }, [transactions, currentMonth, totalMonthlyAmount]);
 
-  // 支払日が近い（3日以内）カードの一覧。アプリを開いた時のリマインダーバナー用。
+  // カードごとの「次の未払い請求」一覧（支払日が近い順）。
   // ブラウズ中の月（currentMonth）ではなく、実際の「今日」基準で判定する。
-  const upcomingPayments = useMemo(() => {
-    const REMINDER_WINDOW_DAYS = 3;
+  // ダッシュボードの「次回の支払い」「支払予定一覧」「引落口座別必要額」の元データ。
+  const paymentSchedule = useMemo(() => {
     const today = new Date();
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const todayMonthKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
 
     return cards
       .map((card) => {
-        const nextDate = resolveNextPaymentDate(card.paymentDay, today);
-        if (!nextDate) return null;
-        const daysUntil = Math.round((nextDate - todayStart) / 86400000);
-        if (daysUntil < 0 || daysUntil > REMINDER_WINDOW_DAYS) return null;
-        const spent = transactions
-          .filter((t) => t.cardId === card.id && t.date.startsWith(todayMonthKey))
-          .reduce((sum, t) => sum + Number(t.amount), 0);
-        return { card, nextDate, daysUntil, spent };
+        const cycle = findNextUnpaidCycle(card, today);
+        if (!cycle) return null;
+        const daysUntil = Math.round((cycle.paymentDate - todayStart) / 86400000);
+        const amount = sumTransactionsInCycle(transactions, card.id, cycle);
+        return { card, paymentDate: cycle.paymentDate, daysUntil, amount };
       })
       .filter(Boolean)
-      .sort((a, b) => a.daysUntil - b.daysUntil);
+      .sort((a, b) => a.paymentDate - b.paymentDate);
   }, [cards, transactions]);
+
+  // 次回の支払い（最も近いもの1件）
+  const nextPayment = paymentSchedule[0] || null;
+
+  // 今月残りの支払予定額（支払日が今月かつ未来のものだけ合計）
+  const remainingThisMonthTotal = useMemo(() => {
+    const today = new Date();
+    return paymentSchedule
+      .filter((p) => p.paymentDate.getFullYear() === today.getFullYear() && p.paymentDate.getMonth() === today.getMonth())
+      .reduce((sum, p) => sum + p.amount, 0);
+  }, [paymentSchedule]);
+
+  // 引落口座ごとの必要額（今月分・銀行口座を設定しているカードのみ）
+  const bankAccountTotals = useMemo(() => {
+    const today = new Date();
+    const map = new Map();
+    paymentSchedule
+      .filter((p) => p.paymentDate.getFullYear() === today.getFullYear() && p.paymentDate.getMonth() === today.getMonth())
+      .filter((p) => p.card.bankAccount)
+      .forEach((p) => {
+        map.set(p.card.bankAccount, (map.get(p.card.bankAccount) || 0) + p.amount);
+      });
+    return Array.from(map.entries()).map(([bankAccount, amount]) => ({ bankAccount, amount }));
+  }, [paymentSchedule]);
+
+  // 支払いカレンダー用: ブラウズ中の月（currentMonth）に支払日が来るカードを日付順に
+  const scheduleCalendarDays = useMemo(() => {
+    const [y, m] = currentMonth.split('-').map(Number);
+    const entries = cards
+      .map((card) => {
+        const cycle = getCardCycleForPaymentMonth(card, y, m - 1);
+        if (!cycle) return null;
+        // 土日調整で月をまたぐ場合はこの月の対象から外す（誤表示を避ける）
+        if (cycle.paymentDate.getFullYear() !== y || cycle.paymentDate.getMonth() !== m - 1) return null;
+        const amount = sumTransactionsInCycle(transactions, card.id, cycle);
+        return { card, day: cycle.paymentDate.getDate(), amount };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.day - b.day);
+
+    const byDay = [];
+    entries.forEach((entry) => {
+      const last = byDay[byDay.length - 1];
+      if (last && last.day === entry.day) {
+        last.items.push(entry);
+      } else {
+        byDay.push({ day: entry.day, items: [entry] });
+      }
+    });
+    return byDay;
+  }, [cards, transactions, currentMonth]);
 
   // 明細一覧フィルター適用
   const filteredTransactions = useMemo(() => {
@@ -860,6 +1029,8 @@ export default function App() {
       limit: 200000,
       billingDay: '末日',
       paymentDay: '27',
+      weekendAdjustment: 'none',
+      bankAccount: '',
     });
   };
 
@@ -899,6 +1070,8 @@ export default function App() {
       limit: card.limit || 0,
       billingDay: card.billingDay || '末日',
       paymentDay: card.paymentDay || '27',
+      weekendAdjustment: card.weekendAdjustment || 'none',
+      bankAccount: card.bankAccount || '',
     });
     setEditingCardId(card.id);
     setIsAddCardOpen(true);
@@ -1060,6 +1233,8 @@ export default function App() {
         limit: Number(extra.limit) || 0,
         billingDay: extra.billingDay || '末日',
         paymentDay: extra.paymentDay || '27',
+        weekendAdjustment: extra.weekendAdjustment || 'none',
+        bankAccount: extra.bankAccount || '',
       };
       nextCards.push(created);
       return created.id;
@@ -1381,33 +1556,56 @@ export default function App() {
             <Wallet className="w-4 h-4 shrink-0" />
             <span className="whitespace-nowrap">カード管理 ({cards.length})</span>
           </button>
+          <button
+            onClick={() => setActiveTab('schedule')}
+            className={`flex-1 py-2 px-1.5 sm:px-3 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1 sm:gap-2 ${
+              activeTab === 'schedule' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Calendar className="w-4 h-4 shrink-0" />
+            <span className="whitespace-nowrap">支払い予定</span>
+          </button>
         </div>
 
         {/* --- タブ 1: ダッシュボード --- */}
         {activeTab === 'dashboard' && (
           <div className="space-y-6 animate-fadeIn">
 
-            {/* 支払日リマインダーバナー */}
-            {upcomingPayments.length > 0 && (
-              <div className="space-y-2">
-                {upcomingPayments.map(({ card, nextDate, daysUntil, spent }) => (
-                  <div
-                    key={card.id}
-                    className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl px-4 py-3"
-                  >
-                    <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
-                    <p className="text-sm text-amber-200 flex-1">
-                      <span className="font-bold">{card.name}</span>
-                      {' '}の支払日は
-                      <span className="font-bold">
-                        {' '}{daysUntil === 0 ? '今日' : `あと${daysUntil}日（${nextDate.getMonth() + 1}/${nextDate.getDate()}）`}
-                      </span>
-                      {spent > 0 && <> ・今月の利用額 ¥{spent.toLocaleString()}</>}
-                    </p>
+            {/* 次回の支払い & 今月残りの支払予定額 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-slate-800/90 border border-slate-700/60 rounded-2xl p-5 shadow-xl">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">次回の支払い</p>
+                {nextPayment ? (
+                  <div className="mt-2 flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl font-extrabold text-white">
+                          {nextPayment.paymentDate.getMonth() + 1}月{nextPayment.paymentDate.getDate()}日
+                        </span>
+                        {nextPayment.daysUntil <= 3 && (
+                          <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 shrink-0">
+                            {nextPayment.daysUntil === 0 ? '今日' : `あと${nextPayment.daysUntil}日`}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm text-slate-300 truncate mt-1">{nextPayment.card.name}</div>
+                      <div className="text-xl font-bold text-indigo-400 mt-1">¥{nextPayment.amount.toLocaleString()}</div>
+                    </div>
+                    {nextPayment.daysUntil > 3 && (
+                      <span className="text-xs text-slate-400 shrink-0 mt-1">あと{nextPayment.daysUntil}日</span>
+                    )}
                   </div>
-                ))}
+                ) : (
+                  <p className="mt-3 text-sm text-slate-500">予定なし（カードに締め日・支払日を設定してください）</p>
+                )}
               </div>
-            )}
+
+              <div className="bg-slate-800/90 border border-slate-700/60 rounded-2xl p-5 shadow-xl">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">今月残りの支払予定額</p>
+                <div className="mt-2 text-3xl font-extrabold text-white">¥{remainingThisMonthTotal.toLocaleString()}</div>
+                <p className="mt-2 text-xs text-slate-400">支払日がまだ来ていないカードの合計</p>
+              </div>
+            </div>
 
             {/* ハイライトサマリーカード */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1903,10 +2101,105 @@ export default function App() {
                         <span className="font-semibold text-slate-200">毎月{card.paymentDay}日</span>
                       </div>
                     </div>
+
+                    {/* 補足情報: 引落口座・今年の累計/月平均・変化検知（控えめに1行ずつ） */}
+                    <div className="text-[11px] text-slate-500 space-y-0.5">
+                      {card.bankAccount && (
+                        <p>引落口座: <span className="text-slate-400">{card.bankAccount}</span></p>
+                      )}
+                      <p>
+                        今年の累計 ¥{(cardYearlyStats[card.id]?.total || 0).toLocaleString()}
+                        {' '}・ 月平均 ¥{Math.round(cardYearlyStats[card.id]?.average || 0).toLocaleString()}
+                      </p>
+                      {cardVarianceNotes[card.id] && (
+                        <p>
+                          {cardVarianceNotes[card.id].higher ? '通常より高め' : '通常より少なめ'}
+                          （平均{cardVarianceNotes[card.id].higher ? '+' : ''}{Math.round(cardVarianceNotes[card.id].diffPct)}%）
+                        </p>
+                      )}
+                    </div>
                   </div>
                 );
               })}
             </div>
+          </div>
+        )}
+
+        {/* --- タブ 4: 支払い予定 --- */}
+        {activeTab === 'schedule' && (
+          <div className="space-y-6 animate-fadeIn">
+
+            {/* 支払予定一覧 */}
+            <div className="bg-slate-800/90 border border-slate-700/60 rounded-2xl p-5 shadow-xl">
+              <h2 className="text-lg font-bold text-white mb-4">支払予定一覧</h2>
+              {paymentSchedule.length === 0 ? (
+                <p className="text-sm text-slate-500">支払予定はありません。カードに締め日・支払日を設定してください。</p>
+              ) : (
+                <div className="divide-y divide-slate-700/50">
+                  {paymentSchedule.map(({ card, paymentDate, amount, daysUntil }) => (
+                    <div key={card.id} className="py-3 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold text-white">
+                          {paymentDate.getMonth() + 1}/{paymentDate.getDate()}
+                          <span className="ml-2 text-slate-300 font-normal truncate">{card.name}</span>
+                        </div>
+                        <div className="text-xs text-slate-500 mt-0.5">
+                          {daysUntil === 0 ? '今日' : `あと${daysUntil}日`}
+                        </div>
+                      </div>
+                      <div className="text-base font-bold text-white shrink-0">¥{amount.toLocaleString()}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 支払いカレンダー */}
+            <div className="bg-slate-800/90 border border-slate-700/60 rounded-2xl p-5 shadow-xl">
+              <h2 className="text-lg font-bold text-white mb-4">支払いカレンダー（{formattedMonth}）</h2>
+              {scheduleCalendarDays.length === 0 ? (
+                <p className="text-sm text-slate-500">この月に支払日があるカードはありません。</p>
+              ) : (
+                <div className="space-y-4">
+                  {scheduleCalendarDays.map(({ day, items }) => (
+                    <div key={day} className="flex gap-4">
+                      <div className="w-10 shrink-0 text-center">
+                        <div className="text-lg font-bold text-white">{day}</div>
+                        <div className="text-[10px] text-slate-500">日</div>
+                      </div>
+                      <div className="flex-1 space-y-1.5 min-w-0">
+                        {items.map(({ card, amount }) => (
+                          <div
+                            key={card.id}
+                            className="flex items-center justify-between gap-3 bg-slate-900/50 rounded-xl px-3 py-2 min-w-0"
+                          >
+                            <span className="text-sm text-slate-200 truncate">{card.name}</span>
+                            <span className="text-sm font-bold text-white shrink-0">¥{amount.toLocaleString()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 引落口座別必要額 */}
+            {bankAccountTotals.length > 0 && (
+              <div className="bg-slate-800/90 border border-slate-700/60 rounded-2xl p-5 shadow-xl">
+                <h2 className="text-lg font-bold text-white mb-1">今月の引落口座別必要額</h2>
+                <p className="text-xs text-slate-500 mb-4">引落口座を設定しているカードのみ集計しています</p>
+                <div className="space-y-2">
+                  {bankAccountTotals.map(({ bankAccount, amount }) => (
+                    <div key={bankAccount} className="flex items-center justify-between gap-3">
+                      <span className="text-sm text-slate-300 truncate">{bankAccount}</span>
+                      <span className="text-base font-bold text-white shrink-0">¥{amount.toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
           </div>
         )}
 
@@ -2163,6 +2456,32 @@ export default function App() {
                     className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                   />
                 </div>
+              </div>
+
+              {/* 支払日が土日の場合の調整 */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-2">支払日が土日の場合</label>
+                <select
+                  value={newCard.weekendAdjustment}
+                  onChange={(e) => setNewCard({ ...newCard, weekendAdjustment: e.target.value })}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="none">調整しない</option>
+                  <option value="next">翌営業日にする</option>
+                  <option value="prev">前営業日にする</option>
+                </select>
+              </div>
+
+              {/* 引落口座（任意） */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-2">引落口座（任意）</label>
+                <input
+                  type="text"
+                  placeholder="例: 三井住友銀行"
+                  value={newCard.bankAccount}
+                  onChange={(e) => setNewCard({ ...newCard, bankAccount: e.target.value })}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                />
               </div>
 
               <div className="pt-2 flex gap-3">
