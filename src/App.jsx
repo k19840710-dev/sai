@@ -1314,10 +1314,10 @@ export default function App() {
                 resetNewTxForm();
                 setIsAddTransactionOpen(true);
               }}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-all duration-200 shadow-lg shadow-indigo-600/30 active:scale-95"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-all duration-200 shadow-lg shadow-indigo-600/30 active:scale-95 whitespace-nowrap"
             >
               <Plus className="w-4 h-4" />
-              <span>利用を記録</span>
+              <span>記録</span>
             </button>
           </div>
         </div>
@@ -1871,13 +1871,13 @@ export default function App() {
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
-                        <div>
+                        <div className="min-w-0">
                           <span className="text-[10px] text-slate-500 block mb-0.5">有効期限</span>
                           <span className="font-mono text-sm text-slate-200">
                             {revealedCards.has(card.id) ? (card.expiry || '未登録') : '••/••'}
                           </span>
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <span className="text-[10px] text-slate-500 block mb-0.5">セキュリティコード</span>
                           <span className="font-mono text-sm text-slate-200">
                             {revealedCards.has(card.id) ? (card.cvv || '未登録') : '•••'}
@@ -1959,17 +1959,17 @@ export default function App() {
 
               {/* 利用日 & カテゴリ */}
               <div className="grid grid-cols-2 gap-3">
-                <div>
+                <div className="min-w-0">
                   <label className="block text-xs font-semibold text-slate-300 mb-1">利用日</label>
                   <input
                     type="date"
                     required
                     value={newTx.date}
                     onChange={(e) => setNewTx({ ...newTx, date: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                    className="w-full min-w-0 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                   />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <label className="block text-xs font-semibold text-slate-300 mb-1">カテゴリ</label>
                   <select
                     value={newTx.category}
@@ -2084,7 +2084,7 @@ export default function App() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div>
+                <div className="min-w-0">
                   <label className="block text-xs font-semibold text-slate-300 mb-1">有効期限</label>
                   <input
                     type="text"
@@ -2093,10 +2093,10 @@ export default function App() {
                     placeholder="MM/YY"
                     value={newCard.expiry}
                     onChange={(e) => setNewCard({ ...newCard, expiry: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm font-mono focus:outline-none focus:border-indigo-500"
+                    className="w-full min-w-0 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm font-mono focus:outline-none focus:border-indigo-500"
                   />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <label className="block text-xs font-semibold text-slate-300 mb-1">セキュリティコード</label>
                   <input
                     type="text"
@@ -2140,17 +2140,17 @@ export default function App() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div>
+                <div className="min-w-0">
                   <label className="block text-xs font-semibold text-slate-300 mb-1">締め日</label>
                   <input
                     type="text"
                     placeholder="例: 末日, 15日"
                     value={newCard.billingDay}
                     onChange={(e) => setNewCard({ ...newCard, billingDay: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                    className="w-full min-w-0 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                   />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <label className="block text-xs font-semibold text-slate-300 mb-1">引き落とし日</label>
                   <input
                     type="text"
