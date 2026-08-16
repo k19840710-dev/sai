@@ -589,6 +589,7 @@ export default function App() {
   const importFileRef = useRef(null);
   const [ocrLoading, setOcrLoading] = useState(false);
   const [ocrReview, setOcrReview] = useState(null); // { candidates: [...], cardId }
+  const [ocrRawText, setOcrRawText] = useState(null); // 自動検出できなかった時、読み取れた生テキストを見せる
 
   const handleExport = async () => {
     const data = { exportedAt: new Date().toISOString(), cards, transactions };
@@ -716,7 +717,7 @@ export default function App() {
         candidates = parseTransactionsFromRows((data.text || '').split('\n'));
       }
       if (!candidates.length) {
-        alert('明細を検出できませんでした。文字がはっきり写ったスクリーンショットでお試しいただくか、JSONファイルの読み込みをご利用ください。');
+        setOcrRawText(data.text || '（文字を読み取れませんでした）');
         return;
       }
       setOcrReview({ candidates, cardId: cards[0]?.id || '' });
@@ -1624,7 +1625,43 @@ export default function App() {
         </div>
       )}
 
-      {/* 7. モーダル: 画像読み取り結果の確認 */}
+      {/* 7. モーダル: 自動検出できなかった時に、読み取れた生テキストを見せる */}
+      {ocrRawText && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-slate-800 border border-slate-700 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-700">
+              <h3 className="font-bold text-lg text-white flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-indigo-400" />
+                明細を自動検出できませんでした
+              </h3>
+              <button
+                onClick={() => setOcrRawText(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-xs text-slate-400">
+              画像からは以下のテキストが読み取れましたが、日付・金額の組み合わせを自動判定できませんでした。
+              このままJSONファイルの読み込みをご利用いただくか、下の内容を開発者へ共有してください。
+            </p>
+            <pre className="whitespace-pre-wrap break-words bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-slate-300 max-h-64 overflow-y-auto">
+{ocrRawText}
+            </pre>
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setOcrRawText(null)}
+                className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm shadow-lg shadow-indigo-600/30"
+              >
+                閉じる
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 8. モーダル: 画像読み取り結果の確認 */}
       {ocrReview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
           <div className="bg-slate-800 border border-slate-700 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto">
