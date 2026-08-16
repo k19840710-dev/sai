@@ -232,6 +232,74 @@ function resolveDate(value) {
   return value;
 }
 
+// ---------- 画像（スクリーンショット）からの明細読み取り ----------
+
+function parseAmountToken(str) {
+  const digits = str.replace(/[^\d]/g, '');
+  return digits ? Number(digits) : null;
+}
+
+function parseDateToken(token, fallbackYear) {
+  let m = token.match(/(\d{4})[/\-年](\d{1,2})[/\-月](\d{1,2})日?/);
+  if (m) {
+    const [, y, mo, d] = m;
+    return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  }
+  m = token.match(/^(\d{1,2})[/月](\d{1,2})日?$/);
+  if (m) {
+    const [, mo, d] = m;
+    return `${fallbackYear}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  }
+  return null;
+}
+
+/**
+ * OCRで得た生テキストから、日付＋金額の組を推測して候補リストを作る。
+ * あくまで「たたき台」— 呼び出し側で必ず確認・編集させる前提。
+ */
+function parseTransactionsFromOcrText(text) {
+  const year = new Date().getFullYear();
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const dateRegex = /(\d{4}[/\-年]\d{1,2}[/\-月]\d{1,2}日?|\d{1,2}[/月]\d{1,2}日)/;
+  const amountRegex = /[¥￥]\s?[\d,]{2,}|[\d,]{3,}\s?円/;
+
+  const candidates = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const dateMatch = line.match(dateRegex);
+    if (!dateMatch) continue;
+    const date = parseDateToken(dateMatch[0], year);
+    if (!date) continue;
+
+    let amount = null;
+    let memoSource = line.replace(dateMatch[0], '').trim();
+    const amtMatch = line.match(amountRegex);
+    if (amtMatch) {
+      amount = parseAmountToken(amtMatch[0]);
+      memoSource = memoSource.replace(amtMatch[0], '').trim();
+    } else {
+      for (let j = i + 1; j <= Math.min(i + 2, lines.length - 1); j++) {
+        const nextAmt = lines[j].match(amountRegex);
+        if (nextAmt) {
+          amount = parseAmountToken(nextAmt[0]);
+          if (!memoSource) memoSource = lines[j].replace(nextAmt[0], '').trim();
+          break;
+        }
+      }
+    }
+    if (!amount) continue;
+
+    candidates.push({
+      id: `ocr-${i}-${Date.now()}`,
+      date,
+      amount,
+      category: 'other',
+      memo: memoSource.replace(/[|•·]/g, '').trim().slice(0, 40),
+    });
+  }
+  return candidates.slice(0, 50);
+}
+
 export default function App() {
   // 現在選択されている年月 (YYYY-MM) — 実際の今日の日付から算出
   const [currentMonth, setCurrentMonth] = useState(currentMonthKey);
@@ -461,14 +529,20 @@ export default function App() {
   };
 
   // --- 書き出し / 読み込み ---
+  // Claude Artifact の中で開かれている場合は外部ネットワークが遮断されるため、
+  // 画像OCR（Tesseract.js を CDN から取得）は使えない。JSONの読み込みのみ提供する。
+  const inCapabilityHost = !!(window.claude && typeof window.claude.use === 'function');
+
   const importFileRef = useRef(null);
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrReview, setOcrReview] = useState(null); // { candidates: [...], cardId }
 
   const handleExport = async () => {
     const data = { exportedAt: new Date().toISOString(), cards, transactions };
     const json = JSON.stringify(data, null, 2);
     const filename = `cardmanager-backup-${new Date().toISOString().slice(0, 10)}.json`;
 
-    if (window.claude && typeof window.claude.use === 'function') {
+    if (inCapabilityHost) {
       try {
         const downloads = await window.claude.use('downloads');
         if (downloads) {
@@ -496,9 +570,36 @@ export default function App() {
 
   const handleImportClick = () => importFileRef.current?.click();
 
-  const handleImportFile = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  // カードは「名前」で既存カードと突き合わせる。無ければ新規作成して cards に足す。
+  const buildCardResolver = (baseCards) => {
+    const nextCards = [...baseCards];
+    const findOrCreateCardId = (nameOrId, extra = {}) => {
+      if (!nameOrId) return nextCards[0]?.id || null;
+      const byId = nextCards.find((c) => c.id === nameOrId);
+      if (byId) return byId.id;
+      const byName = nextCards.find((c) => c.name === nameOrId);
+      if (byName) return byName.id;
+      const created = {
+        id: `card-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        name: nameOrId,
+        brand: extra.brand || 'VISA',
+        last4: extra.last4 || (extra.number || '').replace(/\D/g, '').slice(-4) || '0000',
+        number: extra.number || '',
+        holderName: extra.holderName || '',
+        expiry: extra.expiry || '',
+        cvv: extra.cvv || '',
+        theme: extra.theme && CARD_THEMES[extra.theme] ? extra.theme : 'purple',
+        limit: Number(extra.limit) || 0,
+        billingDay: extra.billingDay || '末日',
+        paymentDay: extra.paymentDay || '27',
+      };
+      nextCards.push(created);
+      return created.id;
+    };
+    return { nextCards, findOrCreateCardId };
+  };
+
+  const handleImportJsonFile = (file) => {
     const reader = new FileReader();
     reader.onload = () => {
       try {
@@ -507,32 +608,7 @@ export default function App() {
         const incomingTxs = Array.isArray(data.transactions) ? data.transactions : [];
         if (!incomingCards.length && !incomingTxs.length) throw new Error('empty');
 
-        // カードは「名前」で既存カードと突き合わせる。無ければ新規作成。
-        const nextCards = [...cards];
-        const findOrCreateCardId = (nameOrId, extra = {}) => {
-          if (!nameOrId) return nextCards[0]?.id || null;
-          const byId = nextCards.find((c) => c.id === nameOrId);
-          if (byId) return byId.id;
-          const byName = nextCards.find((c) => c.name === nameOrId);
-          if (byName) return byName.id;
-          const created = {
-            id: `card-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-            name: nameOrId,
-            brand: extra.brand || 'VISA',
-            last4: extra.last4 || (extra.number || '').replace(/\D/g, '').slice(-4) || '0000',
-            number: extra.number || '',
-            holderName: extra.holderName || '',
-            expiry: extra.expiry || '',
-            cvv: extra.cvv || '',
-            theme: extra.theme && CARD_THEMES[extra.theme] ? extra.theme : 'purple',
-            limit: Number(extra.limit) || 0,
-            billingDay: extra.billingDay || '末日',
-            paymentDay: extra.paymentDay || '27',
-          };
-          nextCards.push(created);
-          return created.id;
-        };
-
+        const { nextCards, findOrCreateCardId } = buildCardResolver(cards);
         incomingCards.forEach((c) => findOrCreateCardId(c.name || c.cardName, c));
 
         const newTxs = incomingTxs
@@ -556,11 +632,71 @@ export default function App() {
       } catch (err) {
         console.error(err);
         alert('ファイルの読み込みに失敗しました。正しいバックアップ／インポート用ファイルか確認してください。');
-      } finally {
-        e.target.value = '';
       }
     };
     reader.readAsText(file);
+  };
+
+  const handleImportImageFile = async (file) => {
+    setOcrLoading(true);
+    try {
+      const { createWorker } = await import('tesseract.js');
+      const worker = await createWorker('jpn');
+      const { data: { text } } = await worker.recognize(file);
+      await worker.terminate();
+
+      const candidates = parseTransactionsFromOcrText(text);
+      if (!candidates.length) {
+        alert('明細を検出できませんでした。文字がはっきり写ったスクリーンショットでお試しいただくか、JSONファイルの読み込みをご利用ください。');
+        return;
+      }
+      setOcrReview({ candidates, cardId: cards[0]?.id || '' });
+    } catch (err) {
+      console.error(err);
+      alert('画像の読み取りに失敗しました。通信環境をご確認のうえ、もう一度お試しください。');
+    } finally {
+      setOcrLoading(false);
+    }
+  };
+
+  const handleImportFile = (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    if (file.type.startsWith('image/')) {
+      handleImportImageFile(file);
+    } else {
+      handleImportJsonFile(file);
+    }
+  };
+
+  const updateOcrCandidate = (idx, patch) => {
+    setOcrReview((prev) => (prev ? {
+      ...prev,
+      candidates: prev.candidates.map((c, i) => (i === idx ? { ...c, ...patch } : c)),
+    } : prev));
+  };
+  const removeOcrCandidate = (idx) => {
+    setOcrReview((prev) => (prev ? {
+      ...prev,
+      candidates: prev.candidates.filter((_, i) => i !== idx),
+    } : prev));
+  };
+  const handleConfirmOcrImport = () => {
+    if (!ocrReview) return;
+    const newTxs = ocrReview.candidates
+      .filter((c) => c.amount && c.date)
+      .map((c) => ({
+        id: `t-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        cardId: ocrReview.cardId,
+        amount: Number(c.amount),
+        date: c.date,
+        category: c.category,
+        memo: c.memo,
+      }));
+    setTransactions([...newTxs, ...transactions]);
+    setOcrReview(null);
+    alert(`${newTxs.length}件の明細を追加しました。`);
   };
 
   return (
@@ -933,7 +1069,9 @@ export default function App() {
             {/* 書き出し・読み込み */}
             <div className="bg-slate-800/90 border border-slate-700/60 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
               <p className="text-xs text-slate-400">
-                データのバックアップ、またはCSV/スクリーンショットから作成したファイルの読み込み
+                {inCapabilityHost
+                  ? 'データのバックアップ、またはバックアップ用JSONファイルの読み込み'
+                  : 'データのバックアップ、または明細のスクリーンショットを直接読み込めます'}
               </p>
               <div className="flex items-center gap-2">
                 <button
@@ -955,7 +1093,7 @@ export default function App() {
                 <input
                   ref={importFileRef}
                   type="file"
-                  accept="application/json"
+                  accept={inCapabilityHost ? 'application/json' : 'application/json,image/*'}
                   onChange={handleImportFile}
                   className="sr-only"
                 />
@@ -1402,6 +1540,123 @@ export default function App() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 6. 画像読み取り中のローディング */}
+      {ocrLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-slate-800 border border-slate-700 rounded-2xl px-8 py-7 shadow-2xl flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-slate-200 font-medium">画像を読み取っています…</p>
+            <p className="text-xs text-slate-500">初回は読み取りエンジンのダウンロードのため少し時間がかかります</p>
+          </div>
+        </div>
+      )}
+
+      {/* 7. モーダル: 画像読み取り結果の確認 */}
+      {ocrReview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-slate-800 border border-slate-700 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-700">
+              <h3 className="font-bold text-lg text-white flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-indigo-400" />
+                読み取り結果を確認
+              </h3>
+              <button
+                onClick={() => setOcrReview(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-amber-200 bg-amber-500/10 border border-amber-500/20 rounded-xl px-3 py-2">
+              画像から自動で読み取った内容です。日付・金額が正しいか確認してから追加してください。
+            </p>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">追加先のカード</label>
+              <select
+                value={ocrReview.cardId}
+                onChange={(e) => setOcrReview({ ...ocrReview, cardId: e.target.value })}
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+              >
+                {cards.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {ocrReview.candidates.length === 0 ? (
+              <p className="text-sm text-slate-400 text-center py-6">すべての候補を削除しました。</p>
+            ) : (
+              <div className="space-y-3">
+                {ocrReview.candidates.map((c, idx) => (
+                  <div key={c.id} className="bg-slate-900/60 border border-slate-700/50 rounded-xl p-3 space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="date"
+                        value={c.date}
+                        onChange={(e) => updateOcrCandidate(idx, { date: e.target.value })}
+                        className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs focus:outline-none focus:border-indigo-500"
+                      />
+                      <input
+                        type="number"
+                        value={c.amount}
+                        onChange={(e) => updateOcrCandidate(idx, { amount: e.target.value })}
+                        className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs font-mono focus:outline-none focus:border-indigo-500"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={c.memo}
+                        onChange={(e) => updateOcrCandidate(idx, { memo: e.target.value })}
+                        placeholder="メモ"
+                        className="flex-1 min-w-0 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs focus:outline-none focus:border-indigo-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeOcrCandidate(idx)}
+                        className="flex-none p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded-lg"
+                        title="この候補を削除"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <select
+                      value={c.category}
+                      onChange={(e) => updateOcrCandidate(idx, { category: e.target.value })}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs focus:outline-none focus:border-indigo-500"
+                    >
+                      {CATEGORIES.map((cat) => (
+                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="pt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setOcrReview(null)}
+                className="flex-1 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-medium text-sm hover:bg-slate-700/50"
+              >
+                キャンセル
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmOcrImport}
+                disabled={ocrReview.candidates.length === 0}
+                className="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm shadow-lg shadow-indigo-600/30 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {ocrReview.candidates.length}件を追加する
+              </button>
+            </div>
           </div>
         </div>
       )}
