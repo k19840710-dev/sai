@@ -5,18 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>メルカリ売上・在庫管理ツール</title>
 
-    <!-- テーマ(ライト/ダーク)の初期適用。ちらつき防止のため他のスタイルより先に実行 -->
-    <script>
-        (function () {
-            try {
-                var pref = localStorage.getItem('mercari_theme_preference') || 'system';
-                if (pref === 'light' || pref === 'dark') {
-                    document.documentElement.setAttribute('data-theme', pref);
-                }
-            } catch (e) {}
-        })();
-    </script>
-
     <!-- ホーム画面に追加した時のアイコン・名前・表示スタイル -->
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icons/favicon.png">
@@ -25,7 +13,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="theme-color" id="meta-theme-color" content="#F5F7FA">
+    <meta name="theme-color" content="#6B7280">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -35,246 +23,115 @@
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
 
         :root {
-            --bg-page: #F5F7FA;
-            --bg-subtle: #EEF1F5;
+            --bg-main: #FFFDFD;
+            --bg-sub: #F8F8F9;
             --card-bg: #FFFFFF;
-            --accent-bg: #6B7280;
-            --accent-hover: #4B5563;
-            --border-color: #E4E8EE;
-            --text-main: #293241;
-            --text-sub: #6F7886;
-
-            --profit-bg: #D7F2E3;
-            --profit-accent: #2E7D5B;
-            --profit-icon-chip: rgba(46, 125, 91, 0.16);
-            --sales-icon-bg: #DAEBFB;
-            --sales-accent: #3E7CB8;
-            --sales-icon-fg: #3E7CB8;
-            --net-icon-bg: #FBDFEA;
-            --net-accent: #C15A82;
-            --net-icon-fg: #C15A82;
-            --count-icon-bg: #DCE7FB;
-            --count-accent: #4C6FB0;
-            --count-icon-fg: #4C6FB0;
-            --purchase-icon-bg: #FCEBC7;
-            --purchase-accent: #B8842E;
-            --purchase-icon-fg: #B8842E;
-            --stock-icon-bg: #DCEFF0;
-            --stock-accent: #2D8A93;
-            --stock-icon-fg: #2D8A93;
-            --types-icon-bg: #EBE0F9;
-            --types-accent: #8256C4;
-            --types-icon-fg: #8256C4;
-
-            --chart-sales: #A9D2F2;
-            --chart-net: #F5B8D0;
-            --chart-profit: #4FA37D;
-            --chart-grid: #E4E8EE;
-            --chart-legend-text: #6F7886;
-
-            --warn-bg: #FCE9D2;
-            --warn-accent: #B25E2A;
-            --danger-accent: #C1473F;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root:not([data-theme="light"]) {
-                --bg-page: #171B22;
-                --bg-subtle: #1C212B;
-                --card-bg: #232832;
-                --accent-bg: #6B7280;
-                --accent-hover: #4B5563;
-                --border-color: #2E3542;
-                --text-main: #F1F3F5;
-                --text-sub: #AEB6C2;
-
-                --profit-bg: #2A4C44;
-                --profit-accent: #83D9AE;
-                --profit-icon-chip: rgba(131, 217, 174, 0.18);
-                --sales-icon-bg: #BFE0FA;
-                --sales-accent: #8FC4EF;
-                --sales-icon-fg: #1B5C8C;
-                --net-icon-bg: #F8D6E7;
-                --net-accent: #EB9FC0;
-                --net-icon-fg: #9A2F5A;
-                --count-icon-bg: #C9DBFA;
-                --count-accent: #93AEEA;
-                --count-icon-fg: #2A4A96;
-                --purchase-icon-bg: #FADFA3;
-                --purchase-accent: #E8BE72;
-                --purchase-icon-fg: #7A5410;
-                --stock-icon-bg: #BEEBEA;
-                --stock-accent: #6FC9D2;
-                --stock-icon-fg: #146569;
-                --types-icon-bg: #E1D0F7;
-                --types-accent: #C1A2EF;
-                --types-icon-fg: #5B2E96;
-
-                --chart-sales: #8FC4EF;
-                --chart-net: #EB9FC0;
-                --chart-profit: #83D9AE;
-                --chart-grid: #2E3542;
-                --chart-legend-text: #AEB6C2;
-
-                --warn-bg: #4A3623;
-                --warn-accent: #E8A56B;
-                --danger-accent: #E27B72;
-            }
-        }
-
-        :root[data-theme="dark"] {
-            --bg-page: #171B22;
-            --bg-subtle: #1C212B;
-            --card-bg: #232832;
-            --accent-bg: #6B7280;
-            --accent-hover: #4B5563;
-            --border-color: #2E3542;
-            --text-main: #F1F3F5;
-            --text-sub: #AEB6C2;
-
-            --profit-bg: #2A4C44;
-            --profit-accent: #83D9AE;
-            --profit-icon-chip: rgba(131, 217, 174, 0.18);
-            --sales-icon-bg: #BFE0FA;
-            --sales-accent: #8FC4EF;
-            --sales-icon-fg: #1B5C8C;
-            --net-icon-bg: #F8D6E7;
-            --net-accent: #EB9FC0;
-            --net-icon-fg: #9A2F5A;
-            --count-icon-bg: #C9DBFA;
-            --count-accent: #93AEEA;
-            --count-icon-fg: #2A4A96;
-            --purchase-icon-bg: #FADFA3;
-            --purchase-accent: #E8BE72;
-            --purchase-icon-fg: #7A5410;
-            --stock-icon-bg: #BEEBEA;
-            --stock-accent: #6FC9D2;
-            --stock-icon-fg: #146569;
-            --types-icon-bg: #E1D0F7;
-            --types-accent: #C1A2EF;
-            --types-icon-fg: #5B2E96;
-
-            --chart-sales: #8FC4EF;
-            --chart-net: #EB9FC0;
-            --chart-profit: #83D9AE;
-            --chart-grid: #2E3542;
-            --chart-legend-text: #AEB6C2;
-
-            --warn-bg: #4A3623;
-            --warn-accent: #E8A56B;
-            --danger-accent: #E27B72;
+            --gray-soft: #F3F4F6;
+            --gray-accent: #6B7280;
+            --gray-hover: #4B5563;
+            --border-color: #ECEDEF;
+            --text-main: #2F3440;
+            --text-sub: #6B7280;
         }
 
         body {
             font-family: 'Noto Sans JP', sans-serif;
-            background-color: var(--bg-page);
+            background-color: var(--bg-sub);
             color: var(--text-main);
-            transition: background-color 0.15s ease, color 0.15s ease;
-        }
-        .app-card-shadow {
-            box-shadow: 0 1px 2px rgba(41, 50, 65, 0.04);
-        }
-        :root[data-theme="dark"] .app-card-shadow {
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-        }
-        @media (prefers-color-scheme: dark) {
-            :root:not([data-theme="light"]) .app-card-shadow {
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-            }
         }
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: var(--bg-subtle);
+            background: #F8F8F9;
         }
         ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
+            background: #E5E7EB;
             border-radius: 3px;
         }
     </style>
 </head>
-<body class="text-[var(--text-main)] antialiased min-h-screen flex flex-col bg-[var(--bg-page)]">
+<body class="text-[#2F3440] antialiased min-h-screen flex flex-col bg-[#F8F8F9]">
 
     <!-- ログインゲート（この端末に保存済みのセッションが無い場合に表示） -->
     <div id="auth-gate" class="hidden fixed inset-0 z-[60] bg-[#FFFDFD] flex items-center justify-center p-4">
-        <div class="max-w-sm w-full bg-[var(--card-bg)] rounded-2xl border border-[var(--border-color)] app-card-shadow p-6 space-y-5">
+        <div class="max-w-sm w-full bg-white rounded-2xl border border-[#ECEDEF] shadow-sm p-6 space-y-5">
             <div class="text-center space-y-1">
-                <div class="inline-flex bg-[var(--accent-bg)] text-white p-2.5 rounded-xl app-card-shadow">
+                <div class="inline-flex bg-[#6B7280] text-white p-2.5 rounded-xl shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M12 22V12"/><path d="m16 17 2 2 4-4"/><path d="M21 11.127V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.729l7 4a2 2 0 0 0 2 .001l1.32-.753"/><path d="M3.29 7 12 12l8.71-5"/><path d="m7.5 4.27 8.997 5.148"/></svg>
                 </div>
-                <h1 class="font-bold text-base text-[var(--text-main)] mt-2">メルカリ売上・在庫管理</h1>
-                <p class="text-xs text-[var(--text-sub)]">この端末には保存されたデータがありません</p>
+                <h1 class="font-bold text-base text-[#2F3440] mt-2">メルカリ売上・在庫管理</h1>
+                <p class="text-xs text-[#6B7280]">この端末には保存されたデータがありません</p>
             </div>
 
             <div class="space-y-3">
-                <h2 class="text-xs font-bold text-[var(--text-sub)]">他の端末で設定済みのメールアドレスがあればログイン</h2>
-                <input type="email" id="gate-login-email" placeholder="メールアドレス" class="w-full px-3.5 py-2.5 border border-[var(--border-color)] rounded-xl text-sm focus:outline-none focus:border-[var(--accent-bg)]">
-                <input type="password" id="gate-login-password" placeholder="パスワード" class="w-full px-3.5 py-2.5 border border-[var(--border-color)] rounded-xl text-sm focus:outline-none focus:border-[var(--accent-bg)]">
-                <button onclick="handleGateLogin()" class="w-full bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white font-bold py-2.5 rounded-xl text-sm">ログイン</button>
+                <h2 class="text-xs font-bold text-[#6B7280]">他の端末で設定済みのメールアドレスがあればログイン</h2>
+                <input type="email" id="gate-login-email" placeholder="メールアドレス" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#6B7280]">
+                <input type="password" id="gate-login-password" placeholder="パスワード" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#6B7280]">
+                <button onclick="handleGateLogin()" class="w-full bg-[#6B7280] hover:bg-[#4B5563] text-white font-bold py-2.5 rounded-xl text-sm">ログイン</button>
                 <p id="gate-login-error" class="hidden text-xs text-red-500"></p>
             </div>
 
             <div class="relative py-1 text-center">
-                <span class="text-[10px] text-[var(--text-sub)] bg-[var(--card-bg)] px-2 relative z-10">または</span>
-                <div class="absolute left-0 right-0 top-1/2 border-t border-[var(--border-color)]"></div>
+                <span class="text-[10px] text-[#6B7280] bg-white px-2 relative z-10">または</span>
+                <div class="absolute left-0 right-0 top-1/2 border-t border-[#ECEDEF]"></div>
             </div>
 
-            <button onclick="handleGateStartFresh()" class="w-full border border-[var(--border-color)] hover:bg-[var(--bg-subtle)] text-[var(--text-main)] font-bold py-2.5 rounded-xl text-sm">この端末で新しく始める</button>
+            <button onclick="handleGateStartFresh()" class="w-full border border-[#ECEDEF] hover:bg-[#F8F8F9] text-[#2F3440] font-bold py-2.5 rounded-xl text-sm">この端末で新しく始める</button>
         </div>
     </div>
 
     <!-- ヘッダー -->
-    <header id="app-header" class="hidden bg-[var(--card-bg)] border-b border-[var(--border-color)] sticky top-0 z-30 pt-[env(safe-area-inset-top,0px)]">
+    <header id="app-header" class="hidden bg-white border-b border-[#ECEDEF] sticky top-0 z-30 pt-[env(safe-area-inset-top,0px)]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-0 sm:min-h-16 flex flex-wrap items-center justify-between gap-y-2">
 
             <!-- アプリタイトル & 同期バッジ -->
             <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                 <div class="flex items-center space-x-2">
-                    <div class="bg-[var(--accent-bg)] text-white p-1.5 sm:p-2 rounded-xl app-card-shadow shrink-0">
+                    <div class="bg-[#6B7280] text-white p-1.5 sm:p-2 rounded-xl shadow-sm shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 sm:w-6 sm:h-6"><path d="M12 22V12"/><path d="m16 17 2 2 4-4"/><path d="M21 11.127V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.729l7 4a2 2 0 0 0 2 .001l1.32-.753"/><path d="M3.29 7 12 12l8.71-5"/><path d="m7.5 4.27 8.997 5.148"/></svg>
                     </div>
-                    <h1 class="font-bold text-base sm:text-lg text-[var(--text-main)] leading-tight whitespace-nowrap">メルカリ売上・在庫管理</h1>
+                    <h1 class="font-bold text-base sm:text-lg text-[#2F3440] leading-tight whitespace-nowrap">メルカリ売上・在庫管理</h1>
                 </div>
                 <div>
-                    <span id="sync-badge" class="inline-flex px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold bg-[var(--bg-subtle)] text-[var(--text-main)] rounded-full border border-[var(--border-color)] items-center gap-1 shrink-0">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent-bg)] animate-pulse"></span>
+                    <span id="sync-badge" class="inline-flex px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold bg-[#F3F4F6] text-[#1F2937] rounded-full border border-[#E5E7EB] items-center gap-1 shrink-0">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#6B7280] animate-pulse"></span>
                         データ同期完了
                     </span>
                 </div>
             </div>
 
             <!-- デスクトップ ナビゲーション -->
-            <nav class="hidden xl:flex items-center space-x-1 bg-[var(--bg-subtle)] p-1 rounded-xl border border-[var(--border-color)]">
-                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[var(--text-main)] bg-[var(--card-bg)] app-card-shadow">
+            <nav class="hidden xl:flex items-center space-x-1 bg-[#F8F8F9] p-1 rounded-xl border border-[#ECEDEF]">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#1F2937] bg-white shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
                     ダッシュボード
                 </button>
-                <button onclick="switchTab('product-stats')" id="nav-product-stats" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[var(--text-sub)] hover:text-[var(--text-main)]">
+                <button onclick="switchTab('product-stats')" id="nav-product-stats" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#6B7280] hover:text-[#2F3440]">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z"/><path d="m7 16.5-4.74-2.85"/><path d="m7 16.5 5-3"/><path d="M7 16.5v5.17"/><path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z"/><path d="m17 16.5-5-3"/><path d="m17 16.5 4.74-2.85"/><path d="M17 16.5v5.17"/><path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z"/><path d="M12 8 7.26 5.15"/><path d="m12 8 4.74-2.85"/><path d="M12 13.5V8"/></svg>
                     商品別実績
                 </button>
-                <button onclick="switchTab('transactions')" id="nav-transactions" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[var(--text-sub)] hover:text-[var(--text-main)]">
+                <button onclick="switchTab('transactions')" id="nav-transactions" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#6B7280] hover:text-[#2F3440]">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M3 5h.01"/><path d="M3 12h.01"/><path d="M3 19h.01"/><path d="M8 5h13"/><path d="M8 12h13"/><path d="M8 19h13"/></svg>
                     取引一覧
                 </button>
-                <button onclick="switchTab('add')" id="nav-add" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[var(--text-sub)] hover:text-[var(--text-main)]">
+                <button onclick="switchTab('add')" id="nav-add" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#6B7280] hover:text-[#2F3440]">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
                     新規登録
                 </button>
-                <button onclick="switchTab('purchases')" id="nav-purchases" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[var(--text-sub)] hover:text-[var(--text-main)]">
+                <button onclick="switchTab('purchases')" id="nav-purchases" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#6B7280] hover:text-[#2F3440]">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg>
                     仕入れ管理
                 </button>
-                <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[var(--text-sub)] hover:text-[var(--text-main)]">
+                <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-[#6B7280] hover:text-[#2F3440]">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>
                     設定・データ管理
                 </button>
             </nav>
 
             <!-- クイック売上登録ボタン -->
-            <button onclick="openAddModal()" class="bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold app-card-shadow transition-colors flex items-center gap-1 whitespace-nowrap shrink-0 ml-auto sm:ml-0">
+            <button onclick="openAddModal()" class="bg-[#6B7280] hover:bg-[#4B5563] text-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-colors flex items-center gap-1 whitespace-nowrap shrink-0 ml-auto sm:ml-0">
                 <span>売上記録</span>
             </button>
         </div>
@@ -286,16 +143,16 @@
         <!-- 1. ダッシュボード タブ -->
         <section id="tab-dashboard" class="tab-content space-y-4">
 
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-[var(--card-bg)] p-3.5 rounded-2xl border border-[var(--border-color)] app-card-shadow">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-3.5 rounded-2xl border border-[#ECEDEF] shadow-sm">
                 <div>
-                    <h2 class="text-xl font-extrabold text-[var(--text-main)] flex items-center gap-2">
-                        <span class="w-1.5 h-6 bg-[var(--accent-bg)] rounded-full"></span>
+                    <h2 class="text-xl font-extrabold text-[#2F3440] flex items-center gap-2">
+                        <span class="w-1.5 h-6 bg-[#6B7280] rounded-full"></span>
                         ダッシュボード
                     </h2>
                 </div>
-                <div class="flex items-center gap-2 bg-[var(--bg-subtle)] p-1.5 rounded-xl border border-[var(--border-color)] text-sm">
-                    <span class="text-xs text-[var(--text-sub)] pl-2">表示期間:</span>
-                    <select id="dashboard-filter" onchange="updateDashboard()" class="bg-transparent font-medium focus:outline-none pr-2 cursor-pointer text-[var(--text-main)]">
+                <div class="flex items-center gap-2 bg-[#F8F8F9] p-1.5 rounded-xl border border-[#ECEDEF] text-sm">
+                    <span class="text-xs text-[#6B7280] pl-2">表示期間:</span>
+                    <select id="dashboard-filter" onchange="updateDashboard()" class="bg-transparent font-medium focus:outline-none pr-2 cursor-pointer text-[#2F3440]">
                         <option value="this-month" selected>今月</option>
                         <option value="last-month">先月</option>
                         <option value="this-year">今年</option>
@@ -305,90 +162,90 @@
             </div>
 
             <!-- 最終利益（最重要指標） -->
-            <div class="bg-[var(--profit-bg)] rounded-2xl app-card-shadow p-5 sm:p-6">
-                <div class="flex items-center justify-between text-[var(--profit-accent)] mb-1">
+            <div class="bg-[#2F3440] rounded-2xl shadow-sm p-5 sm:p-6">
+                <div class="flex items-center justify-between text-gray-300 mb-1">
                     <span class="text-xs font-semibold uppercase tracking-wider">最終利益</span>
-                    <div class="p-1.5 bg-[var(--profit-icon-chip)] text-[var(--profit-accent)] rounded-lg">
+                    <div class="p-1.5 bg-white/10 text-white rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M13.744 17.736a6 6 0 1 1-7.48-7.48"/><path d="M15 6h1v4"/><path d="m6.134 14.768.866-.5 2 3.464"/><circle cx="16" cy="8" r="6"/></svg>
                     </div>
                 </div>
-                <div id="kpi-net-profit" class="text-3xl sm:text-4xl font-extrabold text-[var(--text-main)]">¥0</div>
+                <div id="kpi-net-profit" class="text-3xl sm:text-4xl font-extrabold text-white">¥0</div>
             </div>
 
             <!-- 総売上・手取り額 -->
             <div class="grid grid-cols-2 gap-3">
-                <div class="bg-[var(--card-bg)] p-3.5 sm:p-4 rounded-2xl border border-[var(--border-color)] border-l-4 border-l-[var(--sales-accent)] app-card-shadow">
-                    <div class="flex items-center justify-between text-[var(--text-sub)] mb-1">
+                <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-[#ECEDEF] shadow-sm">
+                    <div class="flex items-center justify-between text-[#6B7280] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">総売上</span>
-                        <div class="p-1.5 bg-[var(--sales-icon-bg)] text-[var(--sales-icon-fg)] rounded-lg">
+                        <div class="p-1.5 bg-[#F8F8F9] text-[#6B7280] rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12 9.5V21m0-11.5L6 3m6 6.5L18 3"/><path d="M6 15h12"/><path d="M6 11h12"/></svg>
                         </div>
                     </div>
-                    <div id="kpi-sales" class="text-xl sm:text-2xl font-extrabold text-[var(--text-main)]">¥0</div>
+                    <div id="kpi-sales" class="text-xl sm:text-2xl font-extrabold text-[#2F3440]">¥0</div>
                 </div>
 
-                <div class="bg-[var(--card-bg)] p-3.5 sm:p-4 rounded-2xl border border-[var(--border-color)] border-l-4 border-l-[var(--net-accent)] app-card-shadow">
-                    <div class="flex items-center justify-between text-[var(--text-sub)] mb-1">
+                <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-[#ECEDEF] shadow-sm">
+                    <div class="flex items-center justify-between text-[#6B7280] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">手取り額</span>
-                        <div class="p-1.5 bg-[var(--net-icon-bg)] text-[var(--net-icon-fg)] rounded-lg">
+                        <div class="p-1.5 bg-[#F8F8F9] text-[#6B7280] rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 16 6 6"/><circle cx="16" cy="9" r="2.9"/><circle cx="6" cy="5" r="3"/></svg>
                         </div>
                     </div>
-                    <div id="kpi-sales-net" class="text-xl sm:text-2xl font-extrabold text-[var(--text-main)]">¥0</div>
+                    <div id="kpi-sales-net" class="text-xl sm:text-2xl font-extrabold text-[#2F3440]">¥0</div>
                 </div>
             </div>
 
             <!-- 補助情報（コンパクト表示） -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-                <div class="bg-[var(--card-bg)] p-2.5 rounded-2xl border border-[var(--border-color)] app-card-shadow flex items-center gap-2">
-                    <div class="p-1.5 bg-[var(--count-icon-bg)] text-[var(--count-icon-fg)] rounded-lg shrink-0">
+                <div class="bg-white p-2.5 rounded-2xl border border-[#ECEDEF] shadow-sm flex items-center gap-2">
+                    <div class="p-1.5 bg-[#F8F8F9] text-[#6B7280] rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
                     </div>
                     <div class="min-w-0">
-                        <div class="text-[10px] text-[var(--text-sub)] font-semibold uppercase tracking-wider truncate">販売数</div>
-                        <div class="text-sm font-bold text-[var(--text-main)]"><span id="kpi-count">0</span> 個</div>
+                        <div class="text-[10px] text-[#6B7280] font-semibold uppercase tracking-wider truncate">販売数</div>
+                        <div class="text-sm font-bold text-[#2F3440]"><span id="kpi-count">0</span> 個</div>
                     </div>
                 </div>
 
-                <div class="bg-[var(--card-bg)] p-2.5 rounded-2xl border border-[var(--border-color)] app-card-shadow flex items-center gap-2">
-                    <div class="p-1.5 bg-[var(--purchase-icon-bg)] text-[var(--purchase-icon-fg)] rounded-lg shrink-0">
+                <div class="bg-white p-2.5 rounded-2xl border border-[#ECEDEF] shadow-sm flex items-center gap-2">
+                    <div class="p-1.5 bg-[#F8F8F9] text-[#6B7280] rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg>
                     </div>
                     <div class="min-w-0">
-                        <div class="text-[10px] text-[var(--text-sub)] font-semibold uppercase tracking-wider truncate">仕入総額</div>
-                        <div id="kpi-purchases" class="text-sm font-bold text-[var(--text-main)] truncate">¥0</div>
+                        <div class="text-[10px] text-[#6B7280] font-semibold uppercase tracking-wider truncate">仕入総額</div>
+                        <div id="kpi-purchases" class="text-sm font-bold text-[#2F3440] truncate">¥0</div>
                     </div>
                 </div>
 
-                <div class="bg-[var(--card-bg)] p-2.5 rounded-2xl border border-[var(--border-color)] app-card-shadow flex items-center gap-2">
-                    <div class="p-1.5 bg-[var(--stock-icon-bg)] text-[var(--stock-icon-fg)] rounded-lg shrink-0">
+                <div class="bg-white p-2.5 rounded-2xl border border-[#ECEDEF] shadow-sm flex items-center gap-2">
+                    <div class="p-1.5 bg-[#F8F8F9] text-[#6B7280] rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z"/><path d="m7 16.5-4.74-2.85"/><path d="m7 16.5 5-3"/><path d="M7 16.5v5.17"/><path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z"/><path d="m17 16.5-5-3"/><path d="m17 16.5 4.74-2.85"/><path d="M17 16.5v5.17"/><path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z"/><path d="M12 8 7.26 5.15"/><path d="m12 8 4.74-2.85"/><path d="M12 13.5V8"/></svg>
                     </div>
                     <div class="min-w-0">
-                        <div class="text-[10px] text-[var(--text-sub)] font-semibold uppercase tracking-wider truncate">現在庫総数</div>
-                        <div id="kpi-total-stock" class="text-sm font-bold text-[var(--text-main)]">0 個</div>
+                        <div class="text-[10px] text-[#6B7280] font-semibold uppercase tracking-wider truncate">現在庫総数</div>
+                        <div id="kpi-total-stock" class="text-sm font-bold text-[#2F3440]">0 個</div>
                     </div>
                 </div>
 
-                <div class="bg-[var(--card-bg)] p-2.5 rounded-2xl border border-[var(--border-color)] app-card-shadow flex items-center gap-2">
-                    <div class="p-1.5 bg-[var(--types-icon-bg)] text-[var(--types-icon-fg)] rounded-lg shrink-0">
+                <div class="bg-white p-2.5 rounded-2xl border border-[#ECEDEF] shadow-sm flex items-center gap-2">
+                    <div class="p-1.5 bg-[#F8F8F9] text-[#6B7280] rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg>
                     </div>
                     <div class="min-w-0">
-                        <div class="text-[10px] text-[var(--text-sub)] font-semibold uppercase tracking-wider truncate">在庫商品種類数</div>
-                        <div id="kpi-product-type-count" class="text-sm font-bold text-[var(--text-main)]">0 種類</div>
+                        <div class="text-[10px] text-[#6B7280] font-semibold uppercase tracking-wider truncate">在庫商品種類数</div>
+                        <div id="kpi-product-type-count" class="text-sm font-bold text-[#2F3440]">0 種類</div>
                     </div>
                 </div>
             </div>
 
             <!-- 在庫注意アラートカード -->
-            <div id="stock-alert-section" class="hidden bg-[var(--warn-bg)] border border-[var(--warn-accent)]/25 p-3.5 rounded-2xl space-y-2">
+            <div id="stock-alert-section" class="hidden bg-[#F3F4F6] border border-[#E5E7EB] p-3.5 rounded-2xl space-y-2">
                 <div class="flex items-center justify-between">
-                    <h3 class="font-bold text-[var(--warn-accent)] text-xs sm:text-sm flex items-center gap-1.5">
-                        <span class="text-base text-[var(--warn-accent)] leading-none" role="img" aria-hidden="true">⚠️</span>
+                    <h3 class="font-bold text-[#2F3440] text-xs sm:text-sm flex items-center gap-1.5">
+                        <span class="text-base text-[#1F2937] leading-none" role="img" aria-hidden="true">⚠️</span>
                         在庫注意・在庫切れ
                     </h3>
-                    <button onclick="switchTab('purchases')" class="text-xs font-bold text-[var(--warn-accent)] hover:underline">仕入れ登録 →</button>
+                    <button onclick="switchTab('purchases')" class="text-xs font-bold text-[#1F2937] hover:underline">仕入れ登録 →</button>
                 </div>
                 <div id="stock-alert-list" class="flex flex-wrap gap-2 pt-1">
                     <!-- JS挿入 -->
@@ -398,10 +255,10 @@
             <!-- グラフ & 商品別ランキング -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <!-- 月別推移グラフ -->
-                <div class="lg:col-span-2 bg-[var(--card-bg)] p-3.5 sm:p-4 rounded-2xl border border-[var(--border-color)] app-card-shadow">
+                <div class="lg:col-span-2 bg-white p-3.5 sm:p-4 rounded-2xl border border-[#ECEDEF] shadow-sm">
                     <div class="flex items-center justify-between mb-3">
-                        <h3 class="font-bold text-[var(--text-main)] flex items-center gap-2 text-sm sm:text-base">
-                            <span class="text-base text-[var(--text-main)] leading-none" role="img" aria-hidden="true">📈</span>
+                        <h3 class="font-bold text-[#2F3440] flex items-center gap-2 text-sm sm:text-base">
+                            <span class="text-base text-[#1F2937] leading-none" role="img" aria-hidden="true">📈</span>
                             月別推移 (売上 / 手取り額 / 最終利益)
                         </h3>
                     </div>
@@ -411,14 +268,14 @@
                 </div>
 
                 <!-- 商品別ランキング -->
-                <div class="bg-[var(--card-bg)] p-3.5 sm:p-4 rounded-2xl border border-[var(--border-color)] app-card-shadow flex flex-col justify-between">
+                <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-[#ECEDEF] shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-bold text-[var(--text-main)] flex items-center gap-1.5 text-sm">
-                                <span class="text-base text-[var(--text-main)] leading-none" role="img" aria-hidden="true">🏆</span>
+                            <h3 class="font-bold text-[#2F3440] flex items-center gap-1.5 text-sm">
+                                <span class="text-base text-[#1F2937] leading-none" role="img" aria-hidden="true">🏆</span>
                                 商品ランキング
                             </h3>
-                            <select id="ranking-sort-type" onchange="updateDashboard()" class="text-xs font-semibold border border-[var(--border-color)] rounded-lg p-1 bg-[var(--card-bg)] focus:outline-none">
+                            <select id="ranking-sort-type" onchange="updateDashboard()" class="text-xs font-semibold border border-[#ECEDEF] rounded-lg p-1 bg-white focus:outline-none">
                                 <option value="qty" selected>販売数</option>
                                 <option value="sales">売上高</option>
                                 <option value="profit">手取り額</option>
@@ -428,8 +285,8 @@
                             <!-- JS描画 -->
                         </div>
                     </div>
-                    <div class="pt-3 border-t border-[var(--border-color)] text-center mt-3">
-                        <button onclick="switchTab('product-stats')" class="text-xs font-bold text-[var(--text-main)] hover:text-[var(--accent-hover)] flex items-center justify-center gap-1 mx-auto">
+                    <div class="pt-3 border-t border-[#ECEDEF] text-center mt-3">
+                        <button onclick="switchTab('product-stats')" class="text-xs font-bold text-[#1F2937] hover:text-[#4B5563] flex items-center justify-center gap-1 mx-auto">
                             商品別実績を詳しく見る <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m9 18 6-6-6-6"/></svg>
                         </button>
                     </div>
@@ -437,27 +294,27 @@
             </div>
 
             <!-- 最近の販売取引 -->
-            <div class="bg-[var(--card-bg)] rounded-2xl border border-[var(--border-color)] app-card-shadow overflow-hidden">
-                <div class="p-3.5 border-b border-[var(--border-color)] flex items-center justify-between">
-                    <h3 class="font-bold text-[var(--text-main)] flex items-center gap-2 text-sm">
-                        <span class="text-base text-[var(--text-sub)] leading-none" role="img" aria-hidden="true">🕓</span>
+            <div class="bg-white rounded-2xl border border-[#ECEDEF] shadow-sm overflow-hidden">
+                <div class="p-3.5 border-b border-[#ECEDEF] flex items-center justify-between">
+                    <h3 class="font-bold text-[#2F3440] flex items-center gap-2 text-sm">
+                        <span class="text-base text-[#6B7280] leading-none" role="img" aria-hidden="true">🕓</span>
                         最近売れた商品
                     </h3>
-                    <button onclick="switchTab('transactions')" class="text-xs font-semibold text-[var(--text-main)] hover:text-[var(--accent-hover)] flex items-center gap-1">
+                    <button onclick="switchTab('transactions')" class="text-xs font-semibold text-[#1F2937] hover:text-[#4B5563] flex items-center gap-1">
                         すべて見る <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3"><path d="m9 18 6-6-6-6"/></svg>
                     </button>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-[var(--bg-subtle)] text-[var(--text-sub)] text-xs font-semibold">
+                            <tr class="bg-[#F8F8F9] text-[#6B7280] text-xs font-semibold">
                                 <th class="p-3 pl-4">日付</th>
                                 <th class="p-3">商品名</th>
                                 <th class="p-3 text-right">販売価格</th>
                                 <th class="p-3 text-right pr-4">手取り額</th>
                             </tr>
                         </thead>
-                        <tbody id="recent-transactions-list" class="divide-y divide-[var(--border-color)] text-sm">
+                        <tbody id="recent-transactions-list" class="divide-y divide-[#ECEDEF] text-sm">
                         </tbody>
                     </table>
                 </div>
@@ -466,16 +323,16 @@
 
         <!-- 2. 商品別実績 タブ -->
         <section id="tab-product-stats" class="tab-content hidden space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--border-color)] app-card-shadow">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border border-[#ECEDEF] shadow-sm">
                 <div>
-                    <h2 class="text-xl font-extrabold text-[var(--text-main)] flex items-center gap-2">
-                        <span class="w-1.5 h-6 bg-[var(--accent-bg)] rounded-full"></span>
+                    <h2 class="text-xl font-extrabold text-[#2F3440] flex items-center gap-2">
+                        <span class="w-1.5 h-6 bg-[#6B7280] rounded-full"></span>
                         商品別実績
                     </h2>
                 </div>
-                <div class="flex items-center gap-2 bg-[var(--bg-subtle)] p-1.5 rounded-xl border border-[var(--border-color)] text-sm">
-                    <span class="text-xs text-[var(--text-sub)] pl-2">表示期間:</span>
-                    <select id="product-stats-filter" onchange="renderProductStatsTable()" class="bg-transparent font-medium focus:outline-none pr-2 cursor-pointer text-[var(--text-main)]">
+                <div class="flex items-center gap-2 bg-[#F8F8F9] p-1.5 rounded-xl border border-[#ECEDEF] text-sm">
+                    <span class="text-xs text-[#6B7280] pl-2">表示期間:</span>
+                    <select id="product-stats-filter" onchange="renderProductStatsTable()" class="bg-transparent font-medium focus:outline-none pr-2 cursor-pointer text-[#2F3440]">
                         <option value="this-month">今月</option>
                         <option value="last-month">先月</option>
                         <option value="this-year">今年</option>
@@ -485,11 +342,11 @@
             </div>
 
             <!-- 商品実績テーブル -->
-            <div class="bg-[var(--card-bg)] rounded-2xl border border-[var(--border-color)] app-card-shadow overflow-hidden">
+            <div class="bg-white rounded-2xl border border-[#ECEDEF] shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-[var(--bg-subtle)] text-[var(--text-sub)] text-xs font-semibold uppercase tracking-wider border-b border-[var(--border-color)] whitespace-nowrap">
+                            <tr class="bg-[#F8F8F9] text-[#6B7280] text-xs font-semibold uppercase tracking-wider border-b border-[#ECEDEF] whitespace-nowrap">
                                 <th class="p-3 pl-4">商品名</th>
                                 <th class="p-3 text-right">販売数</th>
                                 <th class="p-3 text-right">累計売上</th>
@@ -502,29 +359,29 @@
                                 <th class="p-3 text-center pr-4">最終販売日</th>
                             </tr>
                         </thead>
-                        <tbody id="product-stats-list" class="divide-y divide-[var(--border-color)] text-sm">
+                        <tbody id="product-stats-list" class="divide-y divide-[#ECEDEF] text-sm">
                         </tbody>
                     </table>
                 </div>
                 <div id="product-stats-empty" class="hidden p-12 text-center">
-                    <div class="inline-flex p-4 bg-[var(--bg-subtle)] text-[var(--text-sub)] rounded-full mb-3">
+                    <div class="inline-flex p-4 bg-[#F8F8F9] text-[#6B7280] rounded-full mb-3">
                         <span class="text-4xl leading-none" role="img" aria-hidden="true">📦</span>
                     </div>
-                    <p class="text-[var(--text-sub)] font-medium">登録されている商品データがありません</p>
+                    <p class="text-[#6B7280] font-medium">登録されている商品データがありません</p>
                 </div>
             </div>
         </section>
 
         <!-- 3. 取引一覧 タブ -->
         <section id="tab-transactions" class="tab-content hidden space-y-4">
-            <div class="bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--border-color)] app-card-shadow flex flex-col md:flex-row gap-3 items-center justify-between">
+            <div class="bg-white p-4 rounded-2xl border border-[#ECEDEF] shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between">
                 <div class="relative w-full md:w-80">
-                    <span class="text-base text-[var(--text-sub)] absolute left-3 top-3 leading-none" role="img" aria-hidden="true">🔍</span>
-                    <input type="text" id="search-input" oninput="debouncedRenderTransactions()" placeholder="商品名・メモで検索..." class="w-full pl-9 pr-4 py-2 border border-[var(--border-color)] rounded-xl text-sm focus:outline-none focus:border-[var(--accent-bg)]">
+                    <span class="text-base text-[#6B7280] absolute left-3 top-3 leading-none" role="img" aria-hidden="true">🔍</span>
+                    <input type="text" id="search-input" oninput="debouncedRenderTransactions()" placeholder="商品名・メモで検索..." class="w-full pl-9 pr-4 py-2 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#6B7280]">
                 </div>
 
                 <div class="flex items-center gap-2 w-full md:w-auto">
-                    <select id="sort-order" onchange="renderTransactions()" class="px-3 py-2 border border-[var(--border-color)] rounded-xl text-sm bg-[var(--card-bg)] focus:outline-none focus:border-[var(--accent-bg)] text-[var(--text-main)]">
+                    <select id="sort-order" onchange="renderTransactions()" class="px-3 py-2 border border-[#ECEDEF] rounded-xl text-sm bg-white focus:outline-none focus:border-[#6B7280] text-[#2F3440]">
                         <option value="date-desc">日付: 新しい順</option>
                         <option value="date-asc">日付: 古い順</option>
                         <option value="profit-desc">手取り額: 高い順</option>
@@ -536,11 +393,11 @@
             <div id="transactions-container" class="space-y-3">
                 <!-- JS動的描画 -->
             </div>
-            <div id="empty-state" class="hidden p-12 text-center bg-[var(--card-bg)] rounded-2xl border border-[var(--border-color)] app-card-shadow">
-                <div class="inline-flex p-4 bg-[var(--bg-subtle)] text-[var(--text-sub)] rounded-full mb-3">
+            <div id="empty-state" class="hidden p-12 text-center bg-white rounded-2xl border border-[#ECEDEF] shadow-sm">
+                <div class="inline-flex p-4 bg-[#F8F8F9] text-[#6B7280] rounded-full mb-3">
                     <span class="text-4xl leading-none" role="img" aria-hidden="true">📭</span>
                 </div>
-                <p class="text-[var(--text-sub)] font-medium">該当する取引データがありません</p>
+                <p class="text-[#6B7280] font-medium">該当する取引データがありません</p>
             </div>
         </section>
 
@@ -548,98 +405,98 @@
         <section id="tab-add" class="tab-content hidden max-w-2xl mx-auto space-y-6">
 
             <!-- 登録フォーム -->
-            <div class="bg-[var(--card-bg)] p-6 sm:p-8 rounded-2xl border border-[var(--border-color)] app-card-shadow space-y-6">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-6">
                 <form id="add-transaction-form" onsubmit="handleFormSubmit(event)" class="space-y-5">
                     <div>
-                        <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">取引日付 <span class="text-[var(--text-main)]">*</span></label>
-                        <input type="date" id="form-date" required class="w-full max-w-full box-border appearance-none px-3.5 py-2.5 border border-[var(--border-color)] rounded-xl text-sm focus:outline-none focus:border-[var(--accent-bg)]">
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">取引日付 <span class="text-[#1F2937]">*</span></label>
+                        <input type="date" id="form-date" required class="w-full max-w-full box-border appearance-none px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#6B7280]">
                     </div>
 
                     <!-- 商品指定方法選択 -->
                     <div>
-                        <div class="grid grid-cols-2 gap-2 bg-[var(--bg-subtle)] p-1 rounded-xl text-xs font-bold text-center border border-[var(--border-color)]">
-                            <button type="button" id="btn-mode-master" onclick="setProductInputMode('master')" class="py-2 rounded-lg bg-[var(--card-bg)] text-[var(--text-main)] app-card-shadow transition-all">
+                        <div class="grid grid-cols-2 gap-2 bg-[#F8F8F9] p-1 rounded-xl text-xs font-bold text-center border border-[#ECEDEF]">
+                            <button type="button" id="btn-mode-master" onclick="setProductInputMode('master')" class="py-2 rounded-lg bg-white text-[#1F2937] shadow-sm transition-all">
                                 マスター商品
                             </button>
-                            <button type="button" id="btn-mode-single" onclick="setProductInputMode('single')" class="py-2 rounded-lg text-[var(--text-sub)] transition-all">
+                            <button type="button" id="btn-mode-single" onclick="setProductInputMode('single')" class="py-2 rounded-lg text-[#6B7280] transition-all">
                                 単発商品
                             </button>
                         </div>
-                        <p id="mode-desc-text" class="text-[11px] text-[var(--text-sub)] mt-1.5 pl-1">登録済みの商品から選ぶ</p>
+                        <p id="mode-desc-text" class="text-[11px] text-[#6B7280] mt-1.5 pl-1">登録済みの商品から選ぶ</p>
                     </div>
 
                     <!-- モード①: マスター商品 -->
                     <div id="section-master-select" class="space-y-2">
-                        <input type="text" id="form-product-search" oninput="filterProductDropdown()" placeholder="商品名で検索・絞り込み..." class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-xs mb-1 focus:outline-none focus:border-[var(--accent-bg)]">
-                        <select id="form-product-id" onchange="onSaleProductSelectChange()" class="w-full px-3.5 py-2.5 border border-[var(--border-color)] rounded-xl text-sm bg-[var(--card-bg)] focus:outline-none focus:border-[var(--accent-bg)] font-semibold text-[var(--text-main)]">
+                        <input type="text" id="form-product-search" oninput="filterProductDropdown()" placeholder="商品名で検索・絞り込み..." class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-xs mb-1 focus:outline-none focus:border-[#6B7280]">
+                        <select id="form-product-id" onchange="onSaleProductSelectChange()" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm bg-white focus:outline-none focus:border-[#6B7280] font-semibold text-[#2F3440]">
                             <!-- JS動的生成 -->
                         </select>
                     </div>
 
                     <!-- モード②: 単発商品 -->
                     <div id="section-single-input" class="hidden space-y-2">
-                        <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">商品名を直接入力 <span class="text-[var(--text-main)]">*</span></label>
-                        <input type="text" id="form-single-title" placeholder="例: rino様 リクエスト 2点まとめ" class="w-full px-3.5 py-2.5 border border-[var(--border-color)] rounded-xl text-sm focus:outline-none focus:border-[var(--accent-bg)] font-bold">
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">商品名を直接入力 <span class="text-[#1F2937]">*</span></label>
+                        <input type="text" id="form-single-title" placeholder="例: rino様 リクエスト 2点まとめ" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#6B7280] font-bold">
 
                         <div>
-                            <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1 mt-3">仕入原価 (円・任意)</label>
-                            <input type="number" id="form-single-cost" min="0" placeholder="例: 1500" class="w-full px-3.5 py-2.5 border border-[var(--border-color)] rounded-xl text-sm focus:outline-none focus:border-[var(--accent-bg)] font-semibold">
+                            <label class="block text-xs font-semibold text-[#6B7280] mb-1 mt-3">仕入原価 (円・任意)</label>
+                            <input type="number" id="form-single-cost" min="0" placeholder="例: 1500" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#6B7280] font-semibold">
                         </div>
                     </div>
 
                     <!-- 参考カード -->
-                    <div id="product-ref-card" class="hidden border border-[var(--border-color)] p-3.5 rounded-xl grid grid-cols-3 gap-2 text-center text-xs">
-                        <div class="bg-[var(--stock-icon-bg)] rounded-lg p-1.5">
-                            <div class="text-[10px] text-[var(--text-sub)] font-semibold">現在庫</div>
-                            <div id="ref-stock" class="font-bold text-[var(--text-main)] mt-0.5">--</div>
+                    <div id="product-ref-card" class="hidden bg-[#F3F4F6] border border-[#E5E7EB] p-3.5 rounded-xl grid grid-cols-3 gap-2 text-center text-xs">
+                        <div>
+                            <div class="text-[10px] text-[#6B7280] font-semibold">現在庫</div>
+                            <div id="ref-stock" class="font-bold text-[#2F3440] mt-0.5">--</div>
                         </div>
-                        <div class="bg-[var(--sales-icon-bg)] rounded-lg p-1.5">
-                            <div class="text-[10px] text-[var(--text-sub)] font-semibold">直近販売価格</div>
-                            <div id="ref-latest-price" class="font-bold text-[var(--text-main)] mt-0.5">--</div>
+                        <div>
+                            <div class="text-[10px] text-[#6B7280] font-semibold">直近販売価格</div>
+                            <div id="ref-latest-price" class="font-bold text-[#2F3440] mt-0.5">--</div>
                         </div>
-                        <div class="bg-[var(--sales-icon-bg)] rounded-lg p-1.5">
-                            <div class="text-[10px] text-[var(--text-sub)] font-semibold">平均販売価格</div>
-                            <div id="ref-avg-price" class="font-bold text-[var(--text-main)] mt-0.5">--</div>
+                        <div>
+                            <div class="text-[10px] text-[#6B7280] font-semibold">平均販売価格</div>
+                            <div id="ref-avg-price" class="font-bold text-[#2F3440] mt-0.5">--</div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">販売価格 (円) <span class="text-[var(--text-main)]">*</span></label>
-                            <input type="number" id="form-sell-price" required min="0" placeholder="3000" oninput="calculatePreview()" class="w-full px-3.5 py-2.5 border border-[var(--border-color)] rounded-xl text-sm focus:outline-none focus:border-[var(--accent-bg)] font-semibold text-[var(--text-main)]">
+                            <label class="block text-xs font-semibold text-[#6B7280] mb-1">販売価格 (円) <span class="text-[#1F2937]">*</span></label>
+                            <input type="number" id="form-sell-price" required min="0" placeholder="3000" oninput="calculatePreview()" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#6B7280] font-semibold text-[#2F3440]">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">発送時の送料 (円)</label>
-                            <input type="number" id="form-shipping-fee" min="0" placeholder="215" value="215" oninput="calculatePreview()" class="w-full px-3.5 py-2.5 border border-[var(--border-color)] rounded-xl text-sm focus:outline-none focus:border-[var(--accent-bg)]">
+                            <label class="block text-xs font-semibold text-[#6B7280] mb-1">発送時の送料 (円)</label>
+                            <input type="number" id="form-shipping-fee" min="0" placeholder="215" value="215" oninput="calculatePreview()" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#6B7280]">
                         </div>
                     </div>
 
                     <!-- リアルタイム計算プレビュー -->
-                    <div class="bg-[var(--bg-subtle)] p-4 rounded-xl border border-[var(--border-color)] space-y-2">
-                        <div class="text-xs font-semibold text-[var(--text-sub)] uppercase tracking-wider mb-1">計算プレビュー</div>
+                    <div class="bg-[#F8F8F9] p-4 rounded-xl border border-[#ECEDEF] space-y-2">
+                        <div class="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">計算プレビュー</div>
                         <div class="grid grid-cols-3 gap-2 text-center">
-                            <div class="bg-[var(--card-bg)] p-2 rounded-lg border border-[var(--border-color)]">
-                                <div class="text-[11px] text-[var(--text-sub)]">販売手数料 (<span id="preview-fee-rate-label">10</span>%)</div>
-                                <div id="preview-fee" class="font-bold text-[var(--text-main)] mt-0.5">¥0</div>
+                            <div class="bg-white p-2 rounded-lg border border-[#ECEDEF]">
+                                <div class="text-[11px] text-[#6B7280]">販売手数料 (<span id="preview-fee-rate-label">10</span>%)</div>
+                                <div id="preview-fee" class="font-bold text-[#2F3440] mt-0.5">¥0</div>
                             </div>
-                            <div class="bg-[var(--card-bg)] p-2 rounded-lg border border-[var(--border-color)]">
-                                <div class="text-[11px] text-[var(--text-sub)]">送料</div>
-                                <div id="preview-shipping" class="font-bold text-[var(--text-main)] mt-0.5">¥215</div>
+                            <div class="bg-white p-2 rounded-lg border border-[#ECEDEF]">
+                                <div class="text-[11px] text-[#6B7280]">送料</div>
+                                <div id="preview-shipping" class="font-bold text-[#2F3440] mt-0.5">¥215</div>
                             </div>
-                            <div class="bg-[var(--net-icon-bg)] p-2 rounded-lg border border-[var(--net-accent)]/20">
-                                <div class="text-[11px] text-[var(--text-main)] font-semibold">手取り額</div>
-                                <div id="preview-profit" class="font-bold text-[var(--text-main)] mt-0.5">¥0</div>
+                            <div class="bg-white p-2 rounded-lg border border-[#ECEDEF]">
+                                <div class="text-[11px] text-[#1F2937] font-semibold">手取り額</div>
+                                <div id="preview-profit" class="font-bold text-[#1F2937] mt-0.5">¥0</div>
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">メモ</label>
-                        <textarea id="form-memo" rows="2" class="w-full px-3.5 py-2.5 border border-[var(--border-color)] rounded-xl text-sm focus:outline-none focus:border-[var(--accent-bg)]"></textarea>
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">メモ</label>
+                        <textarea id="form-memo" rows="2" class="w-full px-3.5 py-2.5 border border-[#ECEDEF] rounded-xl text-sm focus:outline-none focus:border-[#6B7280]"></textarea>
                     </div>
 
                     <div class="pt-2">
-                        <button type="submit" class="w-full bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white font-bold py-3 px-4 rounded-xl app-card-shadow transition-all flex items-center justify-center gap-2">
+                        <button type="submit" class="w-full bg-[#6B7280] hover:bg-[#4B5563] text-white font-bold py-3 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M20 6 9 17l-5-5"/></svg>
                             登録する
                         </button>
@@ -650,14 +507,14 @@
 
         <!-- 5. 仕入れ管理 タブ -->
         <section id="tab-purchases" class="tab-content hidden space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--border-color)] app-card-shadow">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border border-[#ECEDEF] shadow-sm">
                 <div>
-                    <h2 class="text-xl font-extrabold text-[var(--text-main)] flex items-center gap-2">
-                        <span class="w-1.5 h-6 bg-[var(--accent-bg)] rounded-full"></span>
+                    <h2 class="text-xl font-extrabold text-[#2F3440] flex items-center gap-2">
+                        <span class="w-1.5 h-6 bg-[#6B7280] rounded-full"></span>
                         仕入れ管理
                     </h2>
                 </div>
-                <button onclick="openAddPurchaseModal()" class="bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white px-4 py-2 rounded-xl text-sm font-medium app-card-shadow transition-colors flex items-center gap-1.5">
+                <button onclick="openAddPurchaseModal()" class="bg-[#6B7280] hover:bg-[#4B5563] text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition-colors flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                     新規仕入れ登録
                 </button>
@@ -665,31 +522,26 @@
 
             <!-- 仕入れKPI -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-[var(--card-bg)] p-5 rounded-2xl border border-[var(--border-color)] border-t-4 border-t-[var(--purchase-accent)] app-card-shadow">
-                    <div class="flex items-center justify-between text-[var(--text-sub)] mb-1">
-                        <span class="text-xs font-semibold">今月の仕入額</span>
-                        <div class="p-1.5 bg-[var(--purchase-icon-bg)] text-[var(--purchase-icon-fg)] rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg>
-                        </div>
-                    </div>
-                    <div id="kpi-pur-month" class="text-2xl font-extrabold text-[var(--text-main)]">¥0</div>
+                <div class="bg-white p-5 rounded-2xl border border-[#ECEDEF] shadow-sm">
+                    <div class="text-xs text-[#6B7280] font-semibold mb-1">今月の仕入額</div>
+                    <div id="kpi-pur-month" class="text-2xl font-extrabold text-[#1F2937]">¥0</div>
                 </div>
-                <div class="bg-[var(--card-bg)] p-5 rounded-2xl border border-[var(--border-color)] border-t-4 border-t-[var(--purchase-accent)] app-card-shadow">
-                    <div class="text-xs text-[var(--text-sub)] font-semibold mb-1">今年の仕入額</div>
-                    <div id="kpi-pur-year" class="text-2xl font-extrabold text-[var(--text-main)]">¥0</div>
+                <div class="bg-white p-5 rounded-2xl border border-[#ECEDEF] shadow-sm">
+                    <div class="text-xs text-[#6B7280] font-semibold mb-1">今年の仕入額</div>
+                    <div id="kpi-pur-year" class="text-2xl font-extrabold text-[#2F3440]">¥0</div>
                 </div>
-                <div class="bg-[var(--card-bg)] p-5 rounded-2xl border border-[var(--border-color)] border-t-4 border-t-[var(--purchase-accent)] app-card-shadow">
-                    <div class="text-xs text-[var(--text-sub)] font-semibold mb-1">累計仕入額</div>
-                    <div id="kpi-pur-total" class="text-2xl font-extrabold text-[var(--text-main)]">¥0</div>
+                <div class="bg-white p-5 rounded-2xl border border-[#ECEDEF] shadow-sm">
+                    <div class="text-xs text-[#6B7280] font-semibold mb-1">累計仕入額</div>
+                    <div id="kpi-pur-total" class="text-2xl font-extrabold text-[#2F3440]">¥0</div>
                 </div>
             </div>
 
             <!-- 仕入れ一覧テーブル -->
-            <div class="bg-[var(--card-bg)] rounded-2xl border border-[var(--border-color)] app-card-shadow overflow-hidden">
+            <div class="bg-white rounded-2xl border border-[#ECEDEF] shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-[var(--bg-subtle)] text-[var(--text-sub)] text-xs font-semibold uppercase tracking-wider border-b border-[var(--border-color)] whitespace-nowrap">
+                            <tr class="bg-[#F8F8F9] text-[#6B7280] text-xs font-semibold uppercase tracking-wider border-b border-[#ECEDEF] whitespace-nowrap">
                                 <th class="p-3 pl-4">仕入日</th>
                                 <th class="p-3">仕入れ商品内訳</th>
                                 <th class="p-3 text-right">仕入総額</th>
@@ -697,158 +549,144 @@
                                 <th class="p-3 text-center pr-4">操作</th>
                             </tr>
                         </thead>
-                        <tbody id="purchases-list" class="divide-y divide-[var(--border-color)] text-sm">
+                        <tbody id="purchases-list" class="divide-y divide-[#ECEDEF] text-sm">
                         </tbody>
                     </table>
                 </div>
                 <div id="purchases-empty-state" class="hidden p-12 text-center">
-                    <div class="inline-flex p-4 bg-[var(--bg-subtle)] text-[var(--text-sub)] rounded-full mb-3">
+                    <div class="inline-flex p-4 bg-[#F8F8F9] text-[#6B7280] rounded-full mb-3">
                         <span class="text-4xl leading-none" role="img" aria-hidden="true">🛍️</span>
                     </div>
-                    <p class="text-[var(--text-sub)] font-medium">仕入れデータがありません</p>
+                    <p class="text-[#6B7280] font-medium">仕入れデータがありません</p>
                 </div>
             </div>
         </section>
 
         <!-- 6. 設定・データ管理 タブ -->
         <section id="tab-settings" class="tab-content hidden max-w-2xl mx-auto space-y-6">
-            <!-- テーマ設定カード -->
-            <div class="bg-[var(--card-bg)] p-6 rounded-2xl border border-[var(--border-color)] app-card-shadow space-y-3">
-                <h2 class="text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-[var(--text-main)]"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-                    テーマ
-                </h2>
-                <div class="grid grid-cols-3 gap-2 bg-[var(--bg-subtle)] p-1 rounded-xl text-xs font-bold text-center border border-[var(--border-color)]">
-                    <button type="button" id="theme-btn-system" onclick="setThemePreference('system')" class="py-2 rounded-lg text-[var(--text-sub)] transition-all">端末設定に合わせる</button>
-                    <button type="button" id="theme-btn-light" onclick="setThemePreference('light')" class="py-2 rounded-lg text-[var(--text-sub)] transition-all">ライト</button>
-                    <button type="button" id="theme-btn-dark" onclick="setThemePreference('dark')" class="py-2 rounded-lg text-[var(--text-sub)] transition-all">ダーク</button>
-                </div>
-                <p class="text-[11px] text-[var(--text-sub)]">選んだ内容はこの端末に保存され、次回起動時にも引き継がれます。</p>
-            </div>
-
             <!-- Gmail自動取込みの状態カード -->
-            <div class="bg-[var(--card-bg)] p-6 rounded-2xl border border-[var(--border-color)] app-card-shadow space-y-3">
-                <h2 class="text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
-                    <span class="text-xl text-[var(--text-main)] leading-none" role="img" aria-hidden="true">📬</span>
+            <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-3">
+                <h2 class="text-xl font-bold text-[#2F3440] flex items-center gap-2">
+                    <span class="text-xl text-[#1F2937] leading-none" role="img" aria-hidden="true">📬</span>
                     Gmail自動取込みの状態
                 </h2>
                 <div id="gmail-import-status" class="text-xs space-y-2">まだ一度も実行されていません</div>
             </div>
 
             <!-- システム設定カード -->
-            <div class="bg-[var(--card-bg)] p-6 rounded-2xl border border-[var(--border-color)] app-card-shadow space-y-4">
-                <h2 class="text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
-                    <span class="text-xl text-[var(--text-main)] leading-none" role="img" aria-hidden="true">🎚️</span>
+            <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-4">
+                <h2 class="text-xl font-bold text-[#2F3440] flex items-center gap-2">
+                    <span class="text-xl text-[#1F2937] leading-none" role="img" aria-hidden="true">🎚️</span>
                     計算設定
                 </h2>
                 <div>
-                    <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">メルカリ販売手数料率 (%)</label>
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">メルカリ販売手数料率 (%)</label>
                     <div class="flex items-center gap-2">
-                        <input type="number" id="setting-fee-rate" min="0" max="100" step="0.1" value="10" class="w-32 px-3.5 py-2 border border-[var(--border-color)] rounded-xl text-sm font-bold text-[var(--text-main)] focus:outline-none focus:border-[var(--accent-bg)]">
-                        <button onclick="saveFeeRateSetting()" class="px-4 py-2 bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white text-xs font-bold rounded-xl transition-colors">
+                        <input type="number" id="setting-fee-rate" min="0" max="100" step="0.1" value="10" class="w-32 px-3.5 py-2 border border-[#ECEDEF] rounded-xl text-sm font-bold text-[#2F3440] focus:outline-none focus:border-[#6B7280]">
+                        <button onclick="saveFeeRateSetting()" class="px-4 py-2 bg-[#6B7280] hover:bg-[#4B5563] text-white text-xs font-bold rounded-xl transition-colors">
                             保存する
                         </button>
                     </div>
-                    <p class="text-[11px] text-[var(--text-sub)] mt-1">通常は10%。カテゴリによって違う場合はここで変更できます。</p>
+                    <p class="text-[11px] text-[#6B7280] mt-1">通常は10%。カテゴリによって違う場合はここで変更できます。</p>
                 </div>
             </div>
 
             <!-- バックアップ・復元カード -->
-            <div class="bg-[var(--card-bg)] p-6 rounded-2xl border border-[var(--border-color)] app-card-shadow space-y-4">
-                <h2 class="text-xl font-bold text-[var(--text-main)]">データバックアップ & 復元</h2>
+            <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-4">
+                <h2 class="text-xl font-bold text-[#2F3440]">データバックアップ & 復元</h2>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    <button onclick="exportAllJSON()" class="p-4 border border-[var(--border-color)] bg-[var(--bg-subtle)]/60 rounded-xl text-left hover:border-[var(--accent-bg)] transition-all flex items-start gap-3">
-                        <div class="p-2.5 bg-[var(--card-bg)] text-[var(--text-main)] rounded-lg shrink-0 border border-[var(--border-color)]">
+                    <button onclick="exportAllJSON()" class="p-4 border border-[#E5E7EB] bg-[#F3F4F6]/60 rounded-xl text-left hover:border-[#6B7280] transition-all flex items-start gap-3">
+                        <div class="p-2.5 bg-white text-[#1F2937] rounded-lg shrink-0 border border-[#E5E7EB]">
                             <span class="text-xl leading-none" role="img" aria-hidden="true">📄</span>
                         </div>
                         <div>
-                            <div class="font-bold text-[var(--text-main)] text-sm">全データ一括バックアップ (JSON)</div>
-                            <div class="text-xs text-[var(--text-main)] mt-0.5">商品マスター・売上・仕入れを保存</div>
+                            <div class="font-bold text-[#2F3440] text-sm">全データ一括バックアップ (JSON)</div>
+                            <div class="text-xs text-[#1F2937] mt-0.5">商品マスター・売上・仕入れを保存</div>
                         </div>
                     </button>
 
-                    <button onclick="exportCSV('sales')" class="p-4 border border-[var(--border-color)] rounded-xl text-left hover:border-[var(--accent-bg)] hover:bg-[var(--bg-subtle)]/30 transition-all flex items-start gap-3">
-                        <div class="p-2.5 bg-[var(--bg-subtle)] text-[var(--text-main)] rounded-lg shrink-0 border border-[var(--border-color)]">
+                    <button onclick="exportCSV('sales')" class="p-4 border border-[#ECEDEF] rounded-xl text-left hover:border-[#6B7280] hover:bg-[#F3F4F6]/30 transition-all flex items-start gap-3">
+                        <div class="p-2.5 bg-[#F8F8F9] text-[#2F3440] rounded-lg shrink-0 border border-[#ECEDEF]">
                             <span class="text-xl leading-none" role="img" aria-hidden="true">📥</span>
                         </div>
                         <div>
-                            <div class="font-bold text-[var(--text-main)] text-sm">売上CSVダウンロード</div>
-                            <div class="text-xs text-[var(--text-sub)] mt-0.5">売上データをCSV形式で出力</div>
+                            <div class="font-bold text-[#2F3440] text-sm">売上CSVダウンロード</div>
+                            <div class="text-xs text-[#6B7280] mt-0.5">売上データをCSV形式で出力</div>
                         </div>
                     </button>
                 </div>
 
-                <div class="p-4 border border-[var(--border-color)] rounded-xl space-y-3 bg-[var(--bg-subtle)]">
-                    <div class="font-bold text-sm text-[var(--text-main)] flex items-center gap-2">
-                        <span class="text-base text-[var(--text-main)] leading-none" role="img" aria-hidden="true">📤</span>
+                <div class="p-4 border border-[#ECEDEF] rounded-xl space-y-3 bg-[#F8F8F9]">
+                    <div class="font-bold text-sm text-[#2F3440] flex items-center gap-2">
+                        <span class="text-base text-[#1F2937] leading-none" role="img" aria-hidden="true">📤</span>
                         バックアップから復元 (JSON / CSV)
                     </div>
 
-                    <div class="flex items-center gap-4 text-xs font-semibold text-[var(--text-sub)]">
+                    <div class="flex items-center gap-4 text-xs font-semibold text-[#6B7280]">
                         <span>復元モード:</span>
                         <label class="flex items-center gap-1 cursor-pointer">
-                            <input type="radio" name="import-mode" value="append" checked class="text-[var(--text-main)]">
+                            <input type="radio" name="import-mode" value="append" checked class="text-[#1F2937]">
                             <span>追加 (結合)</span>
                         </label>
                         <label class="flex items-center gap-1 cursor-pointer">
-                            <input type="radio" name="import-mode" value="replace" class="text-[var(--text-main)]">
+                            <input type="radio" name="import-mode" value="replace" class="text-[#1F2937]">
                             <span class="text-red-500">置き換え (初期化して復元)</span>
                         </label>
                     </div>
 
-                    <input type="file" id="backup-file-input" accept=".json,.csv" onchange="handleBackupFileImport(event)" class="block w-full text-xs text-[var(--text-sub)] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#2F3440] file:text-white hover:file:bg-black cursor-pointer">
+                    <input type="file" id="backup-file-input" accept=".json,.csv" onchange="handleBackupFileImport(event)" class="block w-full text-xs text-[#6B7280] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#2F3440] file:text-white hover:file:bg-black cursor-pointer">
                 </div>
             </div>
 
             <!-- アカウント情報 -->
-            <div class="bg-[var(--card-bg)] p-6 rounded-2xl border border-[var(--border-color)] app-card-shadow space-y-3">
-                <h3 class="font-bold text-[var(--text-main)] text-base">アカウント情報</h3>
-                <div id="account-status-display" class="text-xs text-[var(--text-sub)]">確認中...</div>
+            <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-3">
+                <h3 class="font-bold text-[#2F3440] text-base">アカウント情報</h3>
+                <div id="account-status-display" class="text-xs text-[#6B7280]">確認中...</div>
 
-                <div class="bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-xl p-3 space-y-1.5">
-                    <div class="text-[10px] text-[var(--text-sub)] font-semibold">ID（外部連携の設定で使用）</div>
+                <div class="bg-[#F8F8F9] border border-[#ECEDEF] rounded-xl p-3 space-y-1.5">
+                    <div class="text-[10px] text-[#6B7280] font-semibold">ID（外部連携の設定で使用）</div>
                     <div class="flex items-center gap-2">
-                        <code id="account-uid-display" class="flex-1 text-xs font-mono text-[var(--text-main)] break-all select-all">読み込み中...</code>
-                        <button onclick="copyUidToClipboard()" class="shrink-0 px-3 py-1.5 bg-[var(--card-bg)] border border-[var(--border-color)] rounded-lg text-xs font-bold text-[var(--text-main)] hover:bg-[var(--bg-subtle)]">コピー</button>
+                        <code id="account-uid-display" class="flex-1 text-xs font-mono text-[#2F3440] break-all select-all">読み込み中...</code>
+                        <button onclick="copyUidToClipboard()" class="shrink-0 px-3 py-1.5 bg-white border border-[#ECEDEF] rounded-lg text-xs font-bold text-[#2F3440] hover:bg-[#ECEDEF]">コピー</button>
                     </div>
                 </div>
 
-                <div id="account-link-section" class="hidden space-y-4 pt-2 border-t border-[var(--border-color)]">
+                <div id="account-link-section" class="hidden space-y-4 pt-2 border-t border-[#ECEDEF]">
                     <div class="space-y-2">
-                        <p class="text-[11px] text-[var(--text-sub)] font-semibold">他の端末で設定済みのメールアドレスがあればログイン</p>
-                        <input type="email" id="settings-login-email" placeholder="メールアドレス" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm focus:outline-none focus:border-[var(--accent-bg)]">
-                        <input type="password" id="settings-login-password" placeholder="パスワード" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm focus:outline-none focus:border-[var(--accent-bg)]">
+                        <p class="text-[11px] text-[#6B7280] font-semibold">他の端末で設定済みのメールアドレスがあればログイン</p>
+                        <input type="email" id="settings-login-email" placeholder="メールアドレス" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#6B7280]">
+                        <input type="password" id="settings-login-password" placeholder="パスワード" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#6B7280]">
                         <button onclick="handleSettingsLogin()" class="w-full bg-[#2F3440] hover:bg-black text-white text-xs font-bold py-2.5 rounded-xl">ログインする</button>
                         <p id="settings-login-error" class="hidden text-xs text-red-500"></p>
                     </div>
 
-                    <div class="space-y-2 pt-3 border-t border-dashed border-[var(--border-color)]">
-                        <p class="text-[11px] text-[var(--text-sub)] font-semibold">今のデータにメールアドレスを設定する</p>
-                        <p class="text-[11px] text-[var(--text-sub)]">設定すると、他の端末からもこのデータにログインできます。</p>
-                        <input type="email" id="link-email" placeholder="メールアドレス" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm focus:outline-none focus:border-[var(--accent-bg)]">
-                        <input type="password" id="link-password" placeholder="パスワード（6文字以上）" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm focus:outline-none focus:border-[var(--accent-bg)]">
-                        <button onclick="handleLinkEmailAccount()" class="w-full bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white text-xs font-bold py-2.5 rounded-xl">このデータに設定する</button>
+                    <div class="space-y-2 pt-3 border-t border-dashed border-[#ECEDEF]">
+                        <p class="text-[11px] text-[#6B7280] font-semibold">今のデータにメールアドレスを設定する</p>
+                        <p class="text-[11px] text-[#6B7280]">設定すると、他の端末からもこのデータにログインできます。</p>
+                        <input type="email" id="link-email" placeholder="メールアドレス" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#6B7280]">
+                        <input type="password" id="link-password" placeholder="パスワード（6文字以上）" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#6B7280]">
+                        <button onclick="handleLinkEmailAccount()" class="w-full bg-[#6B7280] hover:bg-[#4B5563] text-white text-xs font-bold py-2.5 rounded-xl">このデータに設定する</button>
                         <p id="link-account-error" class="hidden text-xs text-red-500"></p>
                     </div>
                 </div>
 
-                <div id="account-password-section" class="hidden space-y-2 pt-2 border-t border-[var(--border-color)]">
-                    <p class="text-[11px] text-[var(--text-sub)] font-semibold">パスワードの変更</p>
-                    <input type="password" id="pw-current" placeholder="現在のパスワード" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm focus:outline-none focus:border-[var(--accent-bg)]">
-                    <input type="password" id="pw-new" placeholder="新しいパスワード（6文字以上）" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm focus:outline-none focus:border-[var(--accent-bg)]">
+                <div id="account-password-section" class="hidden space-y-2 pt-2 border-t border-[#ECEDEF]">
+                    <p class="text-[11px] text-[#6B7280] font-semibold">パスワードの変更</p>
+                    <input type="password" id="pw-current" placeholder="現在のパスワード" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#6B7280]">
+                    <input type="password" id="pw-new" placeholder="新しいパスワード（6文字以上）" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#6B7280]">
                     <button onclick="handleChangePassword()" class="w-full bg-[#2F3440] hover:bg-black text-white text-xs font-bold py-2.5 rounded-xl">パスワードを変更する</button>
                     <p id="pw-change-error" class="hidden text-xs text-red-500"></p>
                 </div>
 
-                <div id="account-logout-section" class="hidden pt-2 border-t border-[var(--border-color)]">
-                    <button onclick="handleLogout()" class="w-full border border-[var(--border-color)] hover:bg-[var(--bg-subtle)] text-[var(--text-main)] text-xs font-bold py-2.5 rounded-xl">ログアウト</button>
+                <div id="account-logout-section" class="hidden pt-2 border-t border-[#ECEDEF]">
+                    <button onclick="handleLogout()" class="w-full border border-[#ECEDEF] hover:bg-[#F8F8F9] text-[#2F3440] text-xs font-bold py-2.5 rounded-xl">ログアウト</button>
                 </div>
             </div>
 
             <!-- 全消去 -->
-            <div class="bg-[var(--card-bg)] p-6 rounded-2xl border border-[var(--border-color)] app-card-shadow space-y-4">
-                <h3 class="font-bold text-[var(--text-main)] text-base">データ初期化</h3>
+            <div class="bg-white p-6 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-4">
+                <h3 class="font-bold text-[#2F3440] text-base">データ初期化</h3>
                 <div class="flex flex-wrap gap-3">
                     <button onclick="openClearAllModal()" class="px-4 py-2 bg-red-50 text-red-600 border border-red-100 rounded-xl text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-1.5">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -861,28 +699,28 @@
     </main>
 
     <!-- モバイルボトムナビゲーション -->
-    <div id="app-mobile-nav" class="hidden xl:hidden fixed bottom-0 left-0 right-0 bg-[var(--card-bg)]/95 backdrop-blur-md border-t border-[var(--border-color)] z-40 px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex justify-around shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
-        <button onclick="switchTab('dashboard')" id="mobile-nav-dashboard" class="flex flex-col items-center p-1 text-[10px] font-bold text-[var(--text-main)]">
+    <div id="app-mobile-nav" class="hidden xl:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEDEF] z-40 px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex justify-around shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
+        <button onclick="switchTab('dashboard')" id="mobile-nav-dashboard" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#1F2937]">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mb-0.5"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
             ホーム
         </button>
-        <button onclick="switchTab('product-stats')" id="mobile-nav-product-stats" class="flex flex-col items-center p-1 text-[10px] font-bold text-[var(--text-sub)]">
+        <button onclick="switchTab('product-stats')" id="mobile-nav-product-stats" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#6B7280]">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mb-0.5"><path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z"/><path d="m7 16.5-4.74-2.85"/><path d="m7 16.5 5-3"/><path d="M7 16.5v5.17"/><path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z"/><path d="m17 16.5-5-3"/><path d="m17 16.5 4.74-2.85"/><path d="M17 16.5v5.17"/><path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z"/><path d="M12 8 7.26 5.15"/><path d="m12 8 4.74-2.85"/><path d="M12 13.5V8"/></svg>
             実績
         </button>
-        <button onclick="switchTab('transactions')" id="mobile-nav-transactions" class="flex flex-col items-center p-1 text-[10px] font-bold text-[var(--text-sub)]">
+        <button onclick="switchTab('transactions')" id="mobile-nav-transactions" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#6B7280]">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mb-0.5"><path d="M3 5h.01"/><path d="M3 12h.01"/><path d="M3 19h.01"/><path d="M8 5h13"/><path d="M8 12h13"/><path d="M8 19h13"/></svg>
             取引一覧
         </button>
-        <button onclick="switchTab('add')" id="mobile-nav-add" class="flex flex-col items-center p-1 text-[10px] font-bold text-[var(--text-sub)]">
+        <button onclick="switchTab('add')" id="mobile-nav-add" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#6B7280]">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mb-0.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
             登録
         </button>
-        <button onclick="switchTab('purchases')" id="mobile-nav-purchases" class="flex flex-col items-center p-1 text-[10px] font-bold text-[var(--text-sub)]">
+        <button onclick="switchTab('purchases')" id="mobile-nav-purchases" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#6B7280]">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mb-0.5"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg>
             仕入れ
         </button>
-        <button onclick="switchTab('settings')" id="mobile-nav-settings" class="flex flex-col items-center p-1 text-[10px] font-bold text-[var(--text-sub)]">
+        <button onclick="switchTab('settings')" id="mobile-nav-settings" class="flex flex-col items-center p-1 text-[10px] font-bold text-[#6B7280]">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mb-0.5"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>
             設定
         </button>
@@ -890,17 +728,17 @@
 
     <!-- 商品詳細モーダル -->
     <div id="product-detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--card-bg)] rounded-2xl max-w-2xl w-full p-6 shadow-xl space-y-5 relative max-h-[90vh] overflow-y-auto border border-[var(--border-color)]">
-            <button onclick="closeProductDetailModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[var(--text-sub)] hover:text-[var(--text-main)]">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl space-y-5 relative max-h-[90vh] overflow-y-auto border border-[#ECEDEF]">
+            <button onclick="closeProductDetailModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#6B7280] hover:text-[#2F3440]">
                 <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
 
-            <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
+            <div class="flex items-center justify-between border-b border-[#ECEDEF] pb-3">
                 <div>
-                    <span class="px-2 py-0.5 text-[10px] font-bold bg-[var(--bg-subtle)] text-[var(--text-main)] rounded-md border border-[var(--border-color)]">ID: <span id="detail-product-id">---</span></span>
-                    <h3 id="detail-product-title" class="text-xl font-bold text-[var(--text-main)] mt-1">商品名</h3>
+                    <span class="px-2 py-0.5 text-[10px] font-bold bg-[#F3F4F6] text-[#1F2937] rounded-md border border-[#E5E7EB]">ID: <span id="detail-product-id">---</span></span>
+                    <h3 id="detail-product-title" class="text-xl font-bold text-[#2F3440] mt-1">商品名</h3>
                 </div>
-                <button onclick="openEditProductMasterModal()" class="px-3 py-1.5 bg-[var(--bg-subtle)] hover:bg-[var(--border-color)] text-[var(--text-main)] text-xs font-bold rounded-xl transition-colors flex items-center gap-1 border border-[var(--border-color)]">
+                <button onclick="openEditProductMasterModal()" class="px-3 py-1.5 bg-[#F8F8F9] hover:bg-[#ECEDEF] text-[#2F3440] text-xs font-bold rounded-xl transition-colors flex items-center gap-1 border border-[#ECEDEF]">
                     <span class="text-sm leading-none" role="img" aria-hidden="true">🔧</span>
                     初期在庫設定
                 </button>
@@ -908,50 +746,50 @@
 
             <!-- 数値サマリーグリッド -->
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center">
-                <div class="bg-[var(--count-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
-                    <div class="text-[10px] text-[var(--text-sub)] font-semibold">累計販売数</div>
-                    <div id="detail-total-sold" class="text-base font-extrabold text-[var(--text-main)] mt-0.5">0 個</div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#6B7280] font-semibold">累計販売数</div>
+                    <div id="detail-total-sold" class="text-base font-extrabold text-[#1F2937] mt-0.5">0 個</div>
                 </div>
-                <div class="bg-[var(--sales-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
-                    <div class="text-[10px] text-[var(--text-sub)] font-semibold">累計売上</div>
-                    <div id="detail-total-sales" class="text-base font-extrabold text-[var(--text-main)] mt-0.5">¥0</div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#6B7280] font-semibold">累計売上</div>
+                    <div id="detail-total-sales" class="text-base font-extrabold text-[#2F3440] mt-0.5">¥0</div>
                 </div>
-                <div class="bg-[var(--net-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
-                    <div class="text-[10px] text-[var(--text-sub)] font-semibold">累計手取り</div>
-                    <div id="detail-sales-net" class="text-base font-extrabold text-[var(--text-main)] mt-0.5">¥0</div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#6B7280] font-semibold">累計手取り</div>
+                    <div id="detail-sales-net" class="text-base font-extrabold text-teal-600 mt-0.5">¥0</div>
                 </div>
-                <div class="bg-[var(--purchase-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
-                    <div class="text-[10px] text-[var(--text-sub)] font-semibold">累計仕入数</div>
-                    <div id="detail-purchased-qty" class="text-base font-extrabold text-[var(--text-main)] mt-0.5">0 個</div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#6B7280] font-semibold">累計仕入数</div>
+                    <div id="detail-purchased-qty" class="text-base font-extrabold text-[#2F3440] mt-0.5">0 個</div>
                 </div>
-                <div class="bg-[var(--stock-icon-bg)] p-2.5 rounded-xl border border-[var(--border-color)]">
-                    <div class="text-[10px] text-[var(--text-sub)] font-semibold">現在庫</div>
-                    <div id="detail-stock" class="text-base font-extrabold text-[var(--text-main)] mt-0.5">未設定</div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#6B7280] font-semibold">現在庫</div>
+                    <div id="detail-stock" class="text-base font-extrabold text-amber-600 mt-0.5">未設定</div>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
-                <div class="bg-[var(--bg-subtle)] p-2.5 rounded-xl border border-[var(--border-color)]">
-                    <div class="text-[10px] text-[var(--text-sub)] font-semibold">平均販売価格</div>
-                    <div id="detail-avg-price" class="text-sm font-bold text-[var(--text-main)] mt-0.5">¥0</div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#6B7280] font-semibold">平均販売価格</div>
+                    <div id="detail-avg-price" class="text-sm font-bold text-[#2F3440] mt-0.5">¥0</div>
                 </div>
-                <div class="bg-[var(--bg-subtle)] p-2.5 rounded-xl border border-[var(--border-color)]">
-                    <div class="text-[10px] text-[var(--text-sub)] font-semibold">最高 / 最低価格</div>
-                    <div id="detail-minmax-price" class="text-xs font-bold text-[var(--text-main)] mt-1">¥0 / ¥0</div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#6B7280] font-semibold">最高 / 最低価格</div>
+                    <div id="detail-minmax-price" class="text-xs font-bold text-[#2F3440] mt-1">¥0 / ¥0</div>
                 </div>
-                <div class="bg-[var(--bg-subtle)] p-2.5 rounded-xl border border-[var(--border-color)]">
-                    <div class="text-[10px] text-[var(--text-sub)] font-semibold">直近販売価格</div>
-                    <div id="detail-latest-price" class="text-sm font-bold text-[var(--text-main)] mt-0.5">¥0</div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#6B7280] font-semibold">直近販売価格</div>
+                    <div id="detail-latest-price" class="text-sm font-bold text-[#2F3440] mt-0.5">¥0</div>
                 </div>
-                <div class="bg-[var(--bg-subtle)] p-2.5 rounded-xl border border-[var(--border-color)]">
-                    <div class="text-[10px] text-[var(--text-sub)] font-semibold">最終販売日</div>
-                    <div id="detail-last-date" class="text-xs font-bold text-[var(--text-main)] mt-1">--</div>
+                <div class="bg-[#F8F8F9] p-2.5 rounded-xl border border-[#ECEDEF]">
+                    <div class="text-[10px] text-[#6B7280] font-semibold">最終販売日</div>
+                    <div id="detail-last-date" class="text-xs font-bold text-[#2F3440] mt-1">--</div>
                 </div>
             </div>
 
-            <div class="bg-[var(--bg-subtle)] p-4 rounded-xl border border-[var(--border-color)]">
-                <h4 class="text-xs font-bold text-[var(--text-main)] mb-2 flex items-center gap-1.5">
-                    <span class="text-sm text-[var(--text-main)] leading-none" role="img" aria-hidden="true">📈</span>
+            <div class="bg-[#F8F8F9] p-4 rounded-xl border border-[#ECEDEF]">
+                <h4 class="text-xs font-bold text-[#2F3440] mb-2 flex items-center gap-1.5">
+                    <span class="text-sm text-[#1F2937] leading-none" role="img" aria-hidden="true">📈</span>
                     販売価格の推移
                 </h4>
                 <div class="h-44 relative">
@@ -960,11 +798,11 @@
             </div>
 
             <div class="space-y-2">
-                <h4 class="text-xs font-bold text-[var(--text-main)] flex items-center gap-1.5">
-                    <span class="text-sm text-[var(--text-sub)] leading-none" role="img" aria-hidden="true">🕓</span>
+                <h4 class="text-xs font-bold text-[#2F3440] flex items-center gap-1.5">
+                    <span class="text-sm text-[#6B7280] leading-none" role="img" aria-hidden="true">🕓</span>
                     販売履歴
                 </h4>
-                <div id="product-sales-timeline" class="max-h-40 overflow-y-auto bg-[var(--bg-subtle)] rounded-xl p-3 border border-[var(--border-color)] text-xs space-y-1.5">
+                <div id="product-sales-timeline" class="max-h-40 overflow-y-auto bg-[#F8F8F9] rounded-xl p-3 border border-[#ECEDEF] text-xs space-y-1.5">
                     <!-- JS描写 -->
                 </div>
             </div>
@@ -977,33 +815,33 @@
 
     <!-- 初期在庫・警告設定モーダル -->
     <div id="product-master-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--card-bg)] rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 relative border border-[var(--border-color)]">
-            <button onclick="closeProductMasterModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[var(--text-sub)] hover:text-[var(--text-main)]">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 relative border border-[#ECEDEF]">
+            <button onclick="closeProductMasterModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#6B7280] hover:text-[#2F3440]">
                 <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
-            <h3 class="text-lg font-bold text-[var(--text-main)]">在庫・マスター設定</h3>
+            <h3 class="text-lg font-bold text-[#2F3440]">在庫・マスター設定</h3>
 
             <form id="product-master-form" onsubmit="handleProductMasterSubmit(event)" class="space-y-4">
                 <input type="hidden" id="pm-id">
                 <div>
-                    <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">商品名</label>
-                    <input type="text" id="pm-title" required class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm font-bold text-[var(--text-main)]">
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">商品名</label>
+                    <input type="text" id="pm-title" required class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-bold text-[#2F3440]">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">初期在庫数 (個)</label>
-                        <input type="number" id="pm-initial-stock" min="0" placeholder="未設定時は空欄" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm font-semibold">
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">初期在庫数 (個)</label>
+                        <input type="number" id="pm-initial-stock" min="0" placeholder="未設定時は空欄" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-semibold">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">在庫警告数 (個)</label>
-                        <input type="number" id="pm-alert-stock" min="0" value="5" required class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm font-semibold">
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">在庫警告数 (個)</label>
+                        <input type="number" id="pm-alert-stock" min="0" value="5" required class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-semibold">
                     </div>
                 </div>
 
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeProductMasterModal()" class="px-4 py-2 border border-[var(--border-color)] text-[var(--text-sub)] rounded-xl text-sm font-medium">キャンセル</button>
-                    <button type="submit" class="px-4 py-2 bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white rounded-xl text-sm font-medium">保存する</button>
+                    <button type="button" onclick="closeProductMasterModal()" class="px-4 py-2 border border-[#ECEDEF] text-[#6B7280] rounded-xl text-sm font-medium">キャンセル</button>
+                    <button type="submit" class="px-4 py-2 bg-[#6B7280] hover:bg-[#4B5563] text-white rounded-xl text-sm font-medium">保存する</button>
                 </div>
             </form>
         </div>
@@ -1011,19 +849,19 @@
 
     <!-- 新規商品作成ダイアログ -->
     <div id="new-product-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--card-bg)] rounded-2xl max-w-sm w-full p-5 shadow-xl space-y-4 relative border border-[var(--border-color)]">
-            <button onclick="closeNewProductModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[var(--text-sub)] hover:text-[var(--text-main)]">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl space-y-4 relative border border-[#ECEDEF]">
+            <button onclick="closeNewProductModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#6B7280] hover:text-[#2F3440]">
                 <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
-            <h3 class="text-base font-bold text-[var(--text-main)]">新しい商品をマスター追加</h3>
+            <h3 class="text-base font-bold text-[#2F3440]">新しい商品をマスター追加</h3>
 
             <form id="new-product-form" onsubmit="handleNewProductSubmit(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">新商品名 <span class="text-[var(--text-main)]">*</span></label>
-                    <input type="text" id="new-prod-title" required placeholder="例: 商品ABC" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm font-semibold">
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">新商品名 <span class="text-[#1F2937]">*</span></label>
+                    <input type="text" id="new-prod-title" required placeholder="例: 商品ABC" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-semibold">
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeNewProductModal()" class="px-3.5 py-2 border border-[var(--border-color)] text-[var(--text-sub)] rounded-xl text-xs font-medium">キャンセル</button>
+                    <button type="button" onclick="closeNewProductModal()" class="px-3.5 py-2 border border-[#ECEDEF] text-[#6B7280] rounded-xl text-xs font-medium">キャンセル</button>
                     <button type="submit" class="px-4 py-2 bg-[#2F3440] hover:bg-black text-white rounded-xl text-xs font-medium">追加する</button>
                 </div>
             </form>
@@ -1032,66 +870,66 @@
 
     <!-- 編集モーダル（売上） -->
     <div id="edit-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--card-bg)] rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto border border-[var(--border-color)]">
-            <button onclick="closeEditModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[var(--text-sub)] hover:text-[var(--text-main)]">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto border border-[#ECEDEF]">
+            <button onclick="closeEditModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#6B7280] hover:text-[#2F3440]">
                 <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
-            <h3 class="text-lg font-bold text-[var(--text-main)]">取引データの編集</h3>
+            <h3 class="text-lg font-bold text-[#2F3440]">取引データの編集</h3>
 
             <form id="edit-form" onsubmit="handleEditSubmit(event)" class="space-y-4">
                 <input type="hidden" id="edit-id">
                 <div>
-                    <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">日付</label>
-                    <input type="date" id="edit-date" required class="w-full max-w-full box-border appearance-none px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm">
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">日付</label>
+                    <input type="date" id="edit-date" required class="w-full max-w-full box-border appearance-none px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1.5">商品指定方法</label>
-                    <div class="grid grid-cols-2 gap-2 bg-[var(--bg-subtle)] p-1 rounded-xl text-xs font-bold text-center border border-[var(--border-color)]">
-                        <button type="button" id="btn-edit-mode-master" onclick="setEditProductInputMode('master')" class="py-1.5 rounded-lg bg-[var(--card-bg)] text-[var(--text-main)] app-card-shadow transition-all">
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1.5">商品指定方法</label>
+                    <div class="grid grid-cols-2 gap-2 bg-[#F8F8F9] p-1 rounded-xl text-xs font-bold text-center border border-[#ECEDEF]">
+                        <button type="button" id="btn-edit-mode-master" onclick="setEditProductInputMode('master')" class="py-1.5 rounded-lg bg-white text-[#1F2937] shadow-sm transition-all">
                             マスター商品
                         </button>
-                        <button type="button" id="btn-edit-mode-single" onclick="setEditProductInputMode('single')" class="py-1.5 rounded-lg text-[var(--text-sub)] transition-all">
+                        <button type="button" id="btn-edit-mode-single" onclick="setEditProductInputMode('single')" class="py-1.5 rounded-lg text-[#6B7280] transition-all">
                             単発商品
                         </button>
                     </div>
                 </div>
 
                 <div id="edit-section-master" class="space-y-2">
-                    <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">商品選択</label>
-                    <select id="edit-product-id" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm font-bold text-[var(--text-main)]">
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">商品選択</label>
+                    <select id="edit-product-id" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-bold text-[#2F3440]">
                         <!-- JS挿入 -->
                     </select>
                 </div>
 
                 <div id="edit-section-single" class="hidden space-y-2">
-                    <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">単発商品名</label>
-                    <input type="text" id="edit-single-title" placeholder="例: rino様 リクエスト 2点まとめ" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm font-bold">
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">単発商品名</label>
+                    <input type="text" id="edit-single-title" placeholder="例: rino様 リクエスト 2点まとめ" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-bold">
                     <div>
-                        <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1 mt-2">個別仕入原価 (円)</label>
-                        <input type="number" id="edit-single-cost" min="0" placeholder="例: 1500" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm">
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1 mt-2">個別仕入原価 (円)</label>
+                        <input type="number" id="edit-single-cost" min="0" placeholder="例: 1500" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">販売価格 (円)</label>
-                        <input type="number" id="edit-sell-price" required min="0" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm">
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">販売価格 (円)</label>
+                        <input type="number" id="edit-sell-price" required min="0" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">発送送料 (円)</label>
-                        <input type="number" id="edit-shipping-fee" min="0" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm">
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">発送送料 (円)</label>
+                        <input type="number" id="edit-shipping-fee" min="0" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">メモ</label>
-                    <textarea id="edit-memo" rows="2" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm"></textarea>
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">メモ</label>
+                    <textarea id="edit-memo" rows="2" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm"></textarea>
                 </div>
 
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-[var(--border-color)] text-[var(--text-sub)] rounded-xl text-sm font-medium">キャンセル</button>
-                    <button type="submit" class="px-4 py-2 bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white rounded-xl text-sm font-medium">更新する</button>
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-[#ECEDEF] text-[#6B7280] rounded-xl text-sm font-medium">キャンセル</button>
+                    <button type="submit" class="px-4 py-2 bg-[#6B7280] hover:bg-[#4B5563] text-white rounded-xl text-sm font-medium">更新する</button>
                 </div>
             </form>
         </div>
@@ -1099,30 +937,30 @@
 
     <!-- 仕入れ新規/編集モーダル -->
     <div id="purchase-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--card-bg)] rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto border border-[var(--border-color)]">
-            <button onclick="closePurchaseModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[var(--text-sub)] hover:text-[var(--text-main)]">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto border border-[#ECEDEF]">
+            <button onclick="closePurchaseModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[#6B7280] hover:text-[#2F3440]">
                 <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
-            <h3 id="purchase-modal-title" class="text-lg font-bold text-[var(--text-main)]">新規まとめ仕入れの登録</h3>
+            <h3 id="purchase-modal-title" class="text-lg font-bold text-[#2F3440]">新規まとめ仕入れの登録</h3>
 
             <form id="purchase-form" onsubmit="handlePurchaseSubmit(event)" class="space-y-4">
                 <input type="hidden" id="pur-id">
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">仕入日 <span class="text-[var(--text-main)]">*</span></label>
-                        <input type="date" id="pur-date" required class="w-full max-w-full box-border appearance-none px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm focus:outline-none focus:border-[var(--accent-bg)]">
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">仕入日 <span class="text-[#1F2937]">*</span></label>
+                        <input type="date" id="pur-date" required class="w-full max-w-full box-border appearance-none px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm focus:outline-none focus:border-[#6B7280]">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">仕入総額 (円) <span class="text-[var(--text-main)]">*</span></label>
-                        <input type="number" id="pur-amount" min="0" required placeholder="例: 30000" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm font-extrabold text-[var(--text-main)] focus:outline-none focus:border-[var(--accent-bg)]">
+                        <label class="block text-xs font-semibold text-[#6B7280] mb-1">仕入総額 (円) <span class="text-[#1F2937]">*</span></label>
+                        <input type="number" id="pur-amount" min="0" required placeholder="例: 30000" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm font-extrabold text-[#2F3440] focus:outline-none focus:border-[#6B7280]">
                     </div>
                 </div>
 
-                <div class="space-y-2 border-t border-b border-[var(--border-color)] py-3">
+                <div class="space-y-2 border-t border-b border-[#ECEDEF] py-3">
                     <div class="flex items-center justify-between">
-                        <label class="block text-xs font-bold text-[var(--text-main)]">仕入れ商品内訳 (商品 & 数量)</label>
-                        <button type="button" onclick="addPurchaseItemRow()" class="text-xs text-[var(--text-main)] font-bold hover:underline flex items-center gap-1">
+                        <label class="block text-xs font-bold text-[#2F3440]">仕入れ商品内訳 (商品 & 数量)</label>
+                        <button type="button" onclick="addPurchaseItemRow()" class="text-xs text-[#1F2937] font-bold hover:underline flex items-center gap-1">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg> 商品を追加
                         </button>
                     </div>
@@ -1133,13 +971,13 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-[var(--text-sub)] mb-1">メモ</label>
-                    <textarea id="pur-memo" rows="2" placeholder="例: 8月まとめ仕入れ" class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-sm"></textarea>
+                    <label class="block text-xs font-semibold text-[#6B7280] mb-1">メモ</label>
+                    <textarea id="pur-memo" rows="2" placeholder="例: 8月まとめ仕入れ" class="w-full px-3 py-2 border border-[#ECEDEF] rounded-lg text-sm"></textarea>
                 </div>
 
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closePurchaseModal()" class="px-4 py-2 border border-[var(--border-color)] text-[var(--text-sub)] rounded-xl text-sm font-medium">キャンセル</button>
-                    <button type="submit" class="px-4 py-2 bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white rounded-xl text-sm font-medium">保存する</button>
+                    <button type="button" onclick="closePurchaseModal()" class="px-4 py-2 border border-[#ECEDEF] text-[#6B7280] rounded-xl text-sm font-medium">キャンセル</button>
+                    <button type="submit" class="px-4 py-2 bg-[#6B7280] hover:bg-[#4B5563] text-white rounded-xl text-sm font-medium">保存する</button>
                 </div>
             </form>
         </div>
@@ -1147,43 +985,43 @@
 
     <!-- 単体削除確認モーダル（元に戻せない旨を明記） -->
     <div id="delete-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--card-bg)] rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4 text-center border border-[var(--border-color)]">
-            <div class="w-12 h-12 bg-[var(--bg-subtle)] text-[var(--text-main)] rounded-full flex items-center justify-center mx-auto">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4 text-center border border-[#ECEDEF]">
+            <div class="w-12 h-12 bg-[#F3F4F6] text-[#1F2937] rounded-full flex items-center justify-center mx-auto">
                 <span class="text-2xl leading-none" role="img" aria-hidden="true">⚠️</span>
             </div>
             <div>
-                <h3 class="text-base font-bold text-[var(--text-main)]">データの削除</h3>
-                <p class="text-xs text-[var(--text-sub)] mt-1">「<span id="delete-item-name" class="font-bold text-[var(--text-main)]"></span>」を削除しますか？</p>
+                <h3 class="text-base font-bold text-[#2F3440]">データの削除</h3>
+                <p class="text-xs text-[#6B7280] mt-1">「<span id="delete-item-name" class="font-bold text-[#2F3440]"></span>」を削除しますか？</p>
                 <p class="text-[11px] text-red-500 font-bold mt-2">この操作は元に戻せません。</p>
             </div>
             <div class="flex justify-center gap-3 pt-2">
-                <button onclick="closeDeleteModal()" class="w-full py-2.5 border border-[var(--border-color)] text-[var(--text-sub)] rounded-xl text-sm font-medium">キャンセル</button>
-                <button onclick="confirmDelete()" class="w-full py-2.5 bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white rounded-xl text-sm font-medium app-card-shadow">削除する</button>
+                <button onclick="closeDeleteModal()" class="w-full py-2.5 border border-[#ECEDEF] text-[#6B7280] rounded-xl text-sm font-medium">キャンセル</button>
+                <button onclick="confirmDelete()" class="w-full py-2.5 bg-[#6B7280] hover:bg-[#4B5563] text-white rounded-xl text-sm font-medium shadow-sm">削除する</button>
             </div>
         </div>
     </div>
 
     <!-- 二段階全消去確認モーダル -->
     <div id="clear-all-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--card-bg)] rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 text-center border border-[var(--border-color)]">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 text-center border border-[#ECEDEF]">
             <div class="w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             </div>
             <div>
-                <h3 class="text-base font-bold text-[var(--text-main)]">【二段階確認】全データの初期化</h3>
-                <p class="text-xs text-[var(--text-sub)] mt-1">すべての登録データを消去します。<br>この操作は絶対に取り消せません。</p>
+                <h3 class="text-base font-bold text-[#2F3440]">【二段階確認】全データの初期化</h3>
+                <p class="text-xs text-[#6B7280] mt-1">すべての登録データを消去します。<br>この操作は絶対に取り消せません。</p>
             </div>
 
-            <div class="bg-[var(--bg-subtle)] p-3 rounded-xl border border-[var(--border-color)] text-xs text-[var(--text-main)]">
+            <div class="bg-[#F3F4F6] p-3 rounded-xl border border-[#E5E7EB] text-xs text-[#2F3440]">
                 消去前にバックアップのダウンロードをお勧めします。
-                <button onclick="exportAllJSON()" class="mt-2 block w-full py-1.5 bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white font-bold rounded-lg transition-colors">
+                <button onclick="exportAllJSON()" class="mt-2 block w-full py-1.5 bg-[#6B7280] hover:bg-[#4B5563] text-white font-bold rounded-lg transition-colors">
                     JSONバックアップを保存
                 </button>
             </div>
 
             <div class="flex justify-center gap-3 pt-2">
-                <button onclick="closeClearAllModal()" class="w-full py-2.5 border border-[var(--border-color)] text-[var(--text-sub)] rounded-xl text-sm font-medium">キャンセル</button>
-                <button onclick="confirmClearAllExecution()" class="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-bold app-card-shadow">全データを消去実行</button>
+                <button onclick="closeClearAllModal()" class="w-full py-2.5 border border-[#ECEDEF] text-[#6B7280] rounded-xl text-sm font-medium">キャンセル</button>
+                <button onclick="confirmClearAllExecution()" class="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-bold shadow-sm">全データを消去実行</button>
             </div>
         </div>
     </div>
@@ -1498,77 +1336,6 @@
         }
 
         initAuth();
-        initTheme();
-
-        // ===== テーマ(ライト/ダーク)管理 =====
-        const THEME_STORAGE_KEY = 'mercari_theme_preference';
-
-        function getCssVar(name) {
-            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-        }
-
-        function getStoredThemePreference() {
-            try {
-                return localStorage.getItem(THEME_STORAGE_KEY) || 'system';
-            } catch (e) {
-                return 'system';
-            }
-        }
-
-        function updateMetaThemeColor() {
-            const meta = document.getElementById('meta-theme-color');
-            if (meta) meta.setAttribute('content', getCssVar('--bg-page') || '#F5F7FA');
-        }
-
-        function refreshChartsForTheme() {
-            if (typeof updateDashboard === 'function') updateDashboard();
-            if (currentDetailProductId && typeof openProductDetailModal === 'function') {
-                openProductDetailModal(currentDetailProductId);
-            }
-        }
-
-        function updateThemeButtonsUI(pref) {
-            ['system', 'light', 'dark'].forEach(function (key) {
-                const btn = document.getElementById('theme-btn-' + key);
-                if (!btn) return;
-                if (key === pref) {
-                    btn.classList.add('bg-[var(--card-bg)]', 'app-card-shadow', 'text-[var(--text-main)]');
-                    btn.classList.remove('text-[var(--text-sub)]');
-                } else {
-                    btn.classList.remove('bg-[var(--card-bg)]', 'app-card-shadow', 'text-[var(--text-main)]');
-                    btn.classList.add('text-[var(--text-sub)]');
-                }
-            });
-        }
-
-        function applyTheme(pref) {
-            if (pref === 'light' || pref === 'dark') {
-                document.documentElement.setAttribute('data-theme', pref);
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-            }
-            updateMetaThemeColor();
-            refreshChartsForTheme();
-            updateThemeButtonsUI(pref);
-        }
-
-        function setThemePreference(pref) {
-            try {
-                localStorage.setItem(THEME_STORAGE_KEY, pref);
-            } catch (e) {}
-            applyTheme(pref);
-        }
-
-        function initTheme() {
-            updateMetaThemeColor();
-            updateThemeButtonsUI(getStoredThemePreference());
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
-                if (getStoredThemePreference() === 'system') {
-                    updateMetaThemeColor();
-                    refreshChartsForTheme();
-                }
-            });
-        }
 
         function startDataListeners(uid) {
             if (!uid) return;
@@ -1656,7 +1423,7 @@
             if (!el) return;
 
             if (!data || !data.lastRunAt) {
-                el.innerHTML = '<span class="text-[var(--text-sub)]">まだ一度も実行されていません</span>';
+                el.innerHTML = '<span class="text-[#6B7280]">まだ一度も実行されていません</span>';
                 return;
             }
 
@@ -1687,7 +1454,7 @@
                     </div>`;
             }
 
-            el.innerHTML = statusHtml + `<div class="text-[var(--text-sub)] mt-2">最終チェック: ${dateStr}（前回 ${data.lastImportedCount || 0} 件取り込み）</div>`;
+            el.innerHTML = statusHtml + `<div class="text-[#6B7280] mt-2">最終チェック: ${dateStr}（前回 ${data.lastImportedCount || 0} 件取り込み）</div>`;
         }
 
         // 商品/売上/仕入れの3つのリスナーがほぼ同時に発火しても、
@@ -1956,14 +1723,14 @@
             const descText = document.getElementById('mode-desc-text');
 
             if (mode === 'master') {
-                btnMaster.className = 'py-2 rounded-lg bg-[var(--card-bg)] text-[var(--text-main)] app-card-shadow transition-all';
-                btnSingle.className = 'py-2 rounded-lg text-[var(--text-sub)] transition-all';
+                btnMaster.className = 'py-2 rounded-lg bg-white text-[#1F2937] shadow-sm transition-all';
+                btnSingle.className = 'py-2 rounded-lg text-[#6B7280] transition-all';
                 secMaster.classList.remove('hidden');
                 secSingle.classList.add('hidden');
                 if (descText) descText.textContent = '登録済みの商品から選ぶ';
             } else {
-                btnSingle.className = 'py-2 rounded-lg bg-[var(--card-bg)] text-[var(--text-main)] app-card-shadow transition-all';
-                btnMaster.className = 'py-2 rounded-lg text-[var(--text-sub)] transition-all';
+                btnSingle.className = 'py-2 rounded-lg bg-white text-[#1F2937] shadow-sm transition-all';
+                btnMaster.className = 'py-2 rounded-lg text-[#6B7280] transition-all';
                 secSingle.classList.remove('hidden');
                 secMaster.classList.add('hidden');
                 if (descText) descText.textContent = '専用出品やまとめ売りなど、1回限りの商品はこちら';
@@ -1979,13 +1746,13 @@
             const secSingle = document.getElementById('edit-section-single');
 
             if (mode === 'master') {
-                btnMaster.className = 'py-1.5 rounded-lg bg-[var(--card-bg)] text-[var(--text-main)] app-card-shadow transition-all';
-                btnSingle.className = 'py-1.5 rounded-lg text-[var(--text-sub)] transition-all';
+                btnMaster.className = 'py-1.5 rounded-lg bg-white text-[#1F2937] shadow-sm transition-all';
+                btnSingle.className = 'py-1.5 rounded-lg text-[#6B7280] transition-all';
                 secMaster.classList.remove('hidden');
                 secSingle.classList.add('hidden');
             } else {
-                btnSingle.className = 'py-1.5 rounded-lg bg-[var(--card-bg)] text-[var(--text-main)] app-card-shadow transition-all';
-                btnMaster.className = 'py-1.5 rounded-lg text-[var(--text-sub)] transition-all';
+                btnSingle.className = 'py-1.5 rounded-lg bg-white text-[#1F2937] shadow-sm transition-all';
+                btnMaster.className = 'py-1.5 rounded-lg text-[#6B7280] transition-all';
                 secSingle.classList.remove('hidden');
                 secMaster.classList.add('hidden');
             }
@@ -2205,23 +1972,23 @@
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
 
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-[var(--text-main)]', 'bg-[var(--card-bg)]', 'app-card-shadow');
-                btn.classList.add('text-[var(--text-sub)]');
+                btn.classList.remove('text-[#1F2937]', 'bg-white', 'shadow-sm');
+                btn.classList.add('text-[#6B7280]');
             });
             const activeNav = document.getElementById(`nav-${tabId}`);
             if (activeNav) {
-                activeNav.classList.remove('text-[var(--text-sub)]');
-                activeNav.classList.add('text-[var(--text-main)]', 'bg-[var(--card-bg)]', 'app-card-shadow');
+                activeNav.classList.remove('text-[#6B7280]');
+                activeNav.classList.add('text-[#1F2937]', 'bg-white', 'shadow-sm');
             }
 
             document.querySelectorAll('[id^="mobile-nav-"]').forEach(btn => {
-                btn.classList.remove('text-[var(--text-main)]');
-                btn.classList.add('text-[var(--text-sub)]');
+                btn.classList.remove('text-[#1F2937]');
+                btn.classList.add('text-[#6B7280]');
             });
             const activeMobileNav = document.getElementById(`mobile-nav-${tabId}`);
             if (activeMobileNav) {
-                activeMobileNav.classList.remove('text-[var(--text-sub)]');
-                activeMobileNav.classList.add('text-[var(--text-main)]');
+                activeMobileNav.classList.remove('text-[#6B7280]');
+                activeMobileNav.classList.add('text-[#1F2937]');
             }
 
             if (tabId === 'dashboard') {
@@ -2250,7 +2017,7 @@
             if (profit < 0) {
                 profitEl.className = 'font-bold text-red-500 mt-0.5';
             } else {
-                profitEl.className = 'font-bold text-[var(--text-main)] mt-0.5';
+                profitEl.className = 'font-bold text-[#1F2937] mt-0.5';
             }
         }
 
@@ -2430,15 +2197,15 @@
 
             const rowHtml = `
                 <div id="${rowId}" class="flex items-center gap-2">
-                    <select class="pur-row-product flex-grow px-3 py-1.5 border border-[var(--border-color)] rounded-lg text-xs font-semibold bg-[var(--card-bg)] text-[var(--text-main)] focus:outline-none focus:border-[var(--accent-bg)]">
+                    <select class="pur-row-product flex-grow px-3 py-1.5 border border-[#ECEDEF] rounded-lg text-xs font-semibold bg-white text-[#2F3440] focus:outline-none focus:border-[#6B7280]">
                         <option value="">-- 商品を選択 --</option>
                         ${options}
                     </select>
                     <div class="flex items-center gap-1 shrink-0">
-                        <span class="text-xs text-[var(--text-sub)]">数量:</span>
-                        <input type="number" min="1" value="${defaultQty}" class="pur-row-qty w-20 px-2 py-1.5 border border-[var(--border-color)] rounded-lg text-xs font-bold text-center">
+                        <span class="text-xs text-[#6B7280]">数量:</span>
+                        <input type="number" min="1" value="${defaultQty}" class="pur-row-qty w-20 px-2 py-1.5 border border-[#ECEDEF] rounded-lg text-xs font-bold text-center">
                     </div>
-                    <button type="button" onclick="removePurchaseItemRow('${rowId}')" aria-label="この行を削除" class="p-1 text-[var(--text-sub)] hover:text-red-500">
+                    <button type="button" onclick="removePurchaseItemRow('${rowId}')" aria-label="この行を削除" class="p-1 text-[#6B7280] hover:text-red-500">
                         <span class="text-base leading-none" role="img" aria-hidden="true">✖️</span>
                     </button>
                 </div>
@@ -2677,7 +2444,7 @@
             const alertList = document.getElementById('stock-alert-list');
             if (alertProds.length > 0) {
                 alertList.innerHTML = alertProds.map(p => `
-                    <span onclick="openProductDetailModal('${p.id}')" class="px-2.5 py-1 rounded-xl text-xs font-bold cursor-pointer transition-transform hover:scale-105 bg-[var(--card-bg)] ${p.currentStock <= 0 ? 'text-[var(--danger-accent)] border border-[var(--danger-accent)]/30' : 'text-[var(--warn-accent)] border border-[var(--warn-accent)]/30'}">
+                    <span onclick="openProductDetailModal('${p.id}')" class="px-2.5 py-1 rounded-xl text-xs font-bold cursor-pointer transition-transform hover:scale-105 ${p.currentStock <= 0 ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-amber-100 text-amber-800 border border-amber-200'}">
                         ${escapeHtml(p.title)}: ${p.currentStock <= 0 ? '【在庫切れ】' : `残り${p.currentStock}個`}
                     </span>
                 `).join('');
@@ -2708,25 +2475,25 @@
             const topProducts = products.filter(p => p.periodSoldQty > 0).slice(0, 5);
 
             if (topProducts.length === 0) {
-                container.innerHTML = '<div class="text-center text-[var(--text-sub)] text-xs py-8">この期間の販売データはありません</div>';
+                container.innerHTML = '<div class="text-center text-[#6B7280] text-xs py-8">この期間の販売データはありません</div>';
                 return;
             }
 
             const badges = ['🥇', '🥈', '🥉', '4位', '5位'];
-            const badgeBg = ['bg-[var(--bg-subtle)] text-[var(--text-main)]', 'bg-[var(--bg-subtle)] text-[var(--text-main)]', 'bg-[var(--bg-subtle)] text-[var(--text-main)]', 'bg-[var(--bg-subtle)] text-[var(--text-sub)]', 'bg-[var(--bg-subtle)] text-[var(--text-sub)]'];
+            const badgeBg = ['bg-[#F3F4F6] text-[#1F2937]', 'bg-[#F8F8F9] text-[#2F3440]', 'bg-[#F8F8F9] text-[#2F3440]', 'bg-[#F8F8F9] text-[#6B7280]', 'bg-[#F8F8F9] text-[#6B7280]'];
 
             container.innerHTML = topProducts.map((p, idx) => `
-                <div onclick="openProductDetailModal('${p.id}')" class="flex items-center justify-between p-2 hover:bg-[var(--bg-subtle)] rounded-xl cursor-pointer transition-colors border border-[var(--border-color)]">
+                <div onclick="openProductDetailModal('${p.id}')" class="flex items-center justify-between p-2 hover:bg-[#F8F8F9] rounded-xl cursor-pointer transition-colors border border-[#ECEDEF]">
                     <div class="flex items-center gap-2 truncate">
                         <span class="px-2 py-0.5 text-xs font-bold rounded-lg ${badgeBg[idx]} shrink-0">${badges[idx]}</span>
                         <div class="truncate">
-                            <div class="font-bold text-[var(--text-main)] text-xs truncate">${escapeHtml(p.title)}</div>
-                            <div class="text-[10px] text-[var(--text-sub)]">売上: ¥${p.periodSalesTotal.toLocaleString()} | 手取り: ¥${p.periodNetSalesTotal.toLocaleString()}</div>
+                            <div class="font-bold text-[#2F3440] text-xs truncate">${escapeHtml(p.title)}</div>
+                            <div class="text-[10px] text-[#6B7280]">売上: ¥${p.periodSalesTotal.toLocaleString()} | 手取り: ¥${p.periodNetSalesTotal.toLocaleString()}</div>
                         </div>
                     </div>
                     <div class="text-right shrink-0 pl-2">
-                        <span class="font-extrabold text-[var(--text-main)] text-sm">${p.periodSoldQty}</span> <span class="text-[10px] text-[var(--text-sub)]">個</span>
-                        <div class="text-[10px] ${p.isStockSet && p.currentStock <= p.alertStock ? 'text-red-500 font-bold' : 'text-[var(--text-sub)]'}">在庫: ${p.isStockSet ? p.currentStock + '個' : '未設定'}</div>
+                        <span class="font-extrabold text-[#1F2937] text-sm">${p.periodSoldQty}</span> <span class="text-[10px] text-[#6B7280]">個</span>
+                        <div class="text-[10px] ${p.isStockSet && p.currentStock <= p.alertStock ? 'text-red-500 font-bold' : 'text-[#6B7280]'}">在庫: ${p.isStockSet ? p.currentStock + '個' : '未設定'}</div>
                     </div>
                 </div>
             `).join('');
@@ -2735,19 +2502,19 @@
         function renderRecentTable(list) {
             const tbody = document.getElementById('recent-transactions-list');
             if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-[var(--text-sub)] text-xs">売上データがありません</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-[#6B7280] text-xs">売上データがありません</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = list.map(t => `
-                <tr class="hover:bg-[var(--bg-subtle)] transition-colors">
-                    <td class="p-3 pl-4 text-[var(--text-sub)] whitespace-nowrap text-xs">${t.date || ''}</td>
-                    <td class="p-3 font-medium text-[var(--text-main)]">
-                        ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[var(--bg-subtle)] text-[var(--text-main)] font-bold rounded mr-1.5 border border-[var(--border-color)]">単発</span>' : ''}
+                <tr class="hover:bg-[#F8F8F9] transition-colors">
+                    <td class="p-3 pl-4 text-[#6B7280] whitespace-nowrap text-xs">${t.date || ''}</td>
+                    <td class="p-3 font-medium text-[#2F3440]">
+                        ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[#F3F4F6] text-[#1F2937] font-bold rounded mr-1.5 border border-[#E5E7EB]">単発</span>' : ''}
                         ${escapeHtml(t.title || '')}
                     </td>
-                    <td class="p-3 text-right font-semibold text-[var(--text-main)]">¥${(t.sellPrice || 0).toLocaleString()}</td>
-                    <td class="p-3 text-right pr-4 font-bold text-[var(--text-main)]">¥${(t.profit || 0).toLocaleString()}</td>
+                    <td class="p-3 text-right font-semibold text-[#2F3440]">¥${(t.sellPrice || 0).toLocaleString()}</td>
+                    <td class="p-3 text-right pr-4 font-bold text-teal-600">¥${(t.profit || 0).toLocaleString()}</td>
                 </tr>
             `).join('');
         }
@@ -2792,27 +2559,24 @@
                         {
                             label: '売上高',
                             data: salesData,
-                            backgroundColor: getCssVar('--chart-sales'),
-                            borderRadius: 4,
-                            order: 2
+                            backgroundColor: 'rgba(133, 139, 152, 0.3)',
+                            borderRadius: 4
                         },
                         {
                             label: '手取り額',
                             data: salesNetData,
-                            backgroundColor: getCssVar('--chart-net'),
-                            borderRadius: 4,
-                            order: 2
+                            backgroundColor: 'rgba(239, 166, 181, 0.6)',
+                            borderRadius: 4
                         },
                         {
                             label: '最終利益',
                             data: finalProfitData,
                             type: 'line',
-                            borderColor: getCssVar('--chart-profit'),
-                            backgroundColor: getCssVar('--chart-profit'),
+                            borderColor: '#6B7280',
+                            backgroundColor: '#6B7280',
                             borderWidth: 2,
                             pointRadius: 4,
-                            fill: false,
-                            order: 1
+                            fill: false
                         }
                     ]
                 },
@@ -2820,11 +2584,11 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'top', labels: { color: getCssVar('--chart-legend-text'), font: { family: 'Noto Sans JP', size: 11 } } }
+                        legend: { position: 'top', labels: { font: { family: 'Noto Sans JP', size: 11 } } }
                     },
                     scales: {
-                        y: { beginAtZero: true, ticks: { color: getCssVar('--chart-legend-text') }, grid: { color: getCssVar('--chart-grid') } },
-                        x: { ticks: { color: getCssVar('--chart-legend-text') }, grid: { display: false } }
+                        y: { beginAtZero: true, grid: { color: '#ECEDEF' } },
+                        x: { grid: { display: false } }
                     }
                 }
             });
@@ -2847,24 +2611,24 @@
 
             if (emptyEl) emptyEl.classList.add('hidden');
             tbody.innerHTML = products.map(p => `
-                <tr class="hover:bg-[var(--bg-subtle)] transition-colors">
-                    <td class="p-3 pl-4 font-bold text-[var(--text-main)]">
-                        <button onclick="openProductDetailModal('${p.id}')" class="hover:text-[var(--text-main)] text-left flex items-center gap-1">
-                            <span class="text-sm text-[var(--text-sub)] leading-none no-underline" role="img" aria-hidden="true">📦</span>
+                <tr class="hover:bg-[#F8F8F9] transition-colors">
+                    <td class="p-3 pl-4 font-bold text-[#2F3440]">
+                        <button onclick="openProductDetailModal('${p.id}')" class="hover:text-[#1F2937] text-left flex items-center gap-1">
+                            <span class="text-sm text-[#6B7280] leading-none no-underline" role="img" aria-hidden="true">📦</span>
                             <span class="underline">${escapeHtml(p.title)}</span>
                         </button>
                     </td>
-                    <td class="p-3 text-right font-extrabold text-[var(--text-main)]">${p.periodSoldQty} 個</td>
-                    <td class="p-3 text-right font-bold text-[var(--text-main)]">¥${p.periodSalesTotal.toLocaleString()}</td>
-                    <td class="p-3 text-right text-xs text-[var(--text-sub)] font-semibold">¥${p.avgPrice.toLocaleString()}</td>
-                    <td class="p-3 text-right text-xs text-[var(--text-main)] font-bold">¥${p.latestPrice.toLocaleString()}</td>
-                    <td class="p-3 text-right text-[11px] text-[var(--text-sub)]">¥${p.maxPrice.toLocaleString()} / ¥${p.minPrice.toLocaleString()}</td>
-                    <td class="p-3 text-right font-bold text-[var(--text-main)]">¥${p.periodNetSalesTotal.toLocaleString()}</td>
-                    <td class="p-3 text-right text-xs text-[var(--text-main)] font-semibold">${p.allTimePurchasedQty} 個</td>
-                    <td class="p-3 text-right font-bold ${!p.isStockSet ? 'text-[var(--text-sub)] font-normal' : p.currentStock <= p.alertStock ? 'text-red-500' : 'text-[var(--text-main)]'}">
+                    <td class="p-3 text-right font-extrabold text-[#1F2937]">${p.periodSoldQty} 個</td>
+                    <td class="p-3 text-right font-bold text-[#2F3440]">¥${p.periodSalesTotal.toLocaleString()}</td>
+                    <td class="p-3 text-right text-xs text-[#6B7280] font-semibold">¥${p.avgPrice.toLocaleString()}</td>
+                    <td class="p-3 text-right text-xs text-[#2F3440] font-bold">¥${p.latestPrice.toLocaleString()}</td>
+                    <td class="p-3 text-right text-[11px] text-[#6B7280]">¥${p.maxPrice.toLocaleString()} / ¥${p.minPrice.toLocaleString()}</td>
+                    <td class="p-3 text-right font-bold text-teal-600">¥${p.periodNetSalesTotal.toLocaleString()}</td>
+                    <td class="p-3 text-right text-xs text-[#2F3440] font-semibold">${p.allTimePurchasedQty} 個</td>
+                    <td class="p-3 text-right font-bold ${!p.isStockSet ? 'text-[#6B7280] font-normal' : p.currentStock <= p.alertStock ? 'text-red-500' : 'text-[#2F3440]'}">
                         ${p.isStockSet ? (p.currentStock <= 0 ? '【在庫切れ】' : p.currentStock + ' 個') : '未設定'}
                     </td>
-                    <td class="p-3 text-center text-xs text-[var(--text-sub)] pr-4">${p.lastDate || '--'}</td>
+                    <td class="p-3 text-center text-xs text-[#6B7280] pr-4">${p.lastDate || '--'}</td>
                 </tr>
             `).join('');
 
@@ -2895,13 +2659,13 @@
 
             const timelineEl = document.getElementById('product-sales-timeline');
             if (pTrans.length === 0) {
-                timelineEl.innerHTML = '<div class="text-[var(--text-sub)] text-center py-2">販売履歴がありません</div>';
+                timelineEl.innerHTML = '<div class="text-[#6B7280] text-center py-2">販売履歴がありません</div>';
             } else {
                 timelineEl.innerHTML = pTrans.map(t => `
-                    <div class="flex items-center justify-between py-1 border-b border-[var(--border-color)] last:border-0">
-                        <span class="font-semibold text-[var(--text-sub)]">${t.date || ''}</span>
-                        <span class="font-bold text-[var(--text-main)]">売上: ¥${(t.sellPrice || 0).toLocaleString()}</span>
-                        <span class="text-[11px] text-[var(--text-main)] font-bold">手取り: ¥${(t.profit || 0).toLocaleString()}</span>
+                    <div class="flex items-center justify-between py-1 border-b border-[#ECEDEF] last:border-0">
+                        <span class="font-semibold text-[#6B7280]">${t.date || ''}</span>
+                        <span class="font-bold text-[#2F3440]">売上: ¥${(t.sellPrice || 0).toLocaleString()}</span>
+                        <span class="text-[11px] text-[#1F2937] font-bold">手取り: ¥${(t.profit || 0).toLocaleString()}</span>
                     </div>
                 `).join('');
             }
@@ -2921,8 +2685,8 @@
                         {
                             label: '販売価格 (円)',
                             data: prices,
-                            borderColor: getCssVar('--sales-accent'),
-                            backgroundColor: getCssVar('--chart-sales'),
+                            borderColor: '#6B7280',
+                            backgroundColor: 'rgba(239, 166, 181, 0.15)',
                             borderWidth: 2,
                             pointRadius: 4,
                             fill: true,
@@ -2934,8 +2698,8 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: false, ticks: { color: getCssVar('--chart-legend-text') }, grid: { color: getCssVar('--chart-grid') } },
-                        x: { ticks: { color: getCssVar('--chart-legend-text') }, grid: { display: false } }
+                        y: { beginAtZero: false, grid: { color: '#ECEDEF' } },
+                        x: { grid: { display: false } }
                     }
                 }
             });
@@ -3036,11 +2800,11 @@
             emptyState.classList.add('hidden');
 
             container.innerHTML = `
-                <div class="hidden sm:block bg-[var(--card-bg)] rounded-2xl border border-[var(--border-color)] app-card-shadow overflow-hidden">
+                <div class="hidden sm:block bg-white rounded-2xl border border-[#ECEDEF] shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-[var(--bg-subtle)] text-[var(--text-sub)] text-xs font-semibold uppercase tracking-wider border-b border-[var(--border-color)] whitespace-nowrap">
+                                <tr class="bg-[#F8F8F9] text-[#6B7280] text-xs font-semibold uppercase tracking-wider border-b border-[#ECEDEF] whitespace-nowrap">
                                     <th class="p-3 pl-4">日付</th>
                                     <th class="p-3">商品名</th>
                                     <th class="p-3 text-right">販売価格</th>
@@ -3050,22 +2814,22 @@
                                     <th class="p-3 text-center pr-4">操作</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-[var(--border-color)] text-sm">
+                            <tbody class="divide-y divide-[#ECEDEF] text-sm">
                                 ${filtered.map(t => `
-                                    <tr class="hover:bg-[var(--bg-subtle)] transition-colors">
-                                        <td class="p-3 pl-4 text-xs text-[var(--text-sub)] whitespace-nowrap">${t.date || ''}</td>
-                                        <td class="p-3 font-semibold text-[var(--text-main)]">
-                                            ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[var(--bg-subtle)] text-[var(--text-main)] font-bold rounded mr-1.5 border border-[var(--border-color)]">単発</span>' : ''}
+                                    <tr class="hover:bg-[#F8F8F9] transition-colors">
+                                        <td class="p-3 pl-4 text-xs text-[#6B7280] whitespace-nowrap">${t.date || ''}</td>
+                                        <td class="p-3 font-semibold text-[#2F3440]">
+                                            ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[10px] bg-[#F3F4F6] text-[#1F2937] font-bold rounded mr-1.5 border border-[#E5E7EB]">単発</span>' : ''}
                                             ${escapeHtml(t.title || '')}
                                         </td>
-                                        <td class="p-3 text-right font-medium text-[var(--text-main)]">¥${(t.sellPrice || 0).toLocaleString()}</td>
-                                        <td class="p-3 text-right text-xs text-[var(--text-sub)]">¥${(t.fee || 0).toLocaleString()}</td>
-                                        <td class="p-3 text-right text-xs text-[var(--text-sub)]">¥${(t.shippingFee || 0).toLocaleString()}</td>
-                                        <td class="p-3 text-right font-bold text-[var(--text-main)]">¥${(t.profit || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right font-medium text-[#2F3440]">¥${(t.sellPrice || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right text-xs text-[#6B7280]">¥${(t.fee || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right text-xs text-[#6B7280]">¥${(t.shippingFee || 0).toLocaleString()}</td>
+                                        <td class="p-3 text-right font-bold text-[#1F2937]">¥${(t.profit || 0).toLocaleString()}</td>
                                         <td class="p-3 text-center pr-4">
                                             <div class="flex items-center justify-center gap-1">
-                                                <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1.5 text-[var(--text-sub)] hover:text-[var(--text-main)]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
-                                                <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1.5 text-[var(--text-sub)] hover:text-red-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                                                <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1.5 text-[#6B7280] hover:text-[#2F3440]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
+                                                <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1.5 text-[#6B7280] hover:text-red-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -3077,29 +2841,29 @@
 
                 <div class="sm:hidden space-y-2.5">
                     ${filtered.map(t => `
-                        <div class="bg-[var(--card-bg)] p-3.5 rounded-2xl border border-[var(--border-color)] app-card-shadow space-y-2">
+                        <div class="bg-white p-3.5 rounded-2xl border border-[#ECEDEF] shadow-sm space-y-2">
                             <div class="flex items-start justify-between">
                                 <div>
-                                    <span class="text-[10px] font-semibold text-[var(--text-sub)]">${t.date || ''}</span>
-                                    <h4 class="font-bold text-[var(--text-main)] text-sm leading-tight flex items-center gap-1">
-                                        ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[9px] bg-[var(--bg-subtle)] text-[var(--text-main)] font-bold rounded shrink-0">単発</span>' : ''}
+                                    <span class="text-[10px] font-semibold text-[#6B7280]">${t.date || ''}</span>
+                                    <h4 class="font-bold text-[#2F3440] text-sm leading-tight flex items-center gap-1">
+                                        ${t.isSingleItem ? '<span class="px-1.5 py-0.5 text-[9px] bg-[#F3F4F6] text-[#1F2937] font-bold rounded shrink-0">単発</span>' : ''}
                                         ${escapeHtml(t.title || '')}
                                     </h4>
                                 </div>
                                 <div class="flex items-center gap-1 shrink-0">
-                                    <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1 text-[var(--text-sub)]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
-                                    <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1 text-[var(--text-sub)]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                                    <button onclick="openEditModal('${t.id}')" aria-label="編集" class="p-1 text-[#6B7280]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
+                                    <button onclick="openDeleteModal('transaction', '${t.id}')" aria-label="削除" class="p-1 text-[#6B7280]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-2 text-center text-xs">
-                                <div class="bg-[var(--sales-icon-bg)] p-2 rounded-xl">
-                                    <div class="text-[10px] text-[var(--text-sub)]">販売価格</div>
-                                    <div class="font-bold text-[var(--text-main)]">¥${(t.sellPrice || 0).toLocaleString()}</div>
+                            <div class="grid grid-cols-2 gap-2 bg-[#F8F8F9] p-2 rounded-xl text-center text-xs">
+                                <div>
+                                    <div class="text-[10px] text-[#6B7280]">販売価格</div>
+                                    <div class="font-bold text-[#2F3440]">¥${(t.sellPrice || 0).toLocaleString()}</div>
                                 </div>
-                                <div class="bg-[var(--net-icon-bg)] p-2 rounded-xl">
-                                    <div class="text-[10px] text-[var(--text-main)] font-semibold">手取り額</div>
-                                    <div class="font-extrabold text-[var(--text-main)]">¥${(t.profit || 0).toLocaleString()}</div>
+                                <div>
+                                    <div class="text-[10px] text-[#1F2937] font-semibold">手取り額</div>
+                                    <div class="font-extrabold text-[#1F2937]">¥${(t.profit || 0).toLocaleString()}</div>
                                 </div>
                             </div>
                         </div>
@@ -3161,15 +2925,15 @@
                 }
 
                 return `
-                    <tr class="hover:bg-[var(--bg-subtle)] transition-colors">
-                        <td class="p-3 pl-4 text-xs font-semibold text-[var(--text-sub)] whitespace-nowrap">${p.date || ''}</td>
-                        <td class="p-3 font-semibold text-[var(--text-main)] text-xs">${itemsSummary}</td>
-                        <td class="p-3 text-right font-extrabold text-[var(--text-main)] whitespace-nowrap">¥${(p.amount || 0).toLocaleString()}</td>
-                        <td class="p-3 text-[var(--text-main)] text-xs">${escapeHtml(p.memo || '-')}</td>
+                    <tr class="hover:bg-[#F8F8F9] transition-colors">
+                        <td class="p-3 pl-4 text-xs font-semibold text-[#6B7280] whitespace-nowrap">${p.date || ''}</td>
+                        <td class="p-3 font-semibold text-[#2F3440] text-xs">${itemsSummary}</td>
+                        <td class="p-3 text-right font-extrabold text-[#1F2937] whitespace-nowrap">¥${(p.amount || 0).toLocaleString()}</td>
+                        <td class="p-3 text-[#2F3440] text-xs">${escapeHtml(p.memo || '-')}</td>
                         <td class="p-3 text-center pr-4 whitespace-nowrap">
                             <div class="flex items-center justify-center gap-1">
-                                <button onclick="openEditPurchaseModal('${p.id}')" aria-label="編集" class="p-2 text-[var(--text-sub)] hover:text-[var(--text-main)]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
-                                <button onclick="openDeleteModal('purchase', '${p.id}')" aria-label="削除" class="p-2 text-[var(--text-sub)] hover:text-red-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                                <button onclick="openEditPurchaseModal('${p.id}')" aria-label="編集" class="p-2 text-[#6B7280] hover:text-[#2F3440]"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
+                                <button onclick="openDeleteModal('purchase', '${p.id}')" aria-label="削除" class="p-2 text-[#6B7280] hover:text-red-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                             </div>
                         </td>
                     </tr>
@@ -3439,7 +3203,6 @@
         window.handleLinkEmailAccount = handleLinkEmailAccount;
         window.handleLogout = handleLogout;
         window.handleChangePassword = handleChangePassword;
-        window.setThemePreference = setThemePreference;
     </script>
 </body>
 </html>
