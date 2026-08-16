@@ -1,0 +1,63 @@
+import { initializeApp } from 'firebase/app';
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInAnonymously,
+  signInWithEmailAndPassword,
+  signOut,
+  EmailAuthProvider,
+  linkWithCredential,
+} from 'firebase/auth';
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  deleteDoc,
+  onSnapshot,
+  writeBatch,
+  getDocs,
+  enableIndexedDbPersistence,
+} from 'firebase/firestore';
+
+// 同じアカウントの別アプリ（メルカリ売上・在庫管理）と共通の Firebase プロジェクトを流用。
+// Firestore 上は appId で名前空間を分けており、データが混ざることはない。
+const firebaseConfig = {
+  apiKey: 'AIzaSyAyv6B3rtdgxyCMSJxfu4_FX1IupABtKMY',
+  authDomain: 'sai-4d708.firebaseapp.com',
+  projectId: 'sai-4d708',
+  storageBucket: 'sai-4d708.firebasestorage.app',
+  messagingSenderId: '439897510721',
+  appId: '1:439897510721:web:aea9095ba9bf64d80c87c0',
+  measurementId: 'G-PW8FD91NP7',
+};
+
+// このアプリ専用の名前空間（Firestore パス: artifacts/{APP_ID}/users/{uid}/...）
+export const APP_ID = 'card-tracker';
+
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+
+// オフライン時も直前のデータを読めるようにキャッシュを有効化。
+// 複数タブを開いている場合は片方でしか有効化できないため、失敗しても致命的ではない。
+enableIndexedDbPersistence(db).catch(() => {});
+
+export const getCardsColRef = (uid) => collection(db, 'artifacts', APP_ID, 'users', uid, 'cards');
+export const getTransactionsColRef = (uid) => collection(db, 'artifacts', APP_ID, 'users', uid, 'transactions');
+export const cardDocRef = (uid, id) => doc(db, 'artifacts', APP_ID, 'users', uid, 'cards', id);
+export const transactionDocRef = (uid, id) => doc(db, 'artifacts', APP_ID, 'users', uid, 'transactions', id);
+
+export {
+  onAuthStateChanged,
+  signInAnonymously,
+  signInWithEmailAndPassword,
+  signOut,
+  EmailAuthProvider,
+  linkWithCredential,
+  setDoc,
+  deleteDoc,
+  onSnapshot,
+  writeBatch,
+  getDocs,
+};

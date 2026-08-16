@@ -25,8 +25,32 @@ import {
   User,
   Download,
   Upload,
+  Pencil,
+  AlertCircle,
+  Cloud,
+  LogOut,
+  Loader2,
 } from 'lucide-react';
 import TrendChart from './components/TrendChart.jsx';
+import {
+  auth,
+  db,
+  onAuthStateChanged,
+  signInAnonymously,
+  signInWithEmailAndPassword,
+  signOut,
+  EmailAuthProvider,
+  linkWithCredential,
+  getCardsColRef,
+  getTransactionsColRef,
+  cardDocRef,
+  transactionDocRef,
+  setDoc,
+  deleteDoc,
+  onSnapshot,
+  writeBatch,
+  getDocs,
+} from './firebase.js';
 
 // ---------- localStorage ----------
 
@@ -238,6 +262,32 @@ const DEFAULT_TRANSACTIONS = [
 function currentMonthKey() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+/**
+ * 「27日」「末日」「15」などの支払日表記から、今日以降でいちばん近い実際の日付を求める。
+ * 数字が取れない場合は null を返す。
+ */
+function resolveNextPaymentDate(paymentDayText, today = new Date()) {
+  if (!paymentDayText) return null;
+  const isLastDay = /末/.test(paymentDayText);
+  const digits = String(paymentDayText).match(/\d+/);
+  const day = isLastDay ? null : digits ? parseInt(digits[0], 10) : null;
+  if (!isLastDay && (!day || day < 1 || day > 31)) return null;
+
+  const base = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  const dateForMonth = (year, month) => {
+    if (isLastDay) return new Date(year, month + 1, 0); // その月の最終日
+    const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+    return new Date(year, month, Math.min(day, lastDayOfMonth));
+  };
+
+  let candidate = dateForMonth(base.getFullYear(), base.getMonth());
+  if (candidate < base) {
+    candidate = dateForMonth(base.getFullYear(), base.getMonth() + 1);
+  }
+  return candidate;
 }
 
 function monthRange(startKey, endKey) {
@@ -478,19 +528,160 @@ export default function App() {
   const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false);
   const [isAddCardOpen, setIsAddCardOpen] = useState(false);
 
+  // 編集中のID（nullなら新規追加モード）
+  const [editingTxId, setEditingTxId] = useState(null);
+  const [editingCardId, setEditingCardId] = useState(null);
+
   // クレジットカードデータ（保存データがあればそれを、無ければサンプルを初期値に）
   const [cards, setCards] = useState(() => loadList(STORAGE_KEYS.cards, DEFAULT_CARDS));
 
   // 利用明細データ
   const [transactions, setTransactions] = useState(() => loadList(STORAGE_KEYS.transactions, DEFAULT_TRANSACTIONS));
 
-  // データが変わるたびにブラウザに自動保存
+  // データが変わるたびにブラウザにもキャッシュ保存（オフライン時の即時表示用）
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.cards, JSON.stringify(cards));
   }, [cards]);
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.transactions, JSON.stringify(transactions));
   }, [transactions]);
+
+  // --- クラウド同期（Firebase） ---
+  // authUser: undefined = 確認中 / null = 未ログイン(ゲート表示) / User = ログイン済み
+  const [authUser, setAuthUser] = useState(undefined);
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
+  const migratedUidRef = useRef(null);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => setAuthUser(user));
+    return unsub;
+  }, []);
+
+  // 初回ログイン時、この端末のローカルデータをクラウドへ一度だけ移行する
+  // （クラウド側が空の場合のみ。既にクラウドにデータがあれば何もしない）
+  useEffect(() => {
+    if (!authUser) return;
+    if (migratedUidRef.current === authUser.uid) return;
+    migratedUidRef.current = authUser.uid;
+
+    (async () => {
+      try {
+        const existingCards = await getDocs(getCardsColRef(authUser.uid));
+        if (!existingCards.empty) return; // 既にクラウドにデータあり。移行不要
+
+        const localCardsRaw = localStorage.getItem(STORAGE_KEYS.cards);
+        const localTxRaw = localStorage.getItem(STORAGE_KEYS.transactions);
+        const seedCards = localCardsRaw ? JSON.parse(localCardsRaw) : DEFAULT_CARDS;
+        const seedTx = localTxRaw ? JSON.parse(localTxRaw) : DEFAULT_TRANSACTIONS;
+
+        const batch = writeBatch(db);
+        seedCards.forEach((c) => batch.set(cardDocRef(authUser.uid, c.id), c));
+        seedTx.forEach((t) => batch.set(transactionDocRef(authUser.uid, t.id), t));
+        await batch.commit();
+      } catch (err) {
+        console.error('初回データ移行に失敗しました', err);
+      }
+    })();
+  }, [authUser]);
+
+  // クラウドのカード・明細データをリアルタイム購読し、ローカル状態へ反映する
+  useEffect(() => {
+    if (!authUser) return undefined;
+
+    const unsubCards = onSnapshot(
+      getCardsColRef(authUser.uid),
+      (snap) => setCards(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      (err) => console.error('カードの同期に失敗しました', err)
+    );
+    const unsubTx = onSnapshot(
+      getTransactionsColRef(authUser.uid),
+      (snap) => setTransactions(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      (err) => console.error('明細の同期に失敗しました', err)
+    );
+
+    return () => {
+      unsubCards();
+      unsubTx();
+    };
+  }, [authUser]);
+
+  // 認証ゲート（未ログイン端末向け）フォームのステート
+  const [gateEmail, setGateEmail] = useState('');
+  const [gatePassword, setGatePassword] = useState('');
+  const [gateError, setGateError] = useState('');
+  const [gateBusy, setGateBusy] = useState(false);
+
+  const handleGateLogin = async (e) => {
+    e.preventDefault();
+    setGateError('');
+    if (!gateEmail || !gatePassword) {
+      setGateError('メールアドレスとパスワードを入力してください');
+      return;
+    }
+    setGateBusy(true);
+    try {
+      await signInWithEmailAndPassword(auth, gateEmail.trim(), gatePassword);
+    } catch (err) {
+      console.error(err);
+      setGateError('ログインに失敗しました。メールアドレスかパスワードが正しくありません');
+    } finally {
+      setGateBusy(false);
+    }
+  };
+
+  const handleGateStartFresh = async () => {
+    setGateBusy(true);
+    try {
+      await signInAnonymously(auth);
+    } catch (err) {
+      console.error(err);
+      alert('開始に失敗しました。通信環境をご確認ください。');
+    } finally {
+      setGateBusy(false);
+    }
+  };
+
+  // アカウント連携（匿名 → メール/パスワード）フォームのステート
+  const [linkEmail, setLinkEmail] = useState('');
+  const [linkPassword, setLinkPassword] = useState('');
+  const [linkError, setLinkError] = useState('');
+  const [linkBusy, setLinkBusy] = useState(false);
+
+  const handleLinkEmailAccount = async (e) => {
+    e.preventDefault();
+    setLinkError('');
+    if (!linkEmail || !linkPassword) {
+      setLinkError('メールアドレスとパスワードを入力してください');
+      return;
+    }
+    if (linkPassword.length < 6) {
+      setLinkError('パスワードは6文字以上にしてください');
+      return;
+    }
+    setLinkBusy(true);
+    try {
+      const cred = EmailAuthProvider.credential(linkEmail.trim(), linkPassword);
+      await linkWithCredential(auth.currentUser, cred);
+      setLinkEmail('');
+      setLinkPassword('');
+      alert('設定が完了しました。他の端末でもこのメールアドレスでログインできます。');
+    } catch (err) {
+      console.error(err);
+      if (err.code === 'auth/email-already-in-use') {
+        setLinkError('このメールアドレスは既に使われています');
+      } else {
+        setLinkError('設定に失敗しました。もう一度お試しください');
+      }
+    } finally {
+      setLinkBusy(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    if (confirm('ログアウトしますか？（この端末に保存されたキャッシュは残りますが、次回はログインが必要です）')) {
+      await signOut(auth);
+    }
+  };
 
   // フィルター用ステート（明細タブ）
   const [filterCardId, setFilterCardId] = useState('all');
@@ -614,6 +805,29 @@ export default function App() {
     return { lastTotal, diff, pct: (diff / lastTotal) * 100 };
   }, [transactions, currentMonth, totalMonthlyAmount]);
 
+  // 支払日が近い（3日以内）カードの一覧。アプリを開いた時のリマインダーバナー用。
+  // ブラウズ中の月（currentMonth）ではなく、実際の「今日」基準で判定する。
+  const upcomingPayments = useMemo(() => {
+    const REMINDER_WINDOW_DAYS = 3;
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const todayMonthKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+
+    return cards
+      .map((card) => {
+        const nextDate = resolveNextPaymentDate(card.paymentDay, today);
+        if (!nextDate) return null;
+        const daysUntil = Math.round((nextDate - todayStart) / 86400000);
+        if (daysUntil < 0 || daysUntil > REMINDER_WINDOW_DAYS) return null;
+        const spent = transactions
+          .filter((t) => t.cardId === card.id && t.date.startsWith(todayMonthKey))
+          .reduce((sum, t) => sum + Number(t.amount), 0);
+        return { card, nextDate, daysUntil, spent };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.daysUntil - b.daysUntil);
+  }, [cards, transactions]);
+
   // 明細一覧フィルター適用
   const filteredTransactions = useMemo(() => {
     return monthlyTransactions.filter((t) => {
@@ -624,23 +838,7 @@ export default function App() {
   }, [monthlyTransactions, filterCardId, filterCategory]);
 
   // --- アクションハンドラー ---
-  const handleAddTransaction = (e) => {
-    e.preventDefault();
-    if (!newTx.amount || !newTx.cardId) return;
-
-    const newEntry = {
-      id: `t-${Date.now()}`,
-      cardId: newTx.cardId,
-      amount: Number(newTx.amount),
-      date: newTx.date,
-      category: newTx.category,
-      memo: newTx.memo || '利用明細',
-    };
-
-    setTransactions([newEntry, ...transactions]);
-    setIsAddTransactionOpen(false);
-
-    // フォームリセット
+  const resetNewTxForm = () => {
     setNewTx({
       cardId: cards[0]?.id || '',
       amount: '',
@@ -650,28 +848,7 @@ export default function App() {
     });
   };
 
-  const handleDeleteTransaction = (id) => {
-    if (confirm('この利用明細を削除しますか？')) {
-      setTransactions(transactions.filter((t) => t.id !== id));
-    }
-  };
-
-  const handleAddCard = (e) => {
-    e.preventDefault();
-    if (!newCard.name) return;
-
-    const digits = newCard.number.replace(/\D/g, '');
-    const createdCard = {
-      id: `card-${Date.now()}`,
-      ...newCard,
-      limit: Number(newCard.limit) || 0,
-      last4: digits ? digits.slice(-4) : '0000',
-    };
-
-    setCards([...cards, createdCard]);
-    setIsAddCardOpen(false);
-
-    // フォームリセット
+  const resetNewCardForm = () => {
     setNewCard({
       name: '',
       brand: 'VISA',
@@ -686,14 +863,135 @@ export default function App() {
     });
   };
 
-  const handleDeleteCard = (cardId) => {
+  const handleCloseTransactionModal = () => {
+    setIsAddTransactionOpen(false);
+    setEditingTxId(null);
+    resetNewTxForm();
+  };
+
+  const handleCloseCardModal = () => {
+    setIsAddCardOpen(false);
+    setEditingCardId(null);
+    resetNewCardForm();
+  };
+
+  const handleOpenEditTransaction = (tx) => {
+    setNewTx({
+      cardId: tx.cardId,
+      amount: String(tx.amount),
+      date: tx.date,
+      category: tx.category,
+      memo: tx.memo || '',
+    });
+    setEditingTxId(tx.id);
+    setIsAddTransactionOpen(true);
+  };
+
+  const handleOpenEditCard = (card) => {
+    setNewCard({
+      name: card.name || '',
+      brand: card.brand || 'VISA',
+      number: card.number || '',
+      holderName: card.holderName || '',
+      expiry: card.expiry || '',
+      cvv: card.cvv || '',
+      theme: card.theme || 'purple',
+      limit: card.limit || 0,
+      billingDay: card.billingDay || '末日',
+      paymentDay: card.paymentDay || '27',
+    });
+    setEditingCardId(card.id);
+    setIsAddCardOpen(true);
+  };
+
+  const handleSaveTransaction = async (e) => {
+    e.preventDefault();
+    if (!newTx.amount || !newTx.cardId || !authUser) return;
+
+    try {
+      if (editingTxId) {
+        const existing = transactions.find((t) => t.id === editingTxId);
+        const updated = { ...existing, cardId: newTx.cardId, amount: Number(newTx.amount), date: newTx.date, category: newTx.category, memo: newTx.memo || '利用明細' };
+        delete updated.id;
+        await setDoc(transactionDocRef(authUser.uid, editingTxId), updated);
+      } else {
+        const id = `t-${Date.now()}`;
+        const newEntry = {
+          cardId: newTx.cardId,
+          amount: Number(newTx.amount),
+          date: newTx.date,
+          category: newTx.category,
+          memo: newTx.memo || '利用明細',
+        };
+        await setDoc(transactionDocRef(authUser.uid, id), newEntry);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('明細の保存に失敗しました。通信環境をご確認ください。');
+    }
+
+    handleCloseTransactionModal();
+  };
+
+  const handleDeleteTransaction = async (id) => {
+    if (!authUser) return;
+    if (confirm('この利用明細を削除しますか？')) {
+      try {
+        await deleteDoc(transactionDocRef(authUser.uid, id));
+      } catch (err) {
+        console.error(err);
+        alert('明細の削除に失敗しました。');
+      }
+    }
+  };
+
+  const handleSaveCard = async (e) => {
+    e.preventDefault();
+    if (!newCard.name || !authUser) return;
+
+    const digits = newCard.number.replace(/\D/g, '');
+
+    try {
+      if (editingCardId) {
+        const existing = cards.find((c) => c.id === editingCardId);
+        const updated = { ...existing, ...newCard, limit: Number(newCard.limit) || 0, last4: digits ? digits.slice(-4) : existing?.last4 };
+        delete updated.id;
+        await setDoc(cardDocRef(authUser.uid, editingCardId), updated);
+      } else {
+        const id = `card-${Date.now()}`;
+        const createdCard = {
+          ...newCard,
+          limit: Number(newCard.limit) || 0,
+          last4: digits ? digits.slice(-4) : '0000',
+        };
+        await setDoc(cardDocRef(authUser.uid, id), createdCard);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('カードの保存に失敗しました。通信環境をご確認ください。');
+    }
+
+    handleCloseCardModal();
+  };
+
+  const handleDeleteCard = async (cardId) => {
+    if (!authUser) return;
     if (cards.length <= 1) {
       alert('最低1枚のカードが必要です。');
       return;
     }
     if (confirm('このカードを削除すると、関連する明細も確認できなくなる可能性があります。削除しますか？')) {
-      setCards(cards.filter((c) => c.id !== cardId));
-      setTransactions(transactions.filter((t) => t.cardId !== cardId));
+      try {
+        const batch = writeBatch(db);
+        batch.delete(cardDocRef(authUser.uid, cardId));
+        transactions
+          .filter((t) => t.cardId === cardId)
+          .forEach((t) => batch.delete(transactionDocRef(authUser.uid, t.id)));
+        await batch.commit();
+      } catch (err) {
+        console.error(err);
+        alert('カードの削除に失敗しました。');
+      }
     }
   };
 
@@ -771,8 +1069,9 @@ export default function App() {
 
   const handleImportJsonFile = (file) => {
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       try {
+        if (!authUser) throw new Error('not-authenticated');
         const data = JSON.parse(reader.result);
         const incomingCards = Array.isArray(data.cards) ? data.cards : [];
         const incomingTxs = Array.isArray(data.transactions) ? data.transactions : [];
@@ -780,6 +1079,7 @@ export default function App() {
 
         const { nextCards, findOrCreateCardId } = buildCardResolver(cards);
         incomingCards.forEach((c) => findOrCreateCardId(c.name || c.cardName, c));
+        const newCardsOnly = nextCards.filter((c) => !cards.some((existing) => existing.id === c.id));
 
         const newTxs = incomingTxs
           .map((t) => {
@@ -796,8 +1096,17 @@ export default function App() {
           })
           .filter(Boolean);
 
-        setCards(nextCards);
-        setTransactions([...newTxs, ...transactions]);
+        const batch = writeBatch(db);
+        newCardsOnly.forEach((c) => {
+          const { id, ...rest } = c;
+          batch.set(cardDocRef(authUser.uid, id), rest);
+        });
+        newTxs.forEach((t) => {
+          const { id, ...rest } = t;
+          batch.set(transactionDocRef(authUser.uid, id), rest);
+        });
+        await batch.commit();
+
         alert(`${newTxs.length}件の明細を読み込みました。`);
       } catch (err) {
         console.error(err);
@@ -878,8 +1187,8 @@ export default function App() {
       candidates: prev.candidates.filter((_, i) => i !== idx),
     } : prev));
   };
-  const handleConfirmOcrImport = () => {
-    if (!ocrReview) return;
+  const handleConfirmOcrImport = async () => {
+    if (!ocrReview || !authUser) return;
     const newTxs = ocrReview.candidates
       .filter((c) => c.amount && c.date)
       .map((c) => ({
@@ -890,10 +1199,87 @@ export default function App() {
         category: c.category,
         memo: c.memo,
       }));
-    setTransactions([...newTxs, ...transactions]);
+
+    try {
+      const batch = writeBatch(db);
+      newTxs.forEach((t) => {
+        const { id, ...rest } = t;
+        batch.set(transactionDocRef(authUser.uid, id), rest);
+      });
+      await batch.commit();
+      alert(`${newTxs.length}件の明細を追加しました。`);
+    } catch (err) {
+      console.error(err);
+      alert('明細の保存に失敗しました。通信環境をご確認ください。');
+    }
     setOcrReview(null);
-    alert(`${newTxs.length}件の明細を追加しました。`);
   };
+
+  // --- 認証確認中: ローディング表示 ---
+  if (authUser === undefined) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+      </div>
+    );
+  }
+
+  // --- 未ログイン: この端末に保存済みセッションが無い ---
+  if (authUser === null) {
+    return (
+      <div className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center p-4">
+        <div className="max-w-sm w-full bg-slate-800 border border-slate-700 rounded-3xl shadow-2xl p-6 space-y-5">
+          <div className="text-center space-y-1">
+            <div className="inline-flex p-2.5 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/20">
+              <CreditCard className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="font-bold text-base text-white mt-2">CardManager Pro</h1>
+            <p className="text-xs text-slate-400">この端末には保存されたセッションがありません</p>
+          </div>
+
+          <form onSubmit={handleGateLogin} className="space-y-3">
+            <h2 className="text-xs font-bold text-slate-400">他の端末で設定済みのメールアドレスがあればログイン</h2>
+            <input
+              type="email"
+              placeholder="メールアドレス"
+              value={gateEmail}
+              onChange={(e) => setGateEmail(e.target.value)}
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+            />
+            <input
+              type="password"
+              placeholder="パスワード"
+              value={gatePassword}
+              onChange={(e) => setGatePassword(e.target.value)}
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+            />
+            {gateError && <p className="text-xs text-red-400">{gateError}</p>}
+            <button
+              type="submit"
+              disabled={gateBusy}
+              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white font-bold py-2.5 rounded-xl text-sm transition-colors"
+            >
+              ログイン
+            </button>
+          </form>
+
+          <div className="relative py-1 text-center">
+            <span className="text-[10px] text-slate-500 bg-slate-800 px-2 relative z-10">または</span>
+            <div className="absolute left-0 right-0 top-1/2 border-t border-slate-700" />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGateStartFresh}
+            disabled={gateBusy}
+            className="w-full border border-slate-700 hover:bg-slate-700/50 disabled:opacity-60 text-slate-200 font-bold py-2.5 rounded-xl text-sm transition-colors"
+          >
+            この端末で新しく始める
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
@@ -913,13 +1299,19 @@ export default function App() {
             </div>
           </div>
 
-          {/* 明細追加ボタン */}
+          {/* 明細追加ボタン & アカウント */}
           <div className="flex items-center gap-2">
             <button
+              onClick={() => setIsAccountModalOpen(true)}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+              title={authUser.isAnonymous ? 'この端末専用（未ログイン）' : `ログイン中: ${authUser.email}`}
+            >
+              <Cloud className="w-4 h-4" />
+            </button>
+            <button
               onClick={() => {
-                if (cards.length > 0) {
-                  setNewTx((prev) => ({ ...prev, cardId: cards[0].id }));
-                }
+                setEditingTxId(null);
+                resetNewTxForm();
                 setIsAddTransactionOpen(true);
               }}
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-all duration-200 shadow-lg shadow-indigo-600/30 active:scale-95"
@@ -994,6 +1386,28 @@ export default function App() {
         {/* --- タブ 1: ダッシュボード --- */}
         {activeTab === 'dashboard' && (
           <div className="space-y-6 animate-fadeIn">
+
+            {/* 支払日リマインダーバナー */}
+            {upcomingPayments.length > 0 && (
+              <div className="space-y-2">
+                {upcomingPayments.map(({ card, nextDate, daysUntil, spent }) => (
+                  <div
+                    key={card.id}
+                    className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl px-4 py-3"
+                  >
+                    <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
+                    <p className="text-sm text-amber-200 flex-1">
+                      <span className="font-bold">{card.name}</span>
+                      {' '}の支払日は
+                      <span className="font-bold">
+                        {' '}{daysUntil === 0 ? '今日' : `あと${daysUntil}日（${nextDate.getMonth() + 1}/${nextDate.getDate()}）`}
+                      </span>
+                      {spent > 0 && <> ・今月の利用額 ¥{spent.toLocaleString()}</>}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* ハイライトサマリーカード */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1103,7 +1517,11 @@ export default function App() {
                   カード別利用状況
                 </h2>
                 <button
-                  onClick={() => setIsAddCardOpen(true)}
+                  onClick={() => {
+                    setEditingCardId(null);
+                    resetNewCardForm();
+                    setIsAddCardOpen(true);
+                  }}
                   className="text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" /> カードを追加
@@ -1114,7 +1532,11 @@ export default function App() {
                 <div className="bg-slate-800/50 rounded-2xl p-8 text-center border border-dashed border-slate-700">
                   <p className="text-slate-400 text-sm">クレジットカードが登録されていません</p>
                   <button
-                    onClick={() => setIsAddCardOpen(true)}
+                    onClick={() => {
+                    setEditingCardId(null);
+                    resetNewCardForm();
+                    setIsAddCardOpen(true);
+                  }}
                     className="mt-3 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium"
                   >
                     カードを追加する
@@ -1335,6 +1757,13 @@ export default function App() {
                             ¥{Number(tx.amount).toLocaleString()}
                           </span>
                           <button
+                            onClick={() => handleOpenEditTransaction(tx)}
+                            className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-slate-700 rounded-lg transition-colors"
+                            title="編集"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                          <button
                             onClick={() => handleDeleteTransaction(tx.id)}
                             className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded-lg transition-colors"
                             title="削除"
@@ -1361,7 +1790,11 @@ export default function App() {
                 <p className="text-xs text-slate-400">カードの管理・追加・削除を行えます</p>
               </div>
               <button
-                onClick={() => setIsAddCardOpen(true)}
+                onClick={() => {
+                    setEditingCardId(null);
+                    resetNewCardForm();
+                    setIsAddCardOpen(true);
+                  }}
                 className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium flex items-center gap-1.5 shadow-lg shadow-indigo-600/30 transition-all"
               >
                 <Plus className="w-4 h-4" />
@@ -1388,13 +1821,22 @@ export default function App() {
                           <p className="text-xs text-slate-400">{card.brand} •••• {card.last4}</p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => handleDeleteCard(card.id)}
-                        className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded-xl transition-colors"
-                        title="カード削除"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handleOpenEditCard(card)}
+                          className="p-2 text-slate-400 hover:text-indigo-400 hover:bg-slate-700 rounded-xl transition-colors"
+                          title="カード情報を編集"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteCard(card.id)}
+                          className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded-xl transition-colors"
+                          title="カード削除"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
 
                     {/* カード番号・有効期限・セキュリティコード・名義 */}
@@ -1477,17 +1919,17 @@ export default function App() {
             <div className="flex justify-between items-center pb-2 border-b border-slate-700">
               <h3 className="font-bold text-lg text-white flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-indigo-400" />
-                利用明細の登録
+                {editingTxId ? '利用明細の編集' : '利用明細の登録'}
               </h3>
               <button
-                onClick={() => setIsAddTransactionOpen(false)}
+                onClick={handleCloseTransactionModal}
                 className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleAddTransaction} className="space-y-4">
+            <form onSubmit={handleSaveTransaction} className="space-y-4">
               {/* 利用金額 */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">利用金額 (円)</label>
@@ -1556,7 +1998,7 @@ export default function App() {
               <div className="pt-2 flex gap-3">
                 <button
                   type="button"
-                  onClick={() => setIsAddTransactionOpen(false)}
+                  onClick={handleCloseTransactionModal}
                   className="flex-1 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-medium text-sm hover:bg-slate-700/50"
                 >
                   キャンセル
@@ -1565,7 +2007,7 @@ export default function App() {
                   type="submit"
                   className="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm shadow-lg shadow-indigo-600/30"
                 >
-                  保存する
+                  {editingTxId ? '更新する' : '保存する'}
                 </button>
               </div>
             </form>
@@ -1573,24 +2015,24 @@ export default function App() {
         </div>
       )}
 
-      {/* 5. モーダル: 新規カードの登録 */}
+      {/* 5. モーダル: カードの登録・編集 */}
       {isAddCardOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
           <div className="bg-slate-800 border border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-slate-700">
               <h3 className="font-bold text-lg text-white flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-indigo-400" />
-                新しいカードを追加
+                {editingCardId ? 'カード情報を編集' : '新しいカードを追加'}
               </h3>
               <button
-                onClick={() => setIsAddCardOpen(false)}
+                onClick={handleCloseCardModal}
                 className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleAddCard} className="space-y-4">
+            <form onSubmit={handleSaveCard} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">カード名</label>
                 <input
@@ -1723,7 +2165,7 @@ export default function App() {
               <div className="pt-2 flex gap-3">
                 <button
                   type="button"
-                  onClick={() => setIsAddCardOpen(false)}
+                  onClick={handleCloseCardModal}
                   className="flex-1 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-medium text-sm hover:bg-slate-700/50"
                 >
                   キャンセル
@@ -1732,7 +2174,7 @@ export default function App() {
                   type="submit"
                   className="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm shadow-lg shadow-indigo-600/30"
                 >
-                  登録する
+                  {editingCardId ? '更新する' : '登録する'}
                 </button>
               </div>
             </form>
@@ -1893,8 +2335,82 @@ export default function App() {
         </div>
       )}
 
+      {/* 9. モーダル: アカウント（クラウド同期） */}
+      {isAccountModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-slate-800 border border-slate-700 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-700">
+              <h3 className="font-bold text-lg text-white flex items-center gap-2">
+                <Cloud className="w-5 h-5 text-indigo-400" />
+                アカウント・同期
+              </h3>
+              <button
+                onClick={() => setIsAccountModalOpen(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="text-xs text-slate-400">
+              {authUser.isAnonymous
+                ? 'この端末専用のデータです（未ログイン）。他の端末と同期するには、下でメールアドレスを設定してください。'
+                : `ログイン中: ${authUser.email}`}
+            </div>
+
+            <div className="bg-slate-900/50 border border-slate-700/40 rounded-xl p-3 space-y-1">
+              <div className="text-[10px] text-slate-500 font-semibold">アカウントID</div>
+              <code className="block text-xs font-mono text-slate-300 break-all select-all">{authUser.uid}</code>
+            </div>
+
+            {authUser.isAnonymous ? (
+              <form onSubmit={handleLinkEmailAccount} className="space-y-2 pt-2 border-t border-slate-700">
+                <p className="text-[11px] text-slate-400">
+                  メールアドレスとパスワードを設定すると、他の端末（スマホなど）からも同じデータにログインできるようになります。
+                </p>
+                <input
+                  type="email"
+                  placeholder="メールアドレス"
+                  value={linkEmail}
+                  onChange={(e) => setLinkEmail(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                />
+                <input
+                  type="password"
+                  placeholder="パスワード（6文字以上）"
+                  value={linkPassword}
+                  onChange={(e) => setLinkPassword(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                />
+                {linkError && <p className="text-xs text-red-400">{linkError}</p>}
+                <button
+                  type="submit"
+                  disabled={linkBusy}
+                  className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white text-xs font-bold py-2.5 rounded-xl"
+                >
+                  他の端末からもログインできるようにする
+                </button>
+              </form>
+            ) : (
+              <div className="pt-2 border-t border-slate-700">
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center gap-1.5 border border-slate-700 hover:bg-slate-700/50 text-slate-200 text-xs font-bold py-2.5 rounded-xl"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  ログアウト
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <p className="text-center text-[11px] text-slate-600 py-6 px-4">
-        データはこの端末のブラウザ内（localStorage）にのみ保存されます。
+        {authUser.isAnonymous
+          ? 'データはこの端末に保存されます。クラウドにも自動バックアップされますが、他の端末と同期するにはアカウント設定が必要です。'
+          : `${authUser.email} としてログイン中。データは端末をまたいで自動同期されます。`}
       </p>
 
     </div>
