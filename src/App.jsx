@@ -1969,7 +1969,7 @@ export default function App() {
                     required
                     value={newTx.date}
                     onChange={(e) => setNewTx({ ...newTx, date: e.target.value })}
-                    className="w-full min-w-0 bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
+                    className="w-full min-w-0 appearance-none bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div className="min-w-0">
@@ -2277,13 +2277,13 @@ export default function App() {
                         type="date"
                         value={c.date}
                         onChange={(e) => updateOcrCandidate(idx, { date: e.target.value })}
-                        className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs focus:outline-none focus:border-indigo-500"
+                        className="w-full min-w-0 appearance-none bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs focus:outline-none focus:border-indigo-500"
                       />
                       <input
                         type="number"
                         value={c.amount}
                         onChange={(e) => updateOcrCandidate(idx, { amount: e.target.value })}
-                        className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs font-mono focus:outline-none focus:border-indigo-500"
+                        className="w-full min-w-0 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs font-mono focus:outline-none focus:border-indigo-500"
                       />
                     </div>
                     <div className="flex items-center gap-2">
