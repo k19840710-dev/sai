@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   CreditCard,
   Plus,
@@ -23,6 +23,8 @@ import {
   Eye,
   EyeOff,
   User,
+  Download,
+  Upload,
 } from 'lucide-react';
 import TrendChart from './components/TrendChart.jsx';
 
@@ -204,6 +206,30 @@ function maskCardNumber(number, last4) {
   const digits = (number || '').replace(/\D/g, '');
   const tail = digits ? digits.slice(-4) : (last4 || '0000');
   return `•••• •••• •••• ${tail}`;
+}
+
+// 日本語カテゴリ名 → カテゴリID の対応表（インポート時に使用）
+const CATEGORY_NAME_TO_ID = CATEGORIES.reduce((map, c) => {
+  map[c.name] = c.id;
+  return map;
+}, {});
+
+function resolveCategoryId(value) {
+  if (!value) return 'other';
+  if (CATEGORIES.some((c) => c.id === value)) return value;
+  if (CATEGORY_NAME_TO_ID[value]) return CATEGORY_NAME_TO_ID[value];
+  return 'other';
+}
+
+function resolveDate(value) {
+  if (!value) return new Date().toISOString().split('T')[0];
+  // "2026年8月10日" のような表記もざっくり受け付ける
+  const m = String(value).match(/(\d{4})[/\-年](\d{1,2})[/\-月](\d{1,2})/);
+  if (m) {
+    const [, y, mo, d] = m;
+    return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  }
+  return value;
 }
 
 export default function App() {
@@ -432,6 +458,109 @@ export default function App() {
       setCards(cards.filter((c) => c.id !== cardId));
       setTransactions(transactions.filter((t) => t.cardId !== cardId));
     }
+  };
+
+  // --- 書き出し / 読み込み ---
+  const importFileRef = useRef(null);
+
+  const handleExport = async () => {
+    const data = { exportedAt: new Date().toISOString(), cards, transactions };
+    const json = JSON.stringify(data, null, 2);
+    const filename = `cardmanager-backup-${new Date().toISOString().slice(0, 10)}.json`;
+
+    if (window.claude && typeof window.claude.use === 'function') {
+      try {
+        const downloads = await window.claude.use('downloads');
+        if (downloads) {
+          await downloads.save({ filename, data: json });
+        } else {
+          alert('この環境では書き出し機能を利用できません。');
+        }
+      } catch (err) {
+        if (err && err.code !== 'declined') {
+          console.error(err);
+          alert('書き出しに失敗しました。');
+        }
+      }
+      return;
+    }
+
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportClick = () => importFileRef.current?.click();
+
+  const handleImportFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        const incomingCards = Array.isArray(data.cards) ? data.cards : [];
+        const incomingTxs = Array.isArray(data.transactions) ? data.transactions : [];
+        if (!incomingCards.length && !incomingTxs.length) throw new Error('empty');
+
+        // カードは「名前」で既存カードと突き合わせる。無ければ新規作成。
+        const nextCards = [...cards];
+        const findOrCreateCardId = (nameOrId, extra = {}) => {
+          if (!nameOrId) return nextCards[0]?.id || null;
+          const byId = nextCards.find((c) => c.id === nameOrId);
+          if (byId) return byId.id;
+          const byName = nextCards.find((c) => c.name === nameOrId);
+          if (byName) return byName.id;
+          const created = {
+            id: `card-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+            name: nameOrId,
+            brand: extra.brand || 'VISA',
+            last4: extra.last4 || (extra.number || '').replace(/\D/g, '').slice(-4) || '0000',
+            number: extra.number || '',
+            holderName: extra.holderName || '',
+            expiry: extra.expiry || '',
+            cvv: extra.cvv || '',
+            theme: extra.theme && CARD_THEMES[extra.theme] ? extra.theme : 'purple',
+            limit: Number(extra.limit) || 0,
+            billingDay: extra.billingDay || '末日',
+            paymentDay: extra.paymentDay || '27',
+          };
+          nextCards.push(created);
+          return created.id;
+        };
+
+        incomingCards.forEach((c) => findOrCreateCardId(c.name || c.cardName, c));
+
+        const newTxs = incomingTxs
+          .map((t) => {
+            const cardId = findOrCreateCardId(t.cardId || t.cardName || t.card);
+            if (!cardId || !t.amount) return null;
+            return {
+              id: `t-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+              cardId,
+              amount: Number(t.amount),
+              date: resolveDate(t.date),
+              category: resolveCategoryId(t.category),
+              memo: t.memo || '',
+            };
+          })
+          .filter(Boolean);
+
+        setCards(nextCards);
+        setTransactions([...newTxs, ...transactions]);
+        alert(`${newTxs.length}件の明細を読み込みました。`);
+      } catch (err) {
+        console.error(err);
+        alert('ファイルの読み込みに失敗しました。正しいバックアップ／インポート用ファイルか確認してください。');
+      } finally {
+        e.target.value = '';
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -798,6 +927,38 @@ export default function App() {
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
+              </div>
+            </div>
+
+            {/* 書き出し・読み込み */}
+            <div className="bg-slate-800/90 border border-slate-700/60 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs text-slate-400">
+                データのバックアップ、またはCSV/スクリーンショットから作成したファイルの読み込み
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleExport}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs sm:text-sm font-medium hover:bg-slate-700/60 transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  書き出し
+                </button>
+                <button
+                  type="button"
+                  onClick={handleImportClick}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs sm:text-sm font-medium hover:bg-slate-700/60 transition-colors"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  読み込み
+                </button>
+                <input
+                  ref={importFileRef}
+                  type="file"
+                  accept="application/json"
+                  onChange={handleImportFile}
+                  className="sr-only"
+                />
               </div>
             </div>
 
