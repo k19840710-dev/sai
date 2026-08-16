@@ -1958,7 +1958,10 @@ export default function App() {
               </div>
 
               {/* 利用日 & カテゴリ */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* iOS Safari の <input type="date"> は CSS で幅を縮められない内部レイアウトを
+                  持つため、横並び(2カラム)にすると隣のカテゴリ欄に重なってしまう。
+                  スマホでは縦積みにして回避する。 */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="min-w-0">
                   <label className="block text-xs font-semibold text-slate-300 mb-2">利用日</label>
                   <input
