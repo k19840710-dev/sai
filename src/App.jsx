@@ -621,7 +621,7 @@ export default function App() {
                     return (
                       <div
                         key={card.id}
-                        className={`rounded-2xl p-5 shadow-xl border ${theme.bg} ${theme.border} relative flex flex-col justify-between h-48 transition-transform duration-200 hover:-translate-y-1`}
+                        className={`rounded-2xl p-5 shadow-xl border ${theme.bg} ${theme.border} relative flex flex-col justify-center gap-4 h-48 transition-transform duration-200 hover:-translate-y-1`}
                       >
                         {/* カード上部 */}
                         <div className="flex justify-between items-start">
@@ -637,7 +637,7 @@ export default function App() {
                         </div>
 
                         {/* カード中央: 利用金額 */}
-                        <div className="my-2">
+                        <div>
                           <span className="text-xs text-white/70">今月の利用額</span>
                           <div className="text-2xl font-black text-white tracking-tight">
                             ¥{card.spent.toLocaleString()}
