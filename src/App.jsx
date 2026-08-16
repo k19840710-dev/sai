@@ -621,38 +621,38 @@ export default function App() {
                     return (
                       <div
                         key={card.id}
-                        className={`rounded-2xl p-6 shadow-xl border ${theme.bg} ${theme.border} relative flex flex-col justify-center gap-5 h-60 transition-transform duration-200 hover:-translate-y-1`}
+                        className={`rounded-2xl p-4 shadow-xl border ${theme.bg} ${theme.border} relative flex flex-col justify-center gap-3.5 h-44 transition-transform duration-200 hover:-translate-y-1`}
                       >
                         {/* カード上部 */}
                         <div className="flex justify-between items-start">
                           <div>
-                            <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${theme.badge}`}>
+                            <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${theme.badge}`}>
                               {card.brand}
                             </span>
-                            <h3 className="font-bold text-white text-lg mt-2 truncate max-w-[200px]">
+                            <h3 className="font-bold text-white text-sm mt-1.5 truncate max-w-[160px]">
                               {card.name}
                             </h3>
                           </div>
-                          <span className="font-mono text-sm text-white/70">•••• {card.last4}</span>
+                          <span className="font-mono text-xs text-white/70">•••• {card.last4}</span>
                         </div>
 
                         {/* カード中央: 利用金額 */}
                         <div>
-                          <span className="text-sm text-white/70">今月の利用額</span>
-                          <div className="text-3xl font-black text-white tracking-tight">
+                          <span className="text-xs text-white/70">今月の利用額</span>
+                          <div className="text-xl font-black text-white tracking-tight">
                             ¥{card.spent.toLocaleString()}
                           </div>
                         </div>
 
                         {/* カード下部: ゲージ＆締め日情報 */}
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           {card.limit > 0 && (
                             <div>
-                              <div className="flex justify-between text-xs text-white/80 mb-1.5">
+                              <div className="flex justify-between text-[10px] text-white/80 mb-1">
                                 <span>利用枠</span>
                                 <span>{card.percentage}% (上限: ¥{card.limit.toLocaleString()})</span>
                               </div>
-                              <div className="w-full h-2 bg-black/30 rounded-full overflow-hidden backdrop-blur-sm">
+                              <div className="w-full h-1.5 bg-black/30 rounded-full overflow-hidden backdrop-blur-sm">
                                 <div
                                   className={`h-full rounded-full transition-all duration-500 ${
                                     card.percentage > 80 ? 'bg-red-400' : 'bg-white'
@@ -662,7 +662,7 @@ export default function App() {
                               </div>
                             </div>
                           )}
-                          <div className="flex justify-between items-center text-xs text-white/60 pt-1">
+                          <div className="flex justify-between items-center text-[10px] text-white/60 pt-0.5">
                             <span>締日: {card.billingDay}</span>
                             <span>支払日: 毎月{card.paymentDay}日</span>
                           </div>
