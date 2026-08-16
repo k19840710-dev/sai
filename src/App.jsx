@@ -101,13 +101,72 @@ const CATEGORY_KEYWORDS = [
   ['shopping', ['パルコ', 'ユニクロ', 'ＺＡＲＡ', 'Amazon', 'ａｍａｚｏｎ', 'アマゾン', '楽天市場', '百貨店', 'デパート', '無印良品', 'ドンキ', 'ロフト', 'ヨドバシ', 'ビックカメラ', 'ＧＵ']],
 ];
 
+// 全角英数字（ＳＢＩ、ｐｏｖｏ など）を半角に正規化してから比較するためのヘルパー。
+// カード明細アプリは全角で表示することが多く、単純な toLowerCase() だけでは
+// 半角キーワードと一致しないため。
+function toComparableText(str) {
+  return (str || '').normalize('NFKC').toLowerCase();
+}
+
 function guessCategoryFromMemo(memo) {
   if (!memo) return 'other';
-  const normalized = memo.replace(/\s+/g, '');
+  const normalized = toComparableText(memo).replace(/\s+/g, '');
   for (const [categoryId, keywords] of CATEGORY_KEYWORDS) {
-    if (keywords.some((kw) => normalized.includes(kw))) return categoryId;
+    if (keywords.some((kw) => normalized.includes(toComparableText(kw)))) return categoryId;
   }
   return 'other';
+}
+
+// よく見かける店名・サービス名。OCRで多少崩れて読まれても（余分な文字・
+// 半角全角の揺れなど）表記ゆれを吸収して、正式名称＋カテゴリに寄せるための対応表。
+const KNOWN_MERCHANTS = [
+  { match: 'パルコ', name: 'パルコ', category: 'shopping' },
+  { match: 'ユニクロ', name: 'ユニクロ', category: 'shopping' },
+  { match: 'gu', name: 'GU', category: 'shopping' },
+  { match: '無印良品', name: '無印良品', category: 'shopping' },
+  { match: 'ヨドバシ', name: 'ヨドバシカメラ', category: 'shopping' },
+  { match: 'ビックカメラ', name: 'ビックカメラ', category: 'shopping' },
+  { match: 'amazon', name: 'Amazon', category: 'shopping' },
+  { match: '楽天市場', name: '楽天市場', category: 'shopping' },
+  { match: 'cycling', name: 'Hello Cycling', category: 'transport' },
+  { match: 'chargespot', name: 'ChargeSPOT', category: 'other' },
+  { match: 'suica', name: 'Suica', category: 'transport' },
+  { match: 'pasmo', name: 'PASMO', category: 'transport' },
+  { match: 'povo', name: 'povo', category: 'housing' },
+  { match: 'docomo', name: 'ドコモ', category: 'housing' },
+  { match: 'ソフトバンク', name: 'ソフトバンク', category: 'housing' },
+  { match: 'ラクテンモバイル', name: '楽天モバイル', category: 'housing' },
+  { match: '楽天モバイル', name: '楽天モバイル', category: 'housing' },
+  { match: 'netflix', name: 'Netflix', category: 'housing' },
+  { match: 'spotify', name: 'Spotify', category: 'housing' },
+  { match: 'sbi証券', name: 'SBI証券', category: 'housing' },
+  { match: 'スターバックス', name: 'スターバックス', category: 'food' },
+  { match: 'ドトール', name: 'ドトール', category: 'food' },
+  { match: 'マクドナルド', name: 'マクドナルド', category: 'food' },
+  { match: 'セブン', name: 'セブン-イレブン', category: 'food' },
+  { match: 'ローソン', name: 'ローソン', category: 'food' },
+  { match: 'ファミマ', name: 'ファミリーマート', category: 'food' },
+  { match: 'ファミリーマート', name: 'ファミリーマート', category: 'food' },
+];
+
+/**
+ * OCRで読み取った店名の表記ゆれ・ノイズ（アンダースコア、孤立した1文字、
+ * 全角半角の揺れなど）を軽く整えつつ、既知の店名リストに近ければ
+ * 正式名称＋カテゴリに置き換える。
+ */
+function cleanMerchantName(rawMemo) {
+  const base = (rawMemo || '').replace(/[_＿]/g, ' ').replace(/\s+/g, ' ').trim();
+  const compact = toComparableText(base).replace(/\s+/g, '');
+
+  for (const merchant of KNOWN_MERCHANTS) {
+    if (compact.includes(toComparableText(merchant.match).replace(/\s+/g, ''))) {
+      return { name: merchant.name, category: merchant.category };
+    }
+  }
+
+  // 一致しない場合も、行末に紛れ込みがちな孤立した1文字（アイコンの誤読など）だけ除く
+  const trimmed = base.replace(/\s+[ぁ-んァ-ヶ]$/u, '').trim() || base;
+  return { name: trimmed, category: guessCategoryFromMemo(trimmed) };
 }
 
 // 初回起動時のサンプルデータ（保存データが無いときのみ使われる）
@@ -397,12 +456,13 @@ function parseTransactionsFromRows(rawLines) {
     }
     if (!amount) continue;
 
-    const memo = memoSource.replace(/[|•·]/g, '').trim().slice(0, 40);
+    const rawMemo = memoSource.replace(/[|•·]/g, '').trim().slice(0, 40);
+    const { name: memo, category } = cleanMerchantName(rawMemo);
     candidates.push({
       id: `ocr-${i}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       date,
       amount,
-      category: guessCategoryFromMemo(memo),
+      category,
       memo,
     });
   }
