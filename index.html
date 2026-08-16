@@ -49,16 +49,22 @@
             --profit-icon-chip: rgba(46, 125, 91, 0.16);
             --sales-icon-bg: #DAEBFB;
             --sales-accent: #3E7CB8;
+            --sales-icon-fg: #3E7CB8;
             --net-icon-bg: #FBDFEA;
             --net-accent: #C15A82;
+            --net-icon-fg: #C15A82;
             --count-icon-bg: #DCE7FB;
             --count-accent: #4C6FB0;
+            --count-icon-fg: #4C6FB0;
             --purchase-icon-bg: #FCEBC7;
             --purchase-accent: #B8842E;
+            --purchase-icon-fg: #B8842E;
             --stock-icon-bg: #DCEFF0;
             --stock-accent: #2D8A93;
+            --stock-icon-fg: #2D8A93;
             --types-icon-bg: #EBE0F9;
             --types-accent: #8256C4;
+            --types-icon-fg: #8256C4;
 
             --chart-sales: #A9D2F2;
             --chart-net: #F5B8D0;
@@ -85,18 +91,24 @@
                 --profit-bg: #2A4C44;
                 --profit-accent: #83D9AE;
                 --profit-icon-chip: rgba(131, 217, 174, 0.18);
-                --sales-icon-bg: #2C4666;
+                --sales-icon-bg: #BFE0FA;
                 --sales-accent: #8FC4EF;
-                --net-icon-bg: #4D3244;
+                --sales-icon-fg: #1B5C8C;
+                --net-icon-bg: #F8D6E7;
                 --net-accent: #EB9FC0;
-                --count-icon-bg: #2C3D63;
+                --net-icon-fg: #9A2F5A;
+                --count-icon-bg: #C9DBFA;
                 --count-accent: #93AEEA;
-                --purchase-icon-bg: #4F3F28;
+                --count-icon-fg: #2A4A96;
+                --purchase-icon-bg: #FADFA3;
                 --purchase-accent: #E8BE72;
-                --stock-icon-bg: #26494D;
+                --purchase-icon-fg: #7A5410;
+                --stock-icon-bg: #BEEBEA;
                 --stock-accent: #6FC9D2;
-                --types-icon-bg: #40355C;
+                --stock-icon-fg: #146569;
+                --types-icon-bg: #E1D0F7;
                 --types-accent: #C1A2EF;
+                --types-icon-fg: #5B2E96;
 
                 --chart-sales: #8FC4EF;
                 --chart-net: #EB9FC0;
@@ -123,18 +135,24 @@
             --profit-bg: #2A4C44;
             --profit-accent: #83D9AE;
             --profit-icon-chip: rgba(131, 217, 174, 0.18);
-            --sales-icon-bg: #2C4666;
+            --sales-icon-bg: #BFE0FA;
             --sales-accent: #8FC4EF;
-            --net-icon-bg: #4D3244;
+            --sales-icon-fg: #1B5C8C;
+            --net-icon-bg: #F8D6E7;
             --net-accent: #EB9FC0;
-            --count-icon-bg: #2C3D63;
+            --net-icon-fg: #9A2F5A;
+            --count-icon-bg: #C9DBFA;
             --count-accent: #93AEEA;
-            --purchase-icon-bg: #4F3F28;
+            --count-icon-fg: #2A4A96;
+            --purchase-icon-bg: #FADFA3;
             --purchase-accent: #E8BE72;
-            --stock-icon-bg: #26494D;
+            --purchase-icon-fg: #7A5410;
+            --stock-icon-bg: #BEEBEA;
             --stock-accent: #6FC9D2;
-            --types-icon-bg: #40355C;
+            --stock-icon-fg: #146569;
+            --types-icon-bg: #E1D0F7;
             --types-accent: #C1A2EF;
+            --types-icon-fg: #5B2E96;
 
             --chart-sales: #8FC4EF;
             --chart-net: #EB9FC0;
@@ -302,7 +320,7 @@
                 <div class="bg-[var(--card-bg)] p-3.5 sm:p-4 rounded-2xl border border-[var(--border-color)] border-l-4 border-l-[var(--sales-accent)] app-card-shadow">
                     <div class="flex items-center justify-between text-[var(--text-sub)] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">総売上</span>
-                        <div class="p-1.5 bg-[var(--sales-icon-bg)] text-[var(--sales-accent)] rounded-lg">
+                        <div class="p-1.5 bg-[var(--sales-icon-bg)] text-[var(--sales-icon-fg)] rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12 9.5V21m0-11.5L6 3m6 6.5L18 3"/><path d="M6 15h12"/><path d="M6 11h12"/></svg>
                         </div>
                     </div>
@@ -312,7 +330,7 @@
                 <div class="bg-[var(--card-bg)] p-3.5 sm:p-4 rounded-2xl border border-[var(--border-color)] border-l-4 border-l-[var(--net-accent)] app-card-shadow">
                     <div class="flex items-center justify-between text-[var(--text-sub)] mb-1">
                         <span class="text-xs font-semibold uppercase tracking-wider">手取り額</span>
-                        <div class="p-1.5 bg-[var(--net-icon-bg)] text-[var(--net-accent)] rounded-lg">
+                        <div class="p-1.5 bg-[var(--net-icon-bg)] text-[var(--net-icon-fg)] rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 16 6 6"/><circle cx="16" cy="9" r="2.9"/><circle cx="6" cy="5" r="3"/></svg>
                         </div>
                     </div>
@@ -323,7 +341,7 @@
             <!-- 補助情報（コンパクト表示） -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                 <div class="bg-[var(--card-bg)] p-2.5 rounded-2xl border border-[var(--border-color)] app-card-shadow flex items-center gap-2">
-                    <div class="p-1.5 bg-[var(--count-icon-bg)] text-[var(--count-accent)] rounded-lg shrink-0">
+                    <div class="p-1.5 bg-[var(--count-icon-bg)] text-[var(--count-icon-fg)] rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
                     </div>
                     <div class="min-w-0">
@@ -333,7 +351,7 @@
                 </div>
 
                 <div class="bg-[var(--card-bg)] p-2.5 rounded-2xl border border-[var(--border-color)] app-card-shadow flex items-center gap-2">
-                    <div class="p-1.5 bg-[var(--purchase-icon-bg)] text-[var(--purchase-accent)] rounded-lg shrink-0">
+                    <div class="p-1.5 bg-[var(--purchase-icon-bg)] text-[var(--purchase-icon-fg)] rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg>
                     </div>
                     <div class="min-w-0">
@@ -343,7 +361,7 @@
                 </div>
 
                 <div class="bg-[var(--card-bg)] p-2.5 rounded-2xl border border-[var(--border-color)] app-card-shadow flex items-center gap-2">
-                    <div class="p-1.5 bg-[var(--stock-icon-bg)] text-[var(--stock-accent)] rounded-lg shrink-0">
+                    <div class="p-1.5 bg-[var(--stock-icon-bg)] text-[var(--stock-icon-fg)] rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z"/><path d="m7 16.5-4.74-2.85"/><path d="m7 16.5 5-3"/><path d="M7 16.5v5.17"/><path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z"/><path d="m17 16.5-5-3"/><path d="m17 16.5 4.74-2.85"/><path d="M17 16.5v5.17"/><path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z"/><path d="M12 8 7.26 5.15"/><path d="m12 8 4.74-2.85"/><path d="M12 13.5V8"/></svg>
                     </div>
                     <div class="min-w-0">
@@ -353,7 +371,7 @@
                 </div>
 
                 <div class="bg-[var(--card-bg)] p-2.5 rounded-2xl border border-[var(--border-color)] app-card-shadow flex items-center gap-2">
-                    <div class="p-1.5 bg-[var(--types-icon-bg)] text-[var(--types-accent)] rounded-lg shrink-0">
+                    <div class="p-1.5 bg-[var(--types-icon-bg)] text-[var(--types-icon-fg)] rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg>
                     </div>
                     <div class="min-w-0">
@@ -650,7 +668,7 @@
                 <div class="bg-[var(--card-bg)] p-5 rounded-2xl border border-[var(--border-color)] border-t-4 border-t-[var(--purchase-accent)] app-card-shadow">
                     <div class="flex items-center justify-between text-[var(--text-sub)] mb-1">
                         <span class="text-xs font-semibold">今月の仕入額</span>
-                        <div class="p-1.5 bg-[var(--purchase-icon-bg)] text-[var(--purchase-accent)] rounded-lg">
+                        <div class="p-1.5 bg-[var(--purchase-icon-bg)] text-[var(--purchase-icon-fg)] rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg>
                         </div>
                     </div>
@@ -2775,13 +2793,15 @@
                             label: '売上高',
                             data: salesData,
                             backgroundColor: getCssVar('--chart-sales'),
-                            borderRadius: 4
+                            borderRadius: 4,
+                            order: 2
                         },
                         {
                             label: '手取り額',
                             data: salesNetData,
                             backgroundColor: getCssVar('--chart-net'),
-                            borderRadius: 4
+                            borderRadius: 4,
+                            order: 2
                         },
                         {
                             label: '最終利益',
@@ -2791,7 +2811,8 @@
                             backgroundColor: getCssVar('--chart-profit'),
                             borderWidth: 2,
                             pointRadius: 4,
-                            fill: false
+                            fill: false,
+                            order: 1
                         }
                     ]
                 },
