@@ -91,6 +91,25 @@ const CATEGORIES = [
   { id: 'other', name: 'その他', icon: HelpCircle, color: 'bg-gray-500 text-gray-500' },
 ];
 
+// 店名・利用先の文字列に含まれるキーワードから、カテゴリを推測するための対応表。
+// スクリーンショット読み取り（OCR）で使う。優先度は上から順。
+const CATEGORY_KEYWORDS = [
+  ['food', ['スーパー', 'マルエツ', 'イオン', '成城石井', 'コンビニ', 'セブン', 'ローソン', 'ファミリーマート', 'ファミマ', 'マクドナルド', 'モスバーガー', 'スターバックス', 'ドトール', 'カフェ', 'コーヒー', 'レストラン', '食堂', '弁当', '居酒屋', 'サイゼリヤ', '吉野家', 'すき家', '松屋', 'ラーメン', '寿司', '焼肉']],
+  ['transport', ['Suica', 'PASMO', 'ETC', '新幹線', 'ＪＲ', 'JR', '電車', 'バス', 'タクシー', 'Cycling', 'サイクリング', 'ガソリン', 'ＥＮＥＯＳ', '駐車場', 'メトロ', 'タイムズ', 'ANA', 'JAL', '航空', 'チャージ']],
+  ['housing', ['家賃', '電気', 'ガス料金', '水道', 'povo', 'ｐｏｖｏ', 'ドコモ', 'ａｕ', 'ソフトバンク', 'モバイル', 'ﾓﾊﾞｲﾙ', 'NHK', 'Wi-Fi', 'ネット', 'サブスク', 'Netflix', 'Spotify', 'プライム', '保険', '積立', '証券']],
+  ['entertainment', ['映画', '遊園地', 'ゲーム', 'カラオケ', 'ライブ', 'ジム', 'シネマ', 'ディズニー', 'USJ', 'Switch', 'PlayStation', 'Steam']],
+  ['shopping', ['パルコ', 'ユニクロ', 'ＺＡＲＡ', 'Amazon', 'ａｍａｚｏｎ', 'アマゾン', '楽天市場', '百貨店', 'デパート', '無印良品', 'ドンキ', 'ロフト', 'ヨドバシ', 'ビックカメラ', 'ＧＵ']],
+];
+
+function guessCategoryFromMemo(memo) {
+  if (!memo) return 'other';
+  const normalized = memo.replace(/\s+/g, '');
+  for (const [categoryId, keywords] of CATEGORY_KEYWORDS) {
+    if (keywords.some((kw) => normalized.includes(kw))) return categoryId;
+  }
+  return 'other';
+}
+
 // 初回起動時のサンプルデータ（保存データが無いときのみ使われる）
 const DEFAULT_CARDS = [
   {
@@ -342,12 +361,13 @@ function parseTransactionsFromRows(rawLines) {
     }
     if (!amount) continue;
 
+    const memo = memoSource.replace(/[|•·]/g, '').trim().slice(0, 40);
     candidates.push({
       id: `ocr-${i}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       date,
       amount,
-      category: 'other',
-      memo: memoSource.replace(/[|•·]/g, '').trim().slice(0, 40),
+      category: guessCategoryFromMemo(memo),
+      memo,
     });
   }
   return candidates.slice(0, 50);
