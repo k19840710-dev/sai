@@ -47,6 +47,8 @@ export const getCardsColRef = (uid) => collection(db, 'artifacts', APP_ID, 'user
 export const getTransactionsColRef = (uid) => collection(db, 'artifacts', APP_ID, 'users', uid, 'transactions');
 export const cardDocRef = (uid, id) => doc(db, 'artifacts', APP_ID, 'users', uid, 'cards', id);
 export const transactionDocRef = (uid, id) => doc(db, 'artifacts', APP_ID, 'users', uid, 'transactions', id);
+// Gmail自動取り込み（Apps Script）の実行状況。アプリ側は読み取り専用で表示するだけ。
+export const gmailImportStatusDocRef = (uid) => doc(db, 'artifacts', APP_ID, 'users', uid, 'settings', 'gmailImportStatus');
 
 export {
   onAuthStateChanged,

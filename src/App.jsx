@@ -46,6 +46,7 @@ import {
   getTransactionsColRef,
   cardDocRef,
   transactionDocRef,
+  gmailImportStatusDocRef,
   setDoc,
   deleteDoc,
   onSnapshot,
@@ -681,6 +682,18 @@ export default function App() {
       unsubCards();
       unsubTx();
     };
+  }, [authUser]);
+
+  // Gmail自動取り込み（Apps Script）の実行状況。設定していない場合は null のまま。
+  const [gmailImportStatus, setGmailImportStatus] = useState(null);
+  useEffect(() => {
+    if (!authUser) return undefined;
+    const unsub = onSnapshot(
+      gmailImportStatusDocRef(authUser.uid),
+      (snap) => setGmailImportStatus(snap.exists() ? snap.data() : null),
+      () => setGmailImportStatus(null)
+    );
+    return unsub;
   }, [authUser]);
 
   // 認証ゲート（未ログイン端末向け）フォームのステート
@@ -2764,6 +2777,35 @@ export default function App() {
               <div className="text-[10px] text-slate-500 font-semibold">アカウントID</div>
               <code className="block text-xs font-mono text-slate-300 break-all select-all">{authUser.uid}</code>
             </div>
+
+            {gmailImportStatus && (
+              <div className="bg-slate-900/50 border border-slate-700/40 rounded-xl p-3 space-y-1.5">
+                <div className="text-[10px] text-slate-500 font-semibold">Gmail自動取り込み</div>
+                {(() => {
+                  const lastCheckedAt = gmailImportStatus.lastCheckedAt ? new Date(gmailImportStatus.lastCheckedAt) : null;
+                  const minutesAgo = lastCheckedAt ? Math.round((Date.now() - lastCheckedAt.getTime()) / 60000) : null;
+                  const stale = minutesAgo !== null && minutesAgo >= 90;
+                  const ok = gmailImportStatus.ok !== false && !stale;
+                  return (
+                    <>
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <span className={`w-1.5 h-1.5 rounded-full ${ok ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                        <span className="text-slate-300">
+                          {stale ? '止まっている可能性があります' : gmailImportStatus.ok === false ? 'エラーが発生しています' : '正常に動作中'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        最終確認: {minutesAgo !== null ? `${minutesAgo}分前` : '不明'}
+                        {' '}・ 前回の取り込み件数: {gmailImportStatus.importedLastRun ?? 0}件
+                      </p>
+                      {gmailImportStatus.error && (
+                        <p className="text-[11px] text-red-400 break-all">{gmailImportStatus.error}</p>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+            )}
 
             {authUser.isAnonymous ? (
               <form onSubmit={handleLinkEmailAccount} className="space-y-2 pt-2 border-t border-slate-700">
