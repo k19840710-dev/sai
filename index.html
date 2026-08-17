@@ -1224,7 +1224,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged, signInWithEmailAndPassword, EmailAuthProvider, linkWithCredential, signOut, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, initializeFirestore, persistentLocalCache, persistentSingleTabManager, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // 実行環境から __firebase_config が注入される場合はそちらを優先し、
         // 通常のホスティング（GitHub Pages 等）ではこの既定値の Firebase プロジェクトに接続する
@@ -1240,7 +1240,21 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+
+        // データ件数が増えても起動が遅くならないよう、端末内(IndexedDB)にキャッシュを保持する。
+        // 初回以降は保存済みのデータを即座に使い、サーバーとは差分だけ同期するようになる。
+        // 一部のブラウザ環境(プライベートブラウジング等)ではIndexedDBが使えずここで例外が出ることがあるため、
+        // その場合は従来通りのキャッシュなし接続にフォールバックする。
+        let db;
+        try {
+            db = initializeFirestore(app, {
+                localCache: persistentLocalCache({ tabManager: persistentSingleTabManager() })
+            });
+        } catch (err) {
+            console.warn("Firestore永続キャッシュを有効化できなかったため、キャッシュなしで接続します:", err);
+            db = getFirestore(app);
+        }
+
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'mercari-sales-app';
 
         // マッチング判定のスコア閾値（定数化して保守性を維持）
