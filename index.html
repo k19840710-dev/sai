@@ -305,7 +305,25 @@
         <!-- 1. ダッシュボード タブ -->
         <section id="tab-dashboard" class="tab-content space-y-3">
 
-            <div>
+            <!-- スマートフォン版: シンプルな期間ヘッダー -->
+            <div id="dashboard-period-mobile" class="sm:hidden bg-[var(--card-bg)] rounded-2xl border border-[var(--border-color)] app-card-shadow px-3 py-2.5 space-y-2">
+                <div id="dashboard-period-mobile-tap" class="relative flex items-center justify-center gap-1">
+                    <span id="dashboard-period-label-mobile" class="text-lg font-extrabold text-[var(--text-main)]"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-[var(--text-sub)]"><path d="m6 9 6 6 6-6"/></svg>
+                    <input type="month" id="dashboard-month-input" onchange="onDashboardMonthInputChange(this.value)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" aria-label="表示する月を選択">
+                    <select id="dashboard-year-input" onchange="onDashboardYearInputChange(this.value)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer hidden" aria-label="表示する年を選択"></select>
+                </div>
+                <div class="flex justify-center">
+                    <div class="inline-flex gap-1 bg-[var(--bg-subtle)] p-1 rounded-full text-xs font-bold border border-[var(--border-color)]">
+                        <button type="button" id="dashboard-period-mode-month-m" onclick="setDashboardPeriodMode('month')" class="px-4 py-1.5 rounded-full transition-all">月</button>
+                        <button type="button" id="dashboard-period-mode-year-m" onclick="setDashboardPeriodMode('year')" class="px-4 py-1.5 rounded-full transition-all">年</button>
+                        <button type="button" id="dashboard-period-mode-all-m" onclick="setDashboardPeriodMode('all')" class="px-4 py-1.5 rounded-full transition-all">全期間</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- タブレット/PC版: 従来の見出し+期間コントロール -->
+            <div class="hidden sm:block">
                 <div class="bg-[var(--card-bg)] w-screen ml-[calc(50%-50vw)] mr-[calc(50%-50vw)]">
                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-row justify-between items-center gap-2 p-4">
                         <h2 class="text-xl font-extrabold text-[var(--text-main)] flex items-center gap-2 shrink-0 min-w-0">
@@ -500,7 +518,25 @@
 
         <!-- 2. 商品別実績 タブ -->
         <section id="tab-product-stats" class="tab-content hidden space-y-6">
-            <div>
+            <!-- スマートフォン版: シンプルな期間ヘッダー -->
+            <div id="product-stats-period-mobile" class="sm:hidden bg-[var(--card-bg)] rounded-2xl border border-[var(--border-color)] app-card-shadow px-3 py-2.5 space-y-2">
+                <div id="product-stats-period-mobile-tap" class="relative flex items-center justify-center gap-1">
+                    <span id="product-stats-period-label-mobile" class="text-lg font-extrabold text-[var(--text-main)]"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-[var(--text-sub)]"><path d="m6 9 6 6 6-6"/></svg>
+                    <input type="month" id="product-stats-month-input" onchange="onProductStatsMonthInputChange(this.value)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" aria-label="表示する月を選択">
+                    <select id="product-stats-year-input" onchange="onProductStatsYearInputChange(this.value)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer hidden" aria-label="表示する年を選択"></select>
+                </div>
+                <div class="flex justify-center">
+                    <div class="inline-flex gap-1 bg-[var(--bg-subtle)] p-1 rounded-full text-xs font-bold border border-[var(--border-color)]">
+                        <button type="button" id="product-stats-period-mode-month-m" onclick="setProductStatsPeriodMode('month')" class="px-4 py-1.5 rounded-full transition-all">月</button>
+                        <button type="button" id="product-stats-period-mode-year-m" onclick="setProductStatsPeriodMode('year')" class="px-4 py-1.5 rounded-full transition-all">年</button>
+                        <button type="button" id="product-stats-period-mode-all-m" onclick="setProductStatsPeriodMode('all')" class="px-4 py-1.5 rounded-full transition-all">全期間</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- タブレット/PC版: 従来の見出し+期間コントロール -->
+            <div class="hidden sm:block">
                 <div class="bg-[var(--card-bg)] w-screen ml-[calc(50%-50vw)] mr-[calc(50%-50vw)]">
                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-row justify-between items-center gap-2 p-4">
                         <h2 class="text-xl font-extrabold text-[var(--text-main)] flex items-center gap-2 shrink-0 min-w-0">
@@ -1357,15 +1393,17 @@
         // 表示期間コントロール(月/年/全期間タブ + ←→ナビゲーター)のUIを、現在の状態に合わせて更新する。
         function renderPeriodControl(prefix, period) {
             ['month', 'year', 'all'].forEach(m => {
-                const btn = document.getElementById(`${prefix}-period-mode-${m}`);
-                if (!btn) return;
-                if (m === period.mode) {
-                    btn.classList.add('text-[#EF4444]', 'bg-[var(--card-bg)]', 'app-card-shadow');
-                    btn.classList.remove('text-[var(--text-sub)]');
-                } else {
-                    btn.classList.remove('text-[#EF4444]', 'bg-[var(--card-bg)]', 'app-card-shadow');
-                    btn.classList.add('text-[var(--text-sub)]');
-                }
+                // タブレット/PC版のタブと、スマートフォン版のタブ(id末尾に-mが付く)の両方を更新する
+                [document.getElementById(`${prefix}-period-mode-${m}`), document.getElementById(`${prefix}-period-mode-${m}-m`)].forEach(btn => {
+                    if (!btn) return;
+                    if (m === period.mode) {
+                        btn.classList.add('text-[#EF4444]', 'bg-[var(--card-bg)]', 'app-card-shadow');
+                        btn.classList.remove('text-[var(--text-sub)]');
+                    } else {
+                        btn.classList.remove('text-[#EF4444]', 'bg-[var(--card-bg)]', 'app-card-shadow');
+                        btn.classList.add('text-[var(--text-sub)]');
+                    }
+                });
             });
 
             const nav = document.getElementById(`${prefix}-period-nav`);
@@ -1390,6 +1428,95 @@
                 }
                 nextBtn.disabled = atLatest;
             }
+
+            // スマートフォン版: タップ可能な期間ラベル + ネイティブの月/年ピッカー
+            const mobileTap = document.getElementById(`${prefix}-period-mobile-tap`);
+            if (mobileTap) mobileTap.classList.toggle('hidden', period.mode === 'all');
+
+            const mobileLabel = document.getElementById(`${prefix}-period-label-mobile`);
+            if (mobileLabel) mobileLabel.textContent = formatPeriodLabel(period);
+
+            const monthInput = document.getElementById(`${prefix}-month-input`);
+            const yearInput = document.getElementById(`${prefix}-year-input`);
+            if (monthInput && yearInput) {
+                if (period.mode === 'month') {
+                    monthInput.value = `${period.year}-${String(period.month + 1).padStart(2, '0')}`;
+                    monthInput.classList.remove('hidden');
+                    yearInput.classList.add('hidden');
+                } else if (period.mode === 'year') {
+                    populateYearSelect(yearInput, period.year);
+                    monthInput.classList.add('hidden');
+                    yearInput.classList.remove('hidden');
+                }
+            }
+        }
+
+        // 年選択(スマートフォン版のネイティブselect)の選択肢を用意する。既に用意済みなら選択値だけ更新する。
+        function populateYearSelect(selectEl, selectedYear) {
+            const nowYear = new Date().getFullYear();
+            if (selectEl.options.length === 0) {
+                for (let y = nowYear; y >= nowYear - 10; y--) {
+                    const opt = document.createElement('option');
+                    opt.value = String(y);
+                    opt.textContent = `${y}年`;
+                    selectEl.appendChild(opt);
+                }
+            }
+            selectEl.value = String(selectedYear);
+        }
+
+        // スマートフォン版: ネイティブの月/年ピッカーで選ばれた値を反映する
+        function onDashboardMonthInputChange(value) {
+            if (!value) return;
+            const [y, m] = value.split('-').map(Number);
+            dashboardPeriod = { mode: 'month', year: y, month: m - 1 };
+            renderPeriodControl('dashboard', dashboardPeriod);
+            updateDashboard();
+        }
+        function onDashboardYearInputChange(value) {
+            const y = Number(value);
+            if (!y) return;
+            dashboardPeriod = { ...dashboardPeriod, mode: 'year', year: y };
+            renderPeriodControl('dashboard', dashboardPeriod);
+            updateDashboard();
+        }
+        function onProductStatsMonthInputChange(value) {
+            if (!value) return;
+            const [y, m] = value.split('-').map(Number);
+            productStatsPeriod = { mode: 'month', year: y, month: m - 1 };
+            productStatsPage = 1;
+            renderPeriodControl('product-stats', productStatsPeriod);
+            renderProductStatsTable();
+        }
+        function onProductStatsYearInputChange(value) {
+            const y = Number(value);
+            if (!y) return;
+            productStatsPeriod = { ...productStatsPeriod, mode: 'year', year: y };
+            productStatsPage = 1;
+            renderPeriodControl('product-stats', productStatsPeriod);
+            renderProductStatsTable();
+        }
+
+        // スマートフォン版: 期間ヘッダーの左右スワイプで前後の月/年に移動する
+        function attachPeriodSwipeHandler(elId, onSwipeLeft, onSwipeRight) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            let startX = 0, startY = 0, tracking = false;
+            el.addEventListener('touchstart', (e) => {
+                if (e.touches.length !== 1) return;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                tracking = true;
+            }, { passive: true });
+            el.addEventListener('touchend', (e) => {
+                if (!tracking) return;
+                tracking = false;
+                const dx = e.changedTouches[0].clientX - startX;
+                const dy = e.changedTouches[0].clientY - startY;
+                if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+                    if (dx < 0) onSwipeLeft(); else onSwipeRight();
+                }
+            }, { passive: true });
         }
 
         function setDashboardPeriodMode(mode) {
@@ -1715,6 +1842,8 @@
 
         initAuth();
         initTheme();
+        attachPeriodSwipeHandler('dashboard-period-mobile', () => shiftDashboardPeriod(1), () => shiftDashboardPeriod(-1));
+        attachPeriodSwipeHandler('product-stats-period-mobile', () => shiftProductStatsPeriod(1), () => shiftProductStatsPeriod(-1));
 
         // ===== テーマ(ライト/ダーク)管理 =====
         const THEME_STORAGE_KEY = 'mercari_theme_preference';
@@ -3636,6 +3765,10 @@
         window.shiftDashboardPeriod = shiftDashboardPeriod;
         window.setProductStatsPeriodMode = setProductStatsPeriodMode;
         window.shiftProductStatsPeriod = shiftProductStatsPeriod;
+        window.onDashboardMonthInputChange = onDashboardMonthInputChange;
+        window.onDashboardYearInputChange = onDashboardYearInputChange;
+        window.onProductStatsMonthInputChange = onProductStatsMonthInputChange;
+        window.onProductStatsYearInputChange = onProductStatsYearInputChange;
         window.openProductDetailModal = openProductDetailModal;
         window.closeProductDetailModal = closeProductDetailModal;
         window.openEditProductMasterModal = openEditProductMasterModal;
