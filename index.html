@@ -731,7 +731,7 @@
                     テーマ
                 </h2>
                 <div class="grid grid-cols-3 gap-2 bg-[var(--bg-subtle)] p-1 rounded-xl text-xs font-bold text-center border border-[var(--border-color)]">
-                    <button type="button" id="theme-btn-system" onclick="setThemePreference('system')" class="py-2 rounded-lg text-[var(--text-sub)] transition-all">端末設定に合わせる</button>
+                    <button type="button" id="theme-btn-system" onclick="setThemePreference('system')" class="py-2 rounded-lg text-[var(--text-sub)] transition-all">自動</button>
                     <button type="button" id="theme-btn-light" onclick="setThemePreference('light')" class="py-2 rounded-lg text-[var(--text-sub)] transition-all">ライト</button>
                     <button type="button" id="theme-btn-dark" onclick="setThemePreference('dark')" class="py-2 rounded-lg text-[var(--text-sub)] transition-all">ダーク</button>
                 </div>
@@ -800,15 +800,15 @@
                         バックアップから復元 (JSON / CSV)
                     </div>
 
-                    <div class="flex items-center gap-4 text-xs font-semibold text-[var(--text-sub)]">
-                        <span>復元モード:</span>
-                        <label class="flex items-center gap-1 cursor-pointer">
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-[var(--text-sub)]">
+                        <span class="shrink-0">復元モード:</span>
+                        <label class="flex items-center gap-1 cursor-pointer shrink-0">
                             <input type="radio" name="import-mode" value="append" checked class="text-[var(--sales-icon-fg)] accent-[var(--sales-icon-fg)]">
-                            <span>追加 (結合)</span>
+                            <span class="whitespace-nowrap">追加 (結合)</span>
                         </label>
-                        <label class="flex items-center gap-1 cursor-pointer">
+                        <label class="flex items-center gap-1 cursor-pointer shrink-0">
                             <input type="radio" name="import-mode" value="replace" class="text-red-500 accent-red-500">
-                            <span class="text-red-500">置き換え (初期化して復元)</span>
+                            <span class="whitespace-nowrap text-red-500">置き換え (初期化して復元)</span>
                         </label>
                     </div>
 
@@ -916,7 +916,7 @@
 
     <!-- 商品詳細モーダル -->
     <div id="product-detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--card-bg)] rounded-2xl max-w-2xl w-full p-6 shadow-xl space-y-5 relative max-h-[90vh] overflow-y-auto border border-[var(--border-color)]">
+        <div class="bg-[var(--card-bg)] rounded-2xl max-w-2xl w-full p-6 shadow-xl space-y-5 relative max-h-[90vh] overflow-y-auto overflow-x-hidden border border-[var(--border-color)]">
             <button onclick="closeProductDetailModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[var(--text-sub)] hover:text-[var(--text-main)]">
                 <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
@@ -1058,7 +1058,7 @@
 
     <!-- 編集モーダル（売上） -->
     <div id="edit-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--card-bg)] rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto border border-[var(--border-color)]">
+        <div class="bg-[var(--card-bg)] rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto overflow-x-hidden border border-[var(--border-color)]">
             <button onclick="closeEditModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[var(--text-sub)] hover:text-[var(--text-main)]">
                 <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
@@ -1125,7 +1125,7 @@
 
     <!-- 仕入れ新規/編集モーダル -->
     <div id="purchase-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--card-bg)] rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto border border-[var(--border-color)]">
+        <div class="bg-[var(--card-bg)] rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 relative max-h-[90vh] overflow-y-auto overflow-x-hidden border border-[var(--border-color)]">
             <button onclick="closePurchaseModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[var(--text-sub)] hover:text-[var(--text-main)]">
                 <span class="text-xl leading-none" role="img" aria-hidden="true">✖️</span>
             </button>
@@ -2512,7 +2512,7 @@
 
             const rowHtml = `
                 <div id="${rowId}" class="flex items-center gap-2">
-                    <select class="pur-row-product flex-grow px-3 py-1.5 border border-[var(--border-color)] rounded-lg text-xs font-semibold bg-[var(--card-bg)] text-[var(--text-main)] focus:outline-none focus:border-[var(--accent-bg)]">
+                    <select class="pur-row-product flex-grow min-w-0 px-3 py-1.5 border border-[var(--border-color)] rounded-lg text-xs font-semibold bg-[var(--card-bg)] text-[var(--text-main)] focus:outline-none focus:border-[var(--accent-bg)]">
                         <option value="">-- 商品を選択 --</option>
                         ${options}
                     </select>
