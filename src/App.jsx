@@ -26,6 +26,8 @@ import {
   Download,
   Upload,
   Pencil,
+  Copy,
+  Check,
   Cloud,
   LogOut,
   Loader2,
@@ -801,6 +803,20 @@ export default function App() {
       else next.add(cardId);
       return next;
     });
+  };
+
+  // カード番号・有効期限・セキュリティコードのコピーボタン用
+  const [copiedField, setCopiedField] = useState(null);
+  const handleCopyToClipboard = async (text, key) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedField(key);
+      setTimeout(() => setCopiedField((prev) => (prev === key ? null : prev)), 1500);
+    } catch (err) {
+      console.error(err);
+      alert('コピーに失敗しました。');
+    }
   };
 
   // --- 月の切り替え処理 ---
@@ -2056,23 +2072,71 @@ export default function App() {
 
                       <div>
                         <span className="text-[10px] text-slate-500 block mb-0.5">カード番号</span>
-                        <span className="font-mono text-sm text-slate-200 tracking-wider">
-                          {revealedCards.has(card.id) ? formatCardNumber(card.number) : maskCardNumber(card.number, card.last4)}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono text-sm text-slate-200 tracking-wider">
+                            {revealedCards.has(card.id) ? formatCardNumber(card.number) : maskCardNumber(card.number, card.last4)}
+                          </span>
+                          {revealedCards.has(card.id) && card.number && (
+                            <button
+                              type="button"
+                              onClick={() => handleCopyToClipboard(card.number.replace(/\D/g, ''), `${card.id}:number`)}
+                              className="p-1 text-slate-500 hover:text-indigo-400 shrink-0"
+                              title="カード番号をコピー"
+                            >
+                              {copiedField === `${card.id}:number` ? (
+                                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                              ) : (
+                                <Copy className="w-3.5 h-3.5" />
+                              )}
+                            </button>
+                          )}
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
                         <div className="min-w-0">
                           <span className="text-[10px] text-slate-500 block mb-0.5">有効期限</span>
-                          <span className="font-mono text-sm text-slate-200">
-                            {revealedCards.has(card.id) ? (card.expiry || '未登録') : '••/••'}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-sm text-slate-200">
+                              {revealedCards.has(card.id) ? (card.expiry || '未登録') : '••/••'}
+                            </span>
+                            {revealedCards.has(card.id) && card.expiry && (
+                              <button
+                                type="button"
+                                onClick={() => handleCopyToClipboard(card.expiry, `${card.id}:expiry`)}
+                                className="p-1 text-slate-500 hover:text-indigo-400 shrink-0"
+                                title="有効期限をコピー"
+                              >
+                                {copiedField === `${card.id}:expiry` ? (
+                                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                            )}
+                          </div>
                         </div>
                         <div className="min-w-0">
                           <span className="text-[10px] text-slate-500 block mb-0.5">セキュリティコード</span>
-                          <span className="font-mono text-sm text-slate-200">
-                            {revealedCards.has(card.id) ? (card.cvv || '未登録') : '•••'}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-sm text-slate-200">
+                              {revealedCards.has(card.id) ? (card.cvv || '未登録') : '•••'}
+                            </span>
+                            {revealedCards.has(card.id) && card.cvv && (
+                              <button
+                                type="button"
+                                onClick={() => handleCopyToClipboard(card.cvv, `${card.id}:cvv`)}
+                                className="p-1 text-slate-500 hover:text-indigo-400 shrink-0"
+                                title="セキュリティコードをコピー"
+                              >
+                                {copiedField === `${card.id}:cvv` ? (
+                                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
