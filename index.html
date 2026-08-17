@@ -256,13 +256,11 @@
         <!-- 1. ダッシュボード タブ -->
         <section id="tab-dashboard" class="tab-content space-y-3">
 
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--border-color)] app-card-shadow">
-                <div>
-                    <h2 class="text-xl font-extrabold text-[var(--text-main)] flex items-center gap-2">
-                        <span class="w-1.5 h-6 bg-[var(--accent-bg)] rounded-full"></span>
-                        ダッシュボード
-                    </h2>
-                </div>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--border-color)] app-card-shadow">
+                <h2 class="text-xl font-extrabold text-[var(--text-main)] flex items-center gap-2">
+                    <span class="w-1.5 h-6 bg-[var(--accent-bg)] rounded-full"></span>
+                    ダッシュボード
+                </h2>
                 <div class="flex items-center gap-2 bg-[var(--bg-subtle)] p-1.5 rounded-xl border border-[var(--border-color)] text-sm">
                     <span class="text-xs text-[var(--text-sub)] pl-2">表示期間:</span>
                     <select id="dashboard-filter" onchange="updateDashboard()" class="bg-transparent font-medium focus:outline-none pr-2 cursor-pointer text-[var(--text-main)]">
@@ -436,13 +434,11 @@
 
         <!-- 2. 商品別実績 タブ -->
         <section id="tab-product-stats" class="tab-content hidden space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--border-color)] app-card-shadow">
-                <div>
-                    <h2 class="text-xl font-extrabold text-[var(--text-main)] flex items-center gap-2">
-                        <span class="w-1.5 h-6 bg-[var(--accent-bg)] rounded-full"></span>
-                        商品別実績
-                    </h2>
-                </div>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--border-color)] app-card-shadow">
+                <h2 class="text-xl font-extrabold text-[var(--text-main)] flex items-center gap-2">
+                    <span class="w-1.5 h-6 bg-[var(--accent-bg)] rounded-full"></span>
+                    商品別実績
+                </h2>
                 <div class="flex items-center gap-2 bg-[var(--bg-subtle)] p-1.5 rounded-xl border border-[var(--border-color)] text-sm">
                     <span class="text-xs text-[var(--text-sub)] pl-2">表示期間:</span>
                     <select id="product-stats-filter" onchange="renderProductStatsTable()" class="bg-transparent font-medium focus:outline-none pr-2 cursor-pointer text-[var(--text-main)]">
