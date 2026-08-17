@@ -74,6 +74,8 @@ function checkCardEmails() {
     const matchers = EMAIL_RULES.map((r) => r.key).join(' OR ');
     const query = `-label:"${PROCESSED_LABEL_NAME}" newer_than:7d`;
     const threads = GmailApp.search(query, 0, 50);
+    console.log(`検索クエリ: ${query}`);
+    console.log(`検索結果: ${threads.length}件のスレッド`);
 
     threads.forEach((thread) => {
       const messages = thread.getMessages();
