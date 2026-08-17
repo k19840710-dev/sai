@@ -78,6 +78,7 @@ function checkCardEmails() {
     threads.forEach((thread) => {
       const messages = thread.getMessages();
       let threadHadMatch = false;
+      let threadHadFailure = false;
 
       messages.forEach((message) => {
         const subject = message.getSubject() || '';
@@ -94,11 +95,14 @@ function checkCardEmails() {
             // デバッグ用: 実際のメール本文を確認するための一時的なログ出力。
             // 解析ロジックの調整が終わったら消して構いません。
             console.log(`[${rule.key}] 本文プレビュー ↓↓↓\n` + body.substring(0, 1000));
+            threadHadFailure = true; // 解析失敗した分は「処理済み」にせず、次回また拾い直す
             return;
           }
 
           ensureCardExists_(accessToken, rule);
-          createTransaction_(accessToken, {
+          // メールのメッセージIDから決まる固定IDにしておくことで、同じメールを
+          // 何度処理しても重複した明細ができない（既存ドキュメントを上書きするだけ）。
+          createTransaction_(accessToken, `t-gmail-${message.getId()}`, {
             cardId: rule.cardId,
             amount: parsed.amount,
             date: parsed.date,
@@ -108,11 +112,14 @@ function checkCardEmails() {
           importedCount += 1;
         } catch (err) {
           lastError = String(err);
+          threadHadFailure = true;
           console.error(`[${rule.key}] 処理エラー: ${err}`);
         }
       });
 
-      if (threadHadMatch) {
+      // 解析・書き込みが全部成功したスレッドだけ「処理済み」ラベルを付ける。
+      // 失敗が混ざっていたら次回また対象にして、直したロジックで再挑戦させる。
+      if (threadHadMatch && !threadHadFailure) {
         thread.addLabel(label);
       }
     });
@@ -342,10 +349,13 @@ function toFirestoreFields_(obj) {
   return fields;
 }
 
-function createTransaction_(accessToken, tx) {
-  const id = `t-gmail-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-  const url = firestoreDocPath_('artifacts', FIRESTORE_APP_ID, 'users', FIRESTORE_USER_ID, 'transactions') + `?documentId=${id}`;
-  firestoreRequest_(accessToken, 'post', url, { fields: toFirestoreFields_(tx) });
+/**
+ * 明細を書き込む。id を固定にして PATCH（作成 or 上書き）することで、
+ * 同じメールを誤って2回処理しても重複した明細ができないようにしている。
+ */
+function createTransaction_(accessToken, id, tx) {
+  const url = firestoreDocPath_('artifacts', FIRESTORE_APP_ID, 'users', FIRESTORE_USER_ID, 'transactions', id);
+  firestoreRequest_(accessToken, 'patch', url, { fields: toFirestoreFields_(tx) });
 }
 
 /** 対応するカードがまだ無ければ、控えめな初期値で自動作成する（既にあれば何もしない） */
