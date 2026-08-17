@@ -456,7 +456,7 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-[var(--bg-subtle)] text-[var(--text-sub)] text-xs font-semibold uppercase tracking-wider border-b border-[var(--border-color)] whitespace-nowrap">
-                                <th class="p-3 pl-4">商品名</th>
+                                <th class="p-3 pl-4 sticky left-0 z-20 bg-[var(--bg-subtle)] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.15)]">商品名</th>
                                 <th class="p-3 text-right">販売数</th>
                                 <th class="p-3 text-right">累計売上</th>
                                 <th class="p-3 text-right">平均価格</th>
@@ -2811,11 +2811,11 @@
 
             if (emptyEl) emptyEl.classList.add('hidden');
             tbody.innerHTML = products.map(p => `
-                <tr class="hover:bg-[var(--bg-subtle)] transition-colors">
-                    <td class="p-3 pl-4 font-bold text-[var(--text-main)]">
-                        <button onclick="openProductDetailModal('${p.id}')" class="hover:text-[var(--text-main)] text-left flex items-center gap-1">
-                            <span class="text-sm text-[var(--text-sub)] leading-none no-underline" role="img" aria-hidden="true">📦</span>
-                            <span class="underline">${escapeHtml(p.title)}</span>
+                <tr class="group hover:bg-[var(--bg-subtle)] transition-colors">
+                    <td class="p-3 pl-4 font-bold text-[var(--text-main)] sticky left-0 z-10 bg-[var(--card-bg)] group-hover:bg-[var(--bg-subtle)] transition-colors shadow-[2px_0_4px_-2px_rgba(0,0,0,0.15)]">
+                        <button onclick="openProductDetailModal('${p.id}')" class="hover:text-[var(--text-main)] text-left flex items-center gap-1 w-[150px]">
+                            <span class="text-sm text-[var(--text-sub)] leading-none no-underline shrink-0" role="img" aria-hidden="true">📦</span>
+                            <span class="underline truncate">${escapeHtml(p.title)}</span>
                         </button>
                     </td>
                     <td class="p-3 text-right font-extrabold text-[var(--text-main)]">${p.periodSoldQty} 個</td>
