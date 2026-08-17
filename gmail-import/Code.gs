@@ -91,6 +91,9 @@ function checkCardEmails() {
           const parsed = rule.parse(body, subject);
           if (!parsed || !parsed.amount || !parsed.date) {
             console.warn(`[${rule.key}] 解析失敗: ${subject}`);
+            // デバッグ用: 実際のメール本文を確認するための一時的なログ出力。
+            // 解析ロジックの調整が終わったら消して構いません。
+            console.log(`[${rule.key}] 本文プレビュー ↓↓↓\n` + body.substring(0, 1000));
             return;
           }
 
