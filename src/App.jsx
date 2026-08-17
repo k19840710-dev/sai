@@ -1906,13 +1906,6 @@ export default function App() {
                   <Upload className="w-3.5 h-3.5" />
                   読み込み
                 </button>
-                <input
-                  ref={importFileRef}
-                  type="file"
-                  accept={inCapabilityHost ? 'application/json' : 'application/json,image/*'}
-                  onChange={handleImportFile}
-                  className="sr-only"
-                />
               </div>
             </div>
 
@@ -2205,6 +2198,15 @@ export default function App() {
 
       </main>
 
+      {/* 書き出し・読み込み用の隠しファイル入力（どのタブからでも使えるよう常時マウント） */}
+      <input
+        ref={importFileRef}
+        type="file"
+        accept={inCapabilityHost ? 'application/json' : 'application/json,image/*'}
+        onChange={handleImportFile}
+        className="sr-only"
+      />
+
       {/* 4. モーダル: 利用明細の記録 */}
       {isAddTransactionOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
@@ -2221,6 +2223,20 @@ export default function App() {
                 <X className="w-5 h-5" />
               </button>
             </div>
+
+            {!editingTxId && !inCapabilityHost && (
+              <button
+                type="button"
+                onClick={() => {
+                  handleCloseTransactionModal();
+                  handleImportClick();
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-slate-600 text-slate-300 text-sm font-medium hover:bg-slate-700/40 transition-colors"
+              >
+                <Upload className="w-4 h-4" />
+                スクリーンショットから読み込む
+              </button>
+            )}
 
             <form onSubmit={handleSaveTransaction} className="space-y-5">
               {/* 利用金額 */}
