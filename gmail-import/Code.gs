@@ -396,3 +396,22 @@ function updateStatus_(accessToken, status) {
   const url = firestoreDocPath_('artifacts', FIRESTORE_APP_ID, 'users', FIRESTORE_USER_ID, 'settings', 'gmailImportStatus');
   firestoreRequest_(accessToken, 'patch', url, { fields: toFirestoreFields_(status) });
 }
+
+// ============================================================
+// 調査用（一時的）: ラベル絞り込みなしで検索し、対象になりそうなメールの
+// 件名と現在のラベルを確認する。原因調査が終わったら消して構いません。
+// 実行する時は、上のプルダウンで checkCardEmails ではなく debugSearch を選ぶこと。
+// ============================================================
+function debugSearch() {
+  const threads = GmailApp.search('newer_than:7d', 0, 50);
+  console.log(`ラベル絞り込みなしでの全体件数: ${threads.length}件`);
+  threads.forEach((thread) => {
+    const labels = thread.getLabels().map((l) => l.getName()).join(', ') || '(ラベルなし)';
+    thread.getMessages().forEach((message) => {
+      const subject = message.getSubject() || '';
+      if (/メルカード|三井住友|PayPay/.test(subject)) {
+        console.log(`件名: "${subject}" / スレッドのラベル: ${labels}`);
+      }
+    });
+  });
+}
