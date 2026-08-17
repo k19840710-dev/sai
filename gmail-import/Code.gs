@@ -150,11 +150,12 @@ function checkCardEmails() {
 
 // ============================================================
 // メール解析: メルペイ（メルカード）
+// 実際の本文は「店舗名　　：　○○」のように、ラベルと値が同じ行にある形式。
 // ============================================================
 function parseMercariEmail(body) {
-  const merchant = extractAfterLabel_(body, '店舗名');
-  const amountText = extractAfterLabel_(body, '決済金額');
-  const dateText = extractAfterLabel_(body, '決済日時');
+  const merchant = extractSameLineValue_(body, '店舗名');
+  const amountText = extractSameLineValue_(body, '決済金額');
+  const dateText = extractSameLineValue_(body, '決済日時');
 
   const amount = amountText ? parseAmount_(amountText) : null;
   const date = dateText ? parseDateTime_(dateText) : null;
@@ -163,31 +164,16 @@ function parseMercariEmail(body) {
 
 // ============================================================
 // メール解析: 三井住友カード
+// 実際の本文は「◇利用日：...」「◇利用先：...」「◇利用金額：...」のように、
+// 各項目が「◇ラベル：値」で1行ずつ独立している形式。
 // ============================================================
 function parseSmbcEmail(body) {
-  const lines = body.split('\n').map((l) => l.trim()).filter(Boolean);
-  const dateLineIdx = lines.findIndex((l) => /ご利用日時[：:]/.test(l));
-  if (dateLineIdx === -1) return null;
+  const merchant = extractSameLineValue_(body, '◇利用先');
+  const amountText = extractSameLineValue_(body, '◇利用金額');
+  const dateText = extractSameLineValue_(body, '◇利用日');
 
-  const dateMatch = lines[dateLineIdx].match(/(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{2})/);
-  const date = dateMatch ? isoDate_(dateMatch[1], dateMatch[2], dateMatch[3]) : null;
-
-  // 日時の次の数行から、店名（○○行）と金額（○○円）を探す
-  let merchant = null;
-  let amount = null;
-  for (let i = dateLineIdx + 1; i < Math.min(dateLineIdx + 5, lines.length); i += 1) {
-    const line = lines[i];
-    const amountMatch = line.match(/([\d,]+)\s*円/);
-    if (amountMatch && amount === null) {
-      amount = parseAmount_(amountMatch[1]);
-      continue;
-    }
-    if (!merchant && !amountMatch && line.length > 1) {
-      merchant = line.replace(/[（(].*[）)]\s*$/, '').trim() || line;
-    }
-    if (merchant && amount !== null) break;
-  }
-
+  const amount = amountText ? parseAmount_(amountText) : null;
+  const date = dateText ? parseDateTime_(dateText) : null;
   return { merchant, amount, date };
 }
 
@@ -224,6 +210,23 @@ function extractAfterLabel_(body, label) {
   if (idx === -1) return null;
   for (let i = idx + 1; i < Math.min(idx + 4, lines.length); i += 1) {
     if (lines[i]) return lines[i];
+  }
+  return null;
+}
+
+/**
+ * 「ラベル　　：　値」のように、ラベルと値が同じ行にあるパターンから値を取り出す。
+ * ラベルの前後の全角/半角スペース、コロン（全角／半角どちらも）を許容する。
+ */
+function extractSameLineValue_(body, label) {
+  const lines = body.split('\n');
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    const idx = line.indexOf(label);
+    if (idx === -1) continue;
+    const after = line.slice(idx + label.length);
+    const m = after.match(/^[\s　]*[：:][\s　]*(.+)$/);
+    if (m) return m[1].trim();
   }
   return null;
 }
