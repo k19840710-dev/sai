@@ -85,6 +85,13 @@ function checkCardEmails() {
       messages.forEach((message) => {
         const subject = message.getSubject() || '';
         const from = message.getFrom() || '';
+        // 調査用（一時的）: 関連しそうな件名について、各ルールが一致するかどうかを直接ログに出す
+        if (/メルカード|三井住友|PayPay/.test(subject)) {
+          console.log(`調査: 件名="${subject}" / from="${from}"`);
+          EMAIL_RULES.forEach((r) => {
+            console.log(`  → [${r.key}] 一致=${r.match(subject, from)}`);
+          });
+        }
         const rule = EMAIL_RULES.find((r) => r.match(subject, from));
         if (!rule) return;
 
