@@ -2795,7 +2795,9 @@ export default function App() {
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-500">
-                        最終確認: {minutesAgo !== null ? `${minutesAgo}分前` : '不明'}
+                        最終確認: {lastCheckedAt
+                          ? `${lastCheckedAt.getMonth() + 1}/${lastCheckedAt.getDate()} ${String(lastCheckedAt.getHours()).padStart(2, '0')}:${String(lastCheckedAt.getMinutes()).padStart(2, '0')}（${minutesAgo}分前）`
+                          : '不明'}
                         {' '}・ 前回の取り込み件数: {gmailImportStatus.importedLastRun ?? 0}件
                       </p>
                       {gmailImportStatus.error && (
