@@ -109,14 +109,17 @@ function checkCardEmails() {
           }
 
           ensureCardExists_(accessToken, rule);
+          // 「コミックシーモア　サクヒン　ポイント」のような余計な文字を削り、
+          // 知っている店名なら正式名称＋カテゴリに寄せる。
+          const cleaned = cleanMerchantName_(parsed.merchant);
           // メールのメッセージIDから決まる固定IDにしておくことで、同じメールを
           // 何度処理しても重複した明細ができない（既存ドキュメントを上書きするだけ）。
           createTransaction_(accessToken, `t-gmail-${message.getId()}`, {
             cardId: rule.cardId,
             amount: parsed.amount,
             date: parsed.date,
-            category: guessCategory_(parsed.merchant),
-            memo: parsed.merchant || rule.cardName,
+            category: cleaned.category,
+            memo: cleaned.name || rule.cardName,
           });
           importedCount += 1;
         } catch (err) {
@@ -286,6 +289,61 @@ function guessCategory_(merchant) {
     if (keywords.some((kw) => text.includes(toComparableText_(kw)))) return category;
   }
   return 'other';
+}
+
+// よく見かける店名・サービス名。メール本文には「コミックシーモア　サクヒン　ポイント」の
+// ように余計な文字が付くことがあるので、知っている店名なら正式名称＋カテゴリに寄せる。
+// src/App.jsx の KNOWN_MERCHANTS と揃えてあるので、追加・変更したら両方に反映すること。
+const KNOWN_MERCHANTS_ = [
+  { match: 'パルコ', name: 'パルコ', category: 'other' },
+  { match: 'ユニクロ', name: 'ユニクロ', category: 'other' },
+  { match: 'gu', name: 'GU', category: 'other' },
+  { match: '無印良品', name: '無印良品', category: 'daily' },
+  { match: 'ヨドバシ', name: 'ヨドバシカメラ', category: 'other' },
+  { match: 'ビックカメラ', name: 'ビックカメラ', category: 'other' },
+  { match: 'aliexpress', name: 'AliExpress', category: 'procurement' },
+  { match: 'ali express', name: 'AliExpress', category: 'procurement' },
+  { match: 'taobao', name: 'Taobao', category: 'procurement' },
+  { match: 'temu', name: 'Temu', category: 'procurement' },
+  { match: 'シーモア', name: 'コミックシーモア', category: 'entertainment' },
+  { match: 'kindle', name: 'Kindle', category: 'entertainment' },
+  { match: 'ebookjapan', name: 'ebookJapan', category: 'entertainment' },
+  { match: 'cycling', name: 'Hello Cycling', category: 'transport' },
+  { match: 'chargespot', name: 'ChargeSPOT', category: 'other' },
+  { match: 'suica', name: 'Suica', category: 'transport' },
+  { match: 'pasmo', name: 'PASMO', category: 'transport' },
+  { match: 'povo', name: 'povo', category: 'communication' },
+  { match: 'docomo', name: 'ドコモ', category: 'communication' },
+  { match: 'ソフトバンク', name: 'ソフトバンク', category: 'communication' },
+  { match: 'ラクテンモバイル', name: '楽天モバイル', category: 'communication' },
+  { match: '楽天モバイル', name: '楽天モバイル', category: 'communication' },
+  { match: 'netflix', name: 'Netflix', category: 'communication' },
+  { match: 'spotify', name: 'Spotify', category: 'communication' },
+  { match: 'sbi証券', name: 'SBI証券', category: 'other' },
+  { match: 'スターバックス', name: 'スターバックス', category: 'food' },
+  { match: 'ドトール', name: 'ドトール', category: 'food' },
+  { match: 'マクドナルド', name: 'マクドナルド', category: 'food' },
+  { match: 'セブン', name: 'セブン-イレブン', category: 'food' },
+  { match: 'ローソン', name: 'ローソン', category: 'food' },
+  { match: 'ファミマ', name: 'ファミリーマート', category: 'food' },
+  { match: 'ファミリーマート', name: 'ファミリーマート', category: 'food' },
+];
+
+/**
+ * メールから読み取った店名を、既知の店名リストに近ければ正式名称＋カテゴリに
+ * 置き換える（src/App.jsx の cleanMerchantName と同じ考え方）。
+ * 一致しなければ元の店名のままキーワード表からカテゴリだけ推測する。
+ */
+function cleanMerchantName_(rawMerchant) {
+  const base = String(rawMerchant || '').replace(/[_＿]/g, ' ').replace(/\s+/g, ' ').trim();
+  const compact = toComparableText_(base).replace(/\s+/g, '');
+
+  for (const merchant of KNOWN_MERCHANTS_) {
+    if (compact.includes(toComparableText_(merchant.match).replace(/\s+/g, ''))) {
+      return { name: merchant.name, category: merchant.category };
+    }
+  }
+  return { name: base, category: guessCategory_(base) };
 }
 
 // ============================================================
