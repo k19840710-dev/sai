@@ -3,8 +3,12 @@
  * ============================================================
  *
  * Gmail に届く「ご利用のお知らせ」「利用速報」等のメールを定期的にチェックし、
- * 内容を解析して、カード家計簿アプリの Firestore に直接、明細として書き込みます。
- * アプリを開かなくても自動で明細が増えます。
+ * AI（Gemini）にメール本文を解析させて、カード家計簿アプリの Firestore に
+ * 直接、明細として書き込みます。アプリを開かなくても自動で明細が増えます。
+ *
+ * カード会社ごとの解析ロジックをコードで用意する必要はありません。
+ * 新しいカード会社が増えても、その会社のメールが「利用」「カード」のような
+ * 一般的なキーワードを含む件名であれば、コードを直さずそのまま拾われます。
  *
  * セットアップ手順は README.md を参照してください。
  * このファイルの中で編集が必要な箇所は「▼設定」の見出しがついた部分だけです。
@@ -24,42 +28,20 @@ const FIRESTORE_PROJECT_ID = 'sai-4d708';
 // 二重取り込み防止・処理済みの目印として付けるGmailラベル名（変更不要）
 const PROCESSED_LABEL_NAME = 'カード家計簿-取込済み';
 
+// AIモデル名。将来このモデルが使えなくなった場合は、Google AI Studio
+// (https://aistudio.google.com/) で使えるモデル名に差し替えてください。
+const GEMINI_MODEL = 'gemini-2.5-flash';
+
 // ============================================================
-// ▼設定2: メール形式ごとの検出・解析ルール
-// 新しいカード会社のメールに対応したい場合は、この配列に追記してください。
-// 「match」でメールを判定し、「parse」で本文から金額・店名・日時を取り出します。
-// 「cardId」「cardName」「cardTheme」は、対応するカードが未登録の場合に
-// 自動作成される際の値です（後からアプリ側で編集できます）。
+// ▼設定2: 候補メールの絞り込みキーワード（件名に対する軽いふるい）
+// Gmail検索は「未処理ラベルなし・直近7日」だけで幅広く取得し、その中から
+// 件名にこの2グループの単語が両方含まれるメールだけをAI解析の対象にする。
+// 「利用系の単語」×「カード/ペイ系の単語」の組み合わせなので、新しい
+// カード会社が増えても、たいていの利用通知メールはここに引っかかります。
+// 逃したメールがあれば、ここに単語を追加してください（コード全体の変更は不要）。
 // ============================================================
-const EMAIL_RULES = [
-  {
-    key: 'mercari',
-    cardId: 'card-mercard',
-    cardName: 'メルカード',
-    cardTheme: 'sunset',
-    // 発信元（from）だけでの判定はやめ、確定した利用通知の件名だけを対象にする。
-    // メルペイ・三井住友・PayPayとも「本人確認」「ポイント失効」「キャンペーン」など
-    // 購入確定以外のメールを幅広く送ってくるため、from だけで拾うと誤検出だらけになる。
-    match: (subject) => /メルカードのご利用がありました/.test(subject),
-    parse: parseMercariEmail,
-  },
-  {
-    key: 'smbc',
-    cardId: 'card-smbc-nl',
-    cardName: '三井住友カード',
-    cardTheme: 'dark',
-    match: (subject) => /ご利用のお知らせ.*三井住友カード/.test(subject),
-    parse: parseSmbcEmail,
-  },
-  {
-    key: 'paypay',
-    cardId: 'card-paypay',
-    cardName: 'PayPayカード',
-    cardTheme: 'blue',
-    match: (subject) => /PayPay\s*カード.*利用速報/.test(subject),
-    parse: parsePayPayEmail,
-  },
-];
+const SUBJECT_ACTION_WORDS = /(利用|決済|ご請求|お支払い)/;
+const SUBJECT_PAYMENT_WORDS = /(カード|ペイ|Pay|カ\s*ｰ\s*ド)/i;
 
 // ============================================================
 // メイン処理（このプロジェクトの「トリガー」から checkCardEmails を呼ぶよう設定してください）
@@ -71,10 +53,9 @@ function checkCardEmails() {
 
   try {
     const accessToken = getFirestoreAccessToken_();
+    const geminiKey = getGeminiApiKey_();
     const label = getOrCreateLabel_(PROCESSED_LABEL_NAME);
 
-    // 各ルールごとに OR 検索。ラベルが付いていないメールだけを対象にする。
-    const matchers = EMAIL_RULES.map((r) => r.key).join(' OR ');
     const query = `-label:"${PROCESSED_LABEL_NAME}" newer_than:7d`;
     const threads = GmailApp.search(query, 0, 50);
     console.log(`検索クエリ: ${query}`);
@@ -82,59 +63,55 @@ function checkCardEmails() {
 
     threads.forEach((thread) => {
       const messages = thread.getMessages();
-      let threadHadMatch = false;
+      let threadHadCandidate = false;
       let threadHadFailure = false;
 
       messages.forEach((message) => {
         const subject = message.getSubject() || '';
-        const from = message.getFrom() || '';
-        // 調査用（一時的）: 関連しそうな件名について、各ルールが一致するかどうかを直接ログに出す
-        if (/メルカード|三井住友|PayPay/.test(subject)) {
-          console.log(`調査: 件名="${subject}" / from="${from}"`);
-          EMAIL_RULES.forEach((r) => {
-            console.log(`  → [${r.key}] 一致=${r.match(subject, from)}`);
-          });
-        }
-        const rule = EMAIL_RULES.find((r) => r.match(subject, from));
-        if (!rule) return;
+        if (!SUBJECT_ACTION_WORDS.test(subject) || !SUBJECT_PAYMENT_WORDS.test(subject)) return;
 
-        threadHadMatch = true;
+        threadHadCandidate = true;
         try {
           const body = message.getPlainBody();
-          const parsed = rule.parse(body, subject);
-          if (!parsed || !parsed.amount || !parsed.date) {
-            console.warn(`[${rule.key}] 解析失敗: ${subject}`);
-            // デバッグ用: 実際のメール本文を確認するための一時的なログ出力。
-            // 解析ロジックの調整が終わったら消して構いません。
-            console.log(`[${rule.key}] 本文プレビュー ↓↓↓\n` + body.substring(0, 1000));
-            threadHadFailure = true; // 解析失敗した分は「処理済み」にせず、次回また拾い直す
+          const result = analyzeEmailWithAi_(geminiKey, subject, body);
+
+          if (result.status === 'not_purchase') {
+            console.log(`AI判定: 購入確定通知ではない → スキップ: "${subject}"`);
+            return; // このメール自体は「処理済み」として扱ってよい（threadHadFailureにはしない）
+          }
+          if (result.status === 'error') {
+            console.warn(`AI解析エラー: "${subject}" → ${result.error}`);
+            threadHadFailure = true; // 次回また拾い直す
             return;
           }
 
-          ensureCardExists_(accessToken, rule);
+          const { issuerName, merchant, amount, date } = result.data;
+          const cardId = slugifyCardId_(issuerName);
+          ensureCardFromIssuer_(accessToken, cardId, issuerName);
+
           // 「コミックシーモア　サクヒン　ポイント」のような余計な文字を削り、
           // 知っている店名なら正式名称＋カテゴリに寄せる。
-          const cleaned = cleanMerchantName_(parsed.merchant);
+          const cleaned = cleanMerchantName_(merchant);
           // メールのメッセージIDから決まる固定IDにしておくことで、同じメールを
           // 何度処理しても重複した明細ができない（既存ドキュメントを上書きするだけ）。
           createTransaction_(accessToken, `t-gmail-${message.getId()}`, {
-            cardId: rule.cardId,
-            amount: parsed.amount,
-            date: parsed.date,
+            cardId,
+            amount,
+            date,
             category: cleaned.category,
-            memo: cleaned.name || rule.cardName,
+            memo: cleaned.name || issuerName,
           });
           importedCount += 1;
         } catch (err) {
           lastError = String(err);
           threadHadFailure = true;
-          console.error(`[${rule.key}] 処理エラー: ${err}`);
+          console.error(`処理エラー: "${subject}" → ${err}`);
         }
       });
 
-      // 解析・書き込みが全部成功したスレッドだけ「処理済み」ラベルを付ける。
-      // 失敗が混ざっていたら次回また対象にして、直したロジックで再挑戦させる。
-      if (threadHadMatch && !threadHadFailure) {
+      // 候補になったメールが全部処理できた（AI判定含む）スレッドだけ「処理済み」にする。
+      // エラーが混ざっていたら次回また対象にして再挑戦させる。
+      if (threadHadCandidate && !threadHadFailure) {
         thread.addLabel(label);
       }
     });
@@ -164,109 +141,116 @@ function checkCardEmails() {
 }
 
 // ============================================================
-// メール解析: メルペイ（メルカード）
-// 実際の本文は「店舗名　　：　○○」のように、ラベルと値が同じ行にある形式。
+// AI（Gemini）によるメール解析
 // ============================================================
-function parseMercariEmail(body) {
-  const merchant = extractSameLineValue_(body, '店舗名');
-  const amountText = extractSameLineValue_(body, '決済金額');
-  const dateText = extractSameLineValue_(body, '決済日時');
 
-  const amount = amountText ? parseAmount_(amountText) : null;
-  const date = dateText ? parseDateTime_(dateText) : null;
-  return { merchant, amount, date };
+function getGeminiApiKey_() {
+  const key = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
+  if (!key) throw new Error('Script Properties に GEMINI_API_KEY が設定されていません。README.md を参照してください。');
+  return key;
 }
 
-// ============================================================
-// メール解析: 三井住友カード
-// 実際の本文は「◇利用日：...」「◇利用先：...」「◇利用金額：...」のように、
-// 各項目が「◇ラベル：値」で1行ずつ独立している形式。
-// ============================================================
-function parseSmbcEmail(body) {
-  const merchant = extractSameLineValue_(body, '◇利用先');
-  const amountText = extractSameLineValue_(body, '◇利用金額');
-  const dateText = extractSameLineValue_(body, '◇利用日');
+/**
+ * メール本文をAIに渡し、「購入確定の利用通知かどうか」と、そうであれば
+ * カード会社名・店名・金額・利用日を抽出してもらう。
+ * 戻り値: { status: 'ok', data: {...} } / { status: 'not_purchase' } / { status: 'error', error }
+ */
+function analyzeEmailWithAi_(apiKey, subject, body) {
+  const truncatedBody = String(body || '').slice(0, 4000);
 
-  const amount = amountText ? parseAmount_(amountText) : null;
-  const date = dateText ? parseDateTime_(dateText) : null;
-  return { merchant, amount, date };
-}
+  const prompt = [
+    'あなたはクレジットカードの利用通知メールを解析するアシスタントです。',
+    '以下のメールが「カードで買い物・決済をした際に届く、利用確定の通知メール」かどうか判定してください。',
+    '本人確認（ワンタイムパスワード等）、ポイント失効案内、キャンペーン、広告、請求書（月次まとめ）、',
+    'ログイン通知などは「利用確定の通知」ではないので is_purchase_notification は false にしてください。',
+    '',
+    '利用確定の通知メールであれば、以下も抽出してください:',
+    '- issuer_name: カード会社・決済サービス名（例: 「メルカード」「三井住友カード」「楽天カード」など。件名や本文、署名から判断）',
+    '- merchant: 利用した店舗・サービス名',
+    '- amount: 利用金額（円。数字のみ、カンマなし）',
+    '- date: 利用日（YYYY-MM-DD形式）',
+    '',
+    `件名: ${subject}`,
+    '本文:',
+    truncatedBody,
+  ].join('\n');
 
-// ============================================================
-// メール解析: PayPayカード
-// ============================================================
-function parsePayPayEmail(body) {
-  const lines = body.split('\n').map((l) => l.trim()).filter(Boolean);
-  const dateLineIdx = lines.findIndex((l) => /(\d{4})年(\d{1,2})月(\d{1,2})日\s+(\d{1,2}):(\d{2})/.test(l));
-  if (dateLineIdx === -1) return null;
+  const payload = {
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: {
+      responseMimeType: 'application/json',
+      responseSchema: {
+        type: 'OBJECT',
+        properties: {
+          is_purchase_notification: { type: 'BOOLEAN' },
+          issuer_name: { type: 'STRING' },
+          merchant: { type: 'STRING' },
+          amount: { type: 'INTEGER' },
+          date: { type: 'STRING' },
+        },
+        required: ['is_purchase_notification'],
+      },
+    },
+  };
 
-  const dateMatch = lines[dateLineIdx].match(/(\d{4})年(\d{1,2})月(\d{1,2})日\s+(\d{1,2}):(\d{2})/);
-  const date = dateMatch ? isoDate_(dateMatch[1], dateMatch[2], dateMatch[3]) : null;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+  const response = UrlFetchApp.fetch(url, {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true,
+  });
 
-  // 日時の直前の行が店名、直後の行が金額、というパターン
-  const merchant = dateLineIdx > 0 ? lines[dateLineIdx - 1] : null;
-  let amount = null;
-  for (let i = dateLineIdx + 1; i < Math.min(dateLineIdx + 3, lines.length); i += 1) {
-    const amountMatch = lines[i].match(/([\d,]+)\s*円/);
-    if (amountMatch) { amount = parseAmount_(amountMatch[1]); break; }
+  const code = response.getResponseCode();
+  if (code >= 300) {
+    return { status: 'error', error: `Gemini API エラー (${code}): ${response.getContentText().slice(0, 500)}` };
   }
 
-  return { merchant, amount, date };
+  let parsed;
+  try {
+    const data = JSON.parse(response.getContentText());
+    const text = data.candidates[0].content.parts[0].text;
+    parsed = JSON.parse(text);
+  } catch (e) {
+    return { status: 'error', error: `AI応答の解析に失敗: ${e}` };
+  }
+
+  if (!parsed.is_purchase_notification) {
+    return { status: 'not_purchase' };
+  }
+
+  const amount = Number(parsed.amount);
+  const dateOk = /^\d{4}-\d{2}-\d{2}$/.test(String(parsed.date || ''));
+  if (!parsed.issuer_name || !parsed.merchant || !Number.isFinite(amount) || amount <= 0 || !dateOk) {
+    return { status: 'error', error: `AIが購入通知と判定したが値が不完全: ${JSON.stringify(parsed)}` };
+  }
+
+  return {
+    status: 'ok',
+    data: {
+      issuerName: String(parsed.issuer_name).trim(),
+      merchant: String(parsed.merchant).trim(),
+      amount,
+      date: parsed.date,
+    },
+  };
 }
 
 // ============================================================
 // 解析共通ヘルパー
 // ============================================================
 
-/** 「ラベル」という行の次に出てくる、空でない行の中身を返す */
-function extractAfterLabel_(body, label) {
-  const lines = body.split('\n').map((l) => l.trim());
-  const idx = lines.findIndex((l) => l === label || l.startsWith(label));
-  if (idx === -1) return null;
-  for (let i = idx + 1; i < Math.min(idx + 4, lines.length); i += 1) {
-    if (lines[i]) return lines[i];
-  }
-  return null;
-}
-
-/**
- * 「ラベル　　：　値」のように、ラベルと値が同じ行にあるパターンから値を取り出す。
- * ラベルの前後の全角/半角スペース、コロン（全角／半角どちらも）を許容する。
- */
-function extractSameLineValue_(body, label) {
-  const lines = body.split('\n');
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
-    const idx = line.indexOf(label);
-    if (idx === -1) continue;
-    const after = line.slice(idx + label.length);
-    const m = after.match(/^[\s　]*[：:][\s　]*(.+)$/);
-    if (m) return m[1].trim();
-  }
-  return null;
-}
-
-function parseAmount_(text) {
-  const m = String(text).match(/[\d,]+/);
-  if (!m) return null;
-  return parseInt(m[0].replace(/,/g, ''), 10);
-}
-
-/** "2026/08/13 14:00" のような文字列を YYYY-MM-DD に変換 */
-function parseDateTime_(text) {
-  const m = String(text).match(/(\d{4})\/(\d{1,2})\/(\d{1,2})/);
-  if (!m) return null;
-  return isoDate_(m[1], m[2], m[3]);
-}
-
-function isoDate_(y, m, d) {
-  return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-}
-
 // 全角英数字・半角カナなどの表記ゆれを吸収してから比較するためのヘルパー
 // （アプリ側 src/App.jsx の toComparableText と同じ考え方）。
 function toComparableText_(str) {
   return String(str || '').normalize('NFKC').toLowerCase();
+}
+
+/** カード会社名からFirestoreの安全なドキュメントIDを作る（同じ会社名なら常に同じID） */
+function slugifyCardId_(issuerName) {
+  const base = String(issuerName || 'card').trim();
+  const cleaned = base.replace(/[\/\s]+/g, '-').replace(/[^\p{L}\p{N}\-]/gu, '');
+  return 'card-gmail-' + (cleaned || 'unknown');
 }
 
 /**
@@ -445,9 +429,21 @@ function createTransaction_(accessToken, id, tx) {
   firestoreRequest_(accessToken, 'patch', url, { fields: toFirestoreFields_(tx) });
 }
 
+// 自動作成するカードのテーマ色（アプリ側のCARD_THEMESと同じキー）。
+// カード会社名ごとに固定の色になるよう、名前から決定的に選ぶ。
+const CARD_THEME_PALETTE = ['purple', 'dark', 'emerald', 'blue', 'sunset'];
+function themeForIssuer_(issuerName) {
+  let hash = 0;
+  const s = String(issuerName || '');
+  for (let i = 0; i < s.length; i += 1) {
+    hash = (hash * 31 + s.charCodeAt(i)) >>> 0;
+  }
+  return CARD_THEME_PALETTE[hash % CARD_THEME_PALETTE.length];
+}
+
 /** 対応するカードがまだ無ければ、控えめな初期値で自動作成する（既にあれば何もしない） */
-function ensureCardExists_(accessToken, rule) {
-  const url = firestoreDocPath_('artifacts', FIRESTORE_APP_ID, 'users', FIRESTORE_USER_ID, 'cards', rule.cardId);
+function ensureCardFromIssuer_(accessToken, cardId, issuerName) {
+  const url = firestoreDocPath_('artifacts', FIRESTORE_APP_ID, 'users', FIRESTORE_USER_ID, 'cards', cardId);
   const getOptions = {
     method: 'get',
     headers: { Authorization: 'Bearer ' + accessToken },
@@ -457,14 +453,14 @@ function ensureCardExists_(accessToken, rule) {
   if (existing.getResponseCode() === 200) return; // 既に存在する
 
   const card = {
-    name: rule.cardName,
+    name: issuerName,
     brand: 'VISA',
     last4: '----',
     number: '',
     holderName: '',
     expiry: '',
     cvv: '',
-    theme: rule.cardTheme,
+    theme: themeForIssuer_(issuerName),
     limit: 0,
     billingDay: '末日',
     paymentDay: '27',
@@ -480,19 +476,20 @@ function updateStatus_(accessToken, status) {
 }
 
 // ============================================================
-// 調査用（一時的）: ラベル絞り込みなしで検索し、対象になりそうなメールの
-// 件名と現在のラベルを確認する。原因調査が終わったら消して構いません。
+// 調査用: ラベル絞り込みなしで検索し、件名候補になりそうなメールの
+// 件名と現在のラベルを確認する。取り込み漏れの調査に使ってください。
 // 実行する時は、上のプルダウンで checkCardEmails ではなく debugSearch を選ぶこと。
 // ============================================================
 function debugSearch() {
   const threads = GmailApp.search('newer_than:7d', 0, 50);
-  console.log(`ラベル絞り込みなしでの全体件数: ${threads.length}件`);
+  console.log(`全体件数: ${threads.length}件`);
   threads.forEach((thread) => {
     const labels = thread.getLabels().map((l) => l.getName()).join(', ') || '(ラベルなし)';
     thread.getMessages().forEach((message) => {
       const subject = message.getSubject() || '';
-      if (/メルカード|三井住友|PayPay/.test(subject)) {
-        console.log(`件名: "${subject}" / スレッドのラベル: ${labels}`);
+      const isCandidate = SUBJECT_ACTION_WORDS.test(subject) && SUBJECT_PAYMENT_WORDS.test(subject);
+      if (isCandidate) {
+        console.log(`候補: "${subject}" / スレッドのラベル: ${labels}`);
       }
     });
   });
