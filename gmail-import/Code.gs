@@ -37,11 +37,10 @@ const EMAIL_RULES = [
     cardId: 'card-mercard',
     cardName: 'メルカード',
     cardTheme: 'sunset',
-    // 「本人確認のお知らせ」はOTP確認メールであり購入確定の通知ではないため対象外にする
-    match: (subject, from) => {
-      if (/本人確認/.test(subject)) return false;
-      return /メルカードのご利用がありました/.test(subject) || /メルペイ/.test(from);
-    },
+    // 発信元（from）だけでの判定はやめ、確定した利用通知の件名だけを対象にする。
+    // メルペイ・三井住友・PayPayとも「本人確認」「ポイント失効」「キャンペーン」など
+    // 購入確定以外のメールを幅広く送ってくるため、from だけで拾うと誤検出だらけになる。
+    match: (subject) => /メルカードのご利用がありました/.test(subject),
     parse: parseMercariEmail,
   },
   {
@@ -49,7 +48,7 @@ const EMAIL_RULES = [
     cardId: 'card-smbc-nl',
     cardName: '三井住友カード',
     cardTheme: 'dark',
-    match: (subject, from) => /ご利用のお知らせ.*三井住友カード/.test(subject) || /smbc-card\.com/.test(from),
+    match: (subject) => /ご利用のお知らせ.*三井住友カード/.test(subject),
     parse: parseSmbcEmail,
   },
   {
@@ -57,7 +56,7 @@ const EMAIL_RULES = [
     cardId: 'card-paypay',
     cardName: 'PayPayカード',
     cardTheme: 'blue',
-    match: (subject, from) => /PayPay\s*カード.*利用速報/.test(subject) || /PayPayカード/.test(from),
+    match: (subject) => /PayPay\s*カード.*利用速報/.test(subject),
     parse: parsePayPayEmail,
   },
 ];
