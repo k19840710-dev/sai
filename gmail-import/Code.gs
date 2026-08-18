@@ -37,7 +37,11 @@ const EMAIL_RULES = [
     cardId: 'card-mercard',
     cardName: 'メルカード',
     cardTheme: 'sunset',
-    match: (subject, from) => /メルカードのご利用がありました/.test(subject) || /メルペイ/.test(from),
+    // 「本人確認のお知らせ」はOTP確認メールであり購入確定の通知ではないため対象外にする
+    match: (subject, from) => {
+      if (/本人確認/.test(subject)) return false;
+      return /メルカードのご利用がありました/.test(subject) || /メルペイ/.test(from);
+    },
     parse: parseMercariEmail,
   },
   {
