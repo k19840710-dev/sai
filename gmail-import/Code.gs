@@ -35,13 +35,15 @@ const GEMINI_MODEL = 'gemini-2.5-flash';
 // ============================================================
 // ▼設定2: 候補メールの絞り込みキーワード（件名に対する軽いふるい）
 // Gmail検索は「未処理ラベルなし・直近7日」だけで幅広く取得し、その中から
-// 件名にこの2グループの単語が両方含まれるメールだけをAI解析の対象にする。
-// 「利用系の単語」×「カード/ペイ系の単語」の組み合わせなので、新しい
-// カード会社が増えても、たいていの利用通知メールはここに引っかかります。
-// 逃したメールがあれば、ここに単語を追加してください（コード全体の変更は不要）。
+// 件名にこの単語が含まれるメールだけをAI解析の対象にする。
+// 「カード」「ペイ」等の単語を追加条件にすると、"Mastercardでお支払いが
+// ありました" "iD決済でお支払いがありました" のような、カード会社名や
+// ブランド名が件名に出てこない形式を取りこぼす（実際に見つかった問題）。
+// 最終的な「これは購入確定通知か」の判定はAIに任せるので、ここは広めに
+// 「利用・決済系の言葉があるか」だけを見る。逃したメールがあれば、
+// ここに単語を追加してください（コード全体の変更は不要）。
 // ============================================================
 const SUBJECT_ACTION_WORDS = /(利用|決済|ご請求|お支払い)/;
-const SUBJECT_PAYMENT_WORDS = /(カード|ペイ|Pay|カ\s*ｰ\s*ド)/i;
 
 // ============================================================
 // メイン処理（このプロジェクトの「トリガー」から checkCardEmails を呼ぶよう設定してください）
@@ -68,7 +70,7 @@ function checkCardEmails() {
 
       messages.forEach((message) => {
         const subject = message.getSubject() || '';
-        if (!SUBJECT_ACTION_WORDS.test(subject) || !SUBJECT_PAYMENT_WORDS.test(subject)) return;
+        if (!SUBJECT_ACTION_WORDS.test(subject)) return;
 
         threadHadCandidate = true;
         try {
@@ -487,7 +489,7 @@ function debugSearch() {
     const labels = thread.getLabels().map((l) => l.getName()).join(', ') || '(ラベルなし)';
     thread.getMessages().forEach((message) => {
       const subject = message.getSubject() || '';
-      const isCandidate = SUBJECT_ACTION_WORDS.test(subject) && SUBJECT_PAYMENT_WORDS.test(subject);
+      const isCandidate = SUBJECT_ACTION_WORDS.test(subject);
       if (isCandidate) {
         console.log(`候補: "${subject}" / スレッドのラベル: ${labels}`);
       }
