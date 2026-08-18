@@ -66,6 +66,11 @@ function checkCardEmails() {
         try {
           const body = message.getPlainBody();
           const result = analyzeEmailWithAi_(geminiKey, subject, body);
+          // 無料枠のレート制限（1分あたり◯リクエスト）に極力引っかからないよう、
+          // 判定1回ごとに少し間隔を空ける。バックログが多い最初の実行では
+          // 1回の実行で全部処理しきれないこともあるが、未処理分はラベルが
+          // 付かないので次回のトリガー実行時に続きから処理される。
+          Utilities.sleep(3200);
 
           if (result.status === 'not_purchase') {
             console.log(`AI判定: 購入確定通知ではない → スキップ: "${subject}"`);
@@ -143,6 +148,35 @@ function getGeminiApiKey_() {
 }
 
 /**
+ * 無料枠のレート制限（例: 1分あたり20リクエスト）に達した(429)場合、
+ * エラーメッセージ中の "retry in Xs" を読み取ってその分待ってから再試行する。
+ * 件名で絞り込まず全メールをAI判定するようにしたため、1回の実行で
+ * リクエストが増えやすく、429が普通に起こりうることを前提にしている。
+ * 戻り値: { code, text }（ネットワーク自体の失敗は例外として呼び出し元に伝播する）
+ */
+function fetchGeminiWithRetry_(url, payload, attempt) {
+  attempt = attempt || 1;
+  const response = UrlFetchApp.fetch(url, {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true,
+  });
+  const code = response.getResponseCode();
+  const text = response.getContentText();
+
+  if (code === 429 && attempt <= 3) {
+    const m = text.match(/retry in ([\d.]+)s/i);
+    const waitSec = Math.min(m ? Math.ceil(parseFloat(m[1])) : 20, 60);
+    console.warn(`Gemini APIのレート制限(429)。${waitSec}秒待って再試行します（${attempt}回目）`);
+    Utilities.sleep(waitSec * 1000);
+    return fetchGeminiWithRetry_(url, payload, attempt + 1);
+  }
+
+  return { code, text };
+}
+
+/**
  * メール本文をAIに渡し、「購入確定の利用通知かどうか」と、そうであれば
  * カード会社名・店名・金額・利用日を抽出してもらう。
  * 戻り値: { status: 'ok', data: {...} } / { status: 'not_purchase' } / { status: 'error', error }
@@ -186,21 +220,14 @@ function analyzeEmailWithAi_(apiKey, subject, body) {
   };
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
-  const response = UrlFetchApp.fetch(url, {
-    method: 'post',
-    contentType: 'application/json',
-    payload: JSON.stringify(payload),
-    muteHttpExceptions: true,
-  });
-
-  const code = response.getResponseCode();
+  const { code, text: responseText } = fetchGeminiWithRetry_(url, payload);
   if (code >= 300) {
-    return { status: 'error', error: `Gemini API エラー (${code}): ${response.getContentText().slice(0, 500)}` };
+    return { status: 'error', error: `Gemini API エラー (${code}): ${responseText.slice(0, 500)}` };
   }
 
   let parsed;
   try {
-    const data = JSON.parse(response.getContentText());
+    const data = JSON.parse(responseText);
     const text = data.candidates[0].content.parts[0].text;
     parsed = JSON.parse(text);
   } catch (e) {
