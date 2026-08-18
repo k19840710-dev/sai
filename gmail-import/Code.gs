@@ -42,10 +42,18 @@ const GEMINI_MODEL = 'gemini-3.6-flash';
 // ============================================================
 // メイン処理（このプロジェクトの「トリガー」から checkCardEmails を呼ぶよう設定してください）
 // ============================================================
+
+// Apps Scriptの実行上限（6分）に強制終了される前に、余裕をもって自分で
+// 切り上げるための時間予算。バックログが多い最初の数回は1回で処理しきれない
+// こともあるが、未処理分はラベルが付かないので次回のトリガー実行時に
+// 続きから処理される（強制終了で中途半端に切れるより、綺麗に切り上げる方が安全）。
+const MAX_RUNTIME_MS = 4.5 * 60 * 1000;
+
 function checkCardEmails() {
   const startedAt = new Date();
   let importedCount = 0;
   let lastError = null;
+  let timeUp = false;
 
   try {
     const accessToken = getFirestoreAccessToken_();
@@ -58,18 +66,25 @@ function checkCardEmails() {
     console.log(`検索結果: ${threads.length}件のスレッド`);
 
     threads.forEach((thread) => {
+      if (timeUp) return;
       const messages = thread.getMessages();
       let threadHadFailure = false;
 
       messages.forEach((message) => {
+        if (timeUp) return;
+        if (Date.now() - startedAt.getTime() > MAX_RUNTIME_MS) {
+          console.warn('実行時間予算に到達したため、ここで打ち切ります（続きは次回実行）');
+          timeUp = true;
+          threadHadFailure = true; // このスレッドは未完了として次回また対象にする
+          return;
+        }
+
         const subject = message.getSubject() || '';
         try {
           const body = message.getPlainBody();
           const result = analyzeEmailWithAi_(geminiKey, subject, body);
           // 無料枠のレート制限（1分あたり◯リクエスト）に極力引っかからないよう、
-          // 判定1回ごとに少し間隔を空ける。バックログが多い最初の実行では
-          // 1回の実行で全部処理しきれないこともあるが、未処理分はラベルが
-          // 付かないので次回のトリガー実行時に続きから処理される。
+          // 判定1回ごとに少し間隔を空ける。
           Utilities.sleep(3200);
 
           if (result.status === 'not_purchase') {
@@ -165,9 +180,12 @@ function fetchGeminiWithRetry_(url, payload, attempt) {
   const code = response.getResponseCode();
   const text = response.getContentText();
 
-  if (code === 429 && attempt <= 3) {
+  // 1回あたりの待ちを短く抑える（長く待っても実行時間予算を圧迫するだけなので、
+  // 待つのは最大1回・上限20秒まで。それでもダメならこのメールは今回諦めて
+  // 次回のトリガー実行に回す）。
+  if (code === 429 && attempt <= 1) {
     const m = text.match(/retry in ([\d.]+)s/i);
-    const waitSec = Math.min(m ? Math.ceil(parseFloat(m[1])) : 20, 60);
+    const waitSec = Math.min(m ? Math.ceil(parseFloat(m[1])) : 15, 20);
     console.warn(`Gemini APIのレート制限(429)。${waitSec}秒待って再試行します（${attempt}回目）`);
     Utilities.sleep(waitSec * 1000);
     return fetchGeminiWithRetry_(url, payload, attempt + 1);
