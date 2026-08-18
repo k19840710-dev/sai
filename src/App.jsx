@@ -13,13 +13,15 @@ import {
   TrendingUp,
   X,
   Filter,
-  ShoppingBag,
   Utensils,
   Car,
-  Home,
-  Tv,
   HelpCircle,
   Sparkles,
+  Package,
+  Boxes,
+  Users,
+  Plane,
+  Smartphone,
   Eye,
   EyeOff,
   User,
@@ -110,21 +112,29 @@ const CARD_THEMES = {
 // カテゴリ定義
 const CATEGORIES = [
   { id: 'food', name: '食費', icon: Utensils, color: 'bg-amber-500 text-amber-500' },
-  { id: 'shopping', name: '買い物', icon: ShoppingBag, color: 'bg-blue-500 text-blue-500' },
+  { id: 'daily', name: '日用品', icon: Package, color: 'bg-lime-500 text-lime-500' },
+  { id: 'procurement', name: '仕入れ', icon: Boxes, color: 'bg-indigo-500 text-indigo-500' },
+  { id: 'beauty', name: '美容', icon: Sparkles, color: 'bg-rose-500 text-rose-500' },
+  { id: 'social', name: '交際費', icon: Users, color: 'bg-orange-500 text-orange-500' },
   { id: 'transport', name: '交通費', icon: Car, color: 'bg-emerald-500 text-emerald-500' },
-  { id: 'housing', name: '固定費・住居', icon: Home, color: 'bg-purple-500 text-purple-500' },
-  { id: 'entertainment', name: '娯楽・趣味', icon: Tv, color: 'bg-pink-500 text-pink-500' },
+  { id: 'travel', name: '旅行', icon: Plane, color: 'bg-sky-500 text-sky-500' },
+  { id: 'communication', name: '通信費', icon: Smartphone, color: 'bg-violet-500 text-violet-500' },
   { id: 'other', name: 'その他', icon: HelpCircle, color: 'bg-gray-500 text-gray-500' },
 ];
 
 // 店名・利用先の文字列に含まれるキーワードから、カテゴリを推測するための対応表。
-// スクリーンショット読み取り（OCR）で使う。優先度は上から順。
+// スクリーンショット読み取り（OCR）・Gmail自動取り込み（gmail-import/Code.gs）共通で使う。
+// gmail-import/Code.gs の guessCategory_ も同じ内容にしてあるので、キーワードを
+// 追加・変更したら両方のファイルに反映すること。優先度は上から順。
 const CATEGORY_KEYWORDS = [
   ['food', ['スーパー', 'マルエツ', 'イオン', '成城石井', 'コンビニ', 'セブン', 'ローソン', 'ファミリーマート', 'ファミマ', 'マクドナルド', 'モスバーガー', 'スターバックス', 'ドトール', 'カフェ', 'コーヒー', 'レストラン', '食堂', '弁当', '居酒屋', 'サイゼリヤ', '吉野家', 'すき家', '松屋', 'ラーメン', '寿司', '焼肉']],
+  ['daily', ['無印良品', 'ドンキ', 'ドン・キホーテ', 'ロフト', 'ダイソー', 'セリア', 'キャンドゥ', '100円ショップ', 'ドラッグストア', 'マツモトキヨシ', 'マツキヨ', 'ウエルシア', 'ツルハ', 'サンドラッグ', 'ニトリ', '東急ハンズ', 'ホームセンター', 'カインズ', 'コーナン']],
+  ['procurement', ['アリエクスプレス', 'AliExpress', 'Ali Express', 'タオバオ', 'Taobao', '1688', 'Pinduoduo', '拼多多', 'Temu', 'SHEIN', '速卖通']],
+  ['beauty', ['美容院', 'ヘアサロン', '理容', 'ネイル', 'エステ', 'まつげ', 'コスメ', '化粧品', '資生堂', 'Shiseido', 'アットコスメ', '脱毛']],
+  ['social', ['ギフト', '贈り物', '贈答', 'ご祝儀', 'お祝い', 'プレゼント', '冠婚葬祭', '香典']],
+  ['travel', ['JTB', 'HIS', 'エイチ・アイ・エス', '楽天トラベル', 'じゃらん', 'Booking', 'Expedia', 'Airbnb', 'エアビーアンドビー', 'ホテル', '旅館', '民宿']],
+  ['communication', ['povo', 'ｐｏｖｏ', 'ドコモ', 'ａｕ', 'ソフトバンク', 'モバイル', 'ﾓﾊﾞｲﾙ', 'ワイモバイル', 'UQ', 'NHK', 'Wi-Fi', 'ネット', 'サブスク', 'Netflix', 'Spotify', 'プライム', '楽天モバイル']],
   ['transport', ['Suica', 'PASMO', 'ETC', '新幹線', 'ＪＲ', 'JR', '電車', 'バス', 'タクシー', 'Cycling', 'サイクリング', 'ガソリン', 'ＥＮＥＯＳ', '駐車場', 'メトロ', 'タイムズ', 'ANA', 'JAL', '航空', 'チャージ']],
-  ['housing', ['家賃', '電気', 'ガス料金', '水道', 'povo', 'ｐｏｖｏ', 'ドコモ', 'ａｕ', 'ソフトバンク', 'モバイル', 'ﾓﾊﾞｲﾙ', 'NHK', 'Wi-Fi', 'ネット', 'サブスク', 'Netflix', 'Spotify', 'プライム', '保険', '積立', '証券']],
-  ['entertainment', ['映画', '遊園地', 'ゲーム', 'カラオケ', 'ライブ', 'ジム', 'シネマ', 'ディズニー', 'USJ', 'Switch', 'PlayStation', 'Steam', 'コミック', '漫画', 'シーモア', '電子書籍', 'Kindle', 'ebookjapan', 'DMM', 'FANZA', 'ニコニコ', 'Hulu', 'U-NEXT', 'ユーネクスト', 'Abema']],
-  ['shopping', ['パルコ', 'ユニクロ', 'ＺＡＲＡ', 'Amazon', 'ａｍａｚｏｎ', 'アマゾン', '楽天市場', '百貨店', 'デパート', '無印良品', 'ドンキ', 'ロフト', 'ヨドバシ', 'ビックカメラ', 'ＧＵ', '商業施設', 'モール', 'アウトレット', '三井不動産', '三菱地所']],
 ];
 
 // 全角英数字（ＳＢＩ、ｐｏｖｏ など）を半角に正規化してから比較するためのヘルパー。
@@ -146,26 +156,28 @@ function guessCategoryFromMemo(memo) {
 // よく見かける店名・サービス名。OCRで多少崩れて読まれても（余分な文字・
 // 半角全角の揺れなど）表記ゆれを吸収して、正式名称＋カテゴリに寄せるための対応表。
 const KNOWN_MERCHANTS = [
-  { match: 'パルコ', name: 'パルコ', category: 'shopping' },
-  { match: 'ユニクロ', name: 'ユニクロ', category: 'shopping' },
-  { match: 'gu', name: 'GU', category: 'shopping' },
-  { match: '無印良品', name: '無印良品', category: 'shopping' },
-  { match: 'ヨドバシ', name: 'ヨドバシカメラ', category: 'shopping' },
-  { match: 'ビックカメラ', name: 'ビックカメラ', category: 'shopping' },
-  { match: 'amazon', name: 'Amazon', category: 'shopping' },
-  { match: '楽天市場', name: '楽天市場', category: 'shopping' },
+  { match: 'パルコ', name: 'パルコ', category: 'other' },
+  { match: 'ユニクロ', name: 'ユニクロ', category: 'other' },
+  { match: 'gu', name: 'GU', category: 'other' },
+  { match: '無印良品', name: '無印良品', category: 'daily' },
+  { match: 'ヨドバシ', name: 'ヨドバシカメラ', category: 'other' },
+  { match: 'ビックカメラ', name: 'ビックカメラ', category: 'other' },
+  { match: 'aliexpress', name: 'AliExpress', category: 'procurement' },
+  { match: 'ali express', name: 'AliExpress', category: 'procurement' },
+  { match: 'taobao', name: 'Taobao', category: 'procurement' },
+  { match: 'temu', name: 'Temu', category: 'procurement' },
   { match: 'cycling', name: 'Hello Cycling', category: 'transport' },
   { match: 'chargespot', name: 'ChargeSPOT', category: 'other' },
   { match: 'suica', name: 'Suica', category: 'transport' },
   { match: 'pasmo', name: 'PASMO', category: 'transport' },
-  { match: 'povo', name: 'povo', category: 'housing' },
-  { match: 'docomo', name: 'ドコモ', category: 'housing' },
-  { match: 'ソフトバンク', name: 'ソフトバンク', category: 'housing' },
-  { match: 'ラクテンモバイル', name: '楽天モバイル', category: 'housing' },
-  { match: '楽天モバイル', name: '楽天モバイル', category: 'housing' },
-  { match: 'netflix', name: 'Netflix', category: 'housing' },
-  { match: 'spotify', name: 'Spotify', category: 'housing' },
-  { match: 'sbi証券', name: 'SBI証券', category: 'housing' },
+  { match: 'povo', name: 'povo', category: 'communication' },
+  { match: 'docomo', name: 'ドコモ', category: 'communication' },
+  { match: 'ソフトバンク', name: 'ソフトバンク', category: 'communication' },
+  { match: 'ラクテンモバイル', name: '楽天モバイル', category: 'communication' },
+  { match: '楽天モバイル', name: '楽天モバイル', category: 'communication' },
+  { match: 'netflix', name: 'Netflix', category: 'communication' },
+  { match: 'spotify', name: 'Spotify', category: 'communication' },
+  { match: 'sbi証券', name: 'SBI証券', category: 'other' },
   { match: 'スターバックス', name: 'スターバックス', category: 'food' },
   { match: 'ドトール', name: 'ドトール', category: 'food' },
   { match: 'マクドナルド', name: 'マクドナルド', category: 'food' },
@@ -249,21 +261,21 @@ const DEFAULT_CARDS = [
 
 const DEFAULT_TRANSACTIONS = [
   // 4月〜6月（月別推移のサンプル用）
-  { id: 't-101', cardId: 'card-1', amount: 68000, date: '2026-04-10', category: 'shopping', memo: '新生活用品' },
+  { id: 't-101', cardId: 'card-1', amount: 68000, date: '2026-04-10', category: 'daily', memo: '新生活用品' },
   { id: 't-102', cardId: 'card-2', amount: 21000, date: '2026-04-20', category: 'food', memo: '' },
-  { id: 't-103', cardId: 'card-1', amount: 74000, date: '2026-05-08', category: 'housing', memo: '' },
-  { id: 't-104', cardId: 'card-2', amount: 26000, date: '2026-05-24', category: 'entertainment', memo: '' },
+  { id: 't-103', cardId: 'card-1', amount: 74000, date: '2026-05-08', category: 'other', memo: '' },
+  { id: 't-104', cardId: 'card-2', amount: 26000, date: '2026-05-24', category: 'other', memo: '' },
   { id: 't-105', cardId: 'card-1', amount: 61000, date: '2026-06-12', category: 'food', memo: '' },
   { id: 't-106', cardId: 'card-3', amount: 15000, date: '2026-06-18', category: 'transport', memo: '' },
   // 7月
-  { id: 't-7', cardId: 'card-1', amount: 28000, date: '2026-07-18', category: 'shopping', memo: '夏服購入' },
+  { id: 't-7', cardId: 'card-1', amount: 28000, date: '2026-07-18', category: 'other', memo: '夏服購入' },
   { id: 't-8', cardId: 'card-2', amount: 15000, date: '2026-07-22', category: 'food', memo: '外食・飲み会' },
   // 8月
   { id: 't-1', cardId: 'card-1', amount: 14800, date: '2026-08-02', category: 'food', memo: '週末スーパー買い物' },
-  { id: 't-2', cardId: 'card-2', amount: 32000, date: '2026-08-05', category: 'shopping', memo: 'スニーカー新調' },
+  { id: 't-2', cardId: 'card-2', amount: 32000, date: '2026-08-05', category: 'other', memo: 'スニーカー新調' },
   { id: 't-3', cardId: 'card-3', amount: 8500, date: '2026-08-08', category: 'transport', memo: 'チャージ＆新幹線チケット' },
-  { id: 't-4', cardId: 'card-1', amount: 9800, date: '2026-08-10', category: 'housing', memo: '通信費・サブスク' },
-  { id: 't-5', cardId: 'card-2', amount: 12400, date: '2026-08-12', category: 'entertainment', memo: '友人とのディナー' },
+  { id: 't-4', cardId: 'card-1', amount: 9800, date: '2026-08-10', category: 'communication', memo: '通信費・サブスク' },
+  { id: 't-5', cardId: 'card-2', amount: 12400, date: '2026-08-12', category: 'social', memo: '友人とのディナー' },
   { id: 't-6', cardId: 'card-1', amount: 4500, date: '2026-08-15', category: 'food', memo: 'カフェ・ランチ' },
 ];
 
