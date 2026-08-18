@@ -257,19 +257,29 @@ function isoDate_(y, m, d) {
   return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 }
 
-/** 店名からざっくりカテゴリを推測（アプリ側のカテゴリIDに合わせる） */
+// 全角英数字・半角カナなどの表記ゆれを吸収してから比較するためのヘルパー
+// （アプリ側 src/App.jsx の toComparableText と同じ考え方）。
+function toComparableText_(str) {
+  return String(str || '').normalize('NFKC').toLowerCase();
+}
+
+/**
+ * 店名からざっくりカテゴリを推測（アプリ側のカテゴリIDに合わせる）。
+ * キーワード表は src/App.jsx の CATEGORY_KEYWORDS と揃えてある。
+ * 精度を上げたいキーワードが見つかったら、両方のファイルに追記すること。
+ */
 function guessCategory_(merchant) {
   if (!merchant) return 'other';
-  const text = merchant.toLowerCase();
+  const text = toComparableText_(merchant);
   const table = [
-    ['food', ['スーパー', 'コンビニ', 'セブン', 'ローソン', 'ファミマ', 'マクドナルド', 'スターバックス', 'カフェ', 'レストラン', '弁当', '居酒屋']],
-    ['transport', ['jr', 'suica', 'pasmo', 'etc', '新幹線', 'タクシー', '駅', '航空']],
-    ['housing', ['電気', 'ガス', '水道', 'モバイル', 'ドコモ', 'ソフトバンク', 'wi-fi', 'ネット', 'サブスク', 'netflix', 'spotify', '保険']],
-    ['entertainment', ['映画', 'ゲーム', 'カラオケ', 'ジム', 'ディズニー', 'シネマ']],
-    ['shopping', ['ドン・キホーテ', 'ドンキ', 'ユニクロ', 'amazon', '楽天市場', '百貨店', '無印良品', 'ヨドバシ', 'ビックカメラ']],
+    ['food', ['スーパー', 'マルエツ', 'イオン', '成城石井', 'コンビニ', 'セブン', 'ローソン', 'ファミリーマート', 'ファミマ', 'マクドナルド', 'モスバーガー', 'スターバックス', 'ドトール', 'カフェ', 'コーヒー', 'レストラン', '食堂', '弁当', '居酒屋', 'サイゼリヤ', '吉野家', 'すき家', '松屋', 'ラーメン', '寿司', '焼肉']],
+    ['transport', ['suica', 'pasmo', 'etc', '新幹線', 'jr', '電車', 'バス', 'タクシー', 'ガソリン', 'eneos', '駐車場', 'メトロ', 'タイムズ', 'ana', 'jal', '航空', 'チャージ', '駅']],
+    ['housing', ['家賃', '電気', 'ガス', '水道', 'povo', 'ドコモ', 'au', 'ソフトバンク', 'モバイル', 'nhk', 'wi-fi', 'ネット', 'サブスク', 'netflix', 'spotify', 'プライム', '保険', '積立', '証券']],
+    ['entertainment', ['映画', '遊園地', 'ゲーム', 'カラオケ', 'ライブ', 'ジム', 'シネマ', 'ディズニー', 'usj', 'switch', 'playstation', 'steam', 'コミック', '漫画', 'シーモア', '電子書籍', 'kindle', 'ebookjapan', 'dmm', 'fanza', 'ニコニコ', 'hulu', 'u-next', 'ユーネクスト', 'abema']],
+    ['shopping', ['パルコ', 'ユニクロ', 'zara', 'amazon', 'アマゾン', '楽天市場', '百貨店', 'デパート', '無印良品', 'ドンキ', 'ドン・キホーテ', 'ロフト', 'ヨドバシ', 'ビックカメラ', 'gu', '商業施設', 'モール', 'アウトレット', '三井不動産', '三菱地所']],
   ];
   for (const [category, keywords] of table) {
-    if (keywords.some((kw) => text.includes(kw.toLowerCase()))) return category;
+    if (keywords.some((kw) => text.includes(toComparableText_(kw)))) return category;
   }
   return 'other';
 }
