@@ -6,9 +6,9 @@
  * AI（Gemini）にメール本文を解析させて、カード家計簿アプリの Firestore に
  * 直接、明細として書き込みます。アプリを開かなくても自動で明細が増えます。
  *
- * カード会社ごとの解析ロジックをコードで用意する必要はありません。
- * 新しいカード会社が増えても、その会社のメールが「利用」「カード」のような
- * 一般的なキーワードを含む件名であれば、コードを直さずそのまま拾われます。
+ * カード会社ごとの解析ロジックをコードで用意する必要はありません。件名によるキーワード
+ * 絞り込みもしていないので、新しいカード会社が増えてもコードを直す必要は一切ありません
+ * （直近7日・未処理のメールは全部AIに「購入確定通知かどうか」を判定させています）。
  *
  * セットアップ手順は README.md を参照してください。
  * このファイルの中で編集が必要な箇所は「▼設定」の見出しがついた部分だけです。
@@ -32,18 +32,12 @@ const PROCESSED_LABEL_NAME = 'カード家計簿-取込済み';
 // (https://aistudio.google.com/) で使えるモデル名に差し替えてください。
 const GEMINI_MODEL = 'gemini-2.5-flash';
 
-// ============================================================
-// ▼設定2: 候補メールの絞り込みキーワード（件名に対する軽いふるい）
-// Gmail検索は「未処理ラベルなし・直近7日」だけで幅広く取得し、その中から
-// 件名にこの単語が含まれるメールだけをAI解析の対象にする。
-// 「カード」「ペイ」等の単語を追加条件にすると、"Mastercardでお支払いが
-// ありました" "iD決済でお支払いがありました" のような、カード会社名や
-// ブランド名が件名に出てこない形式を取りこぼす（実際に見つかった問題）。
-// 最終的な「これは購入確定通知か」の判定はAIに任せるので、ここは広めに
-// 「利用・決済系の言葉があるか」だけを見る。逃したメールがあれば、
-// ここに単語を追加してください（コード全体の変更は不要）。
-// ============================================================
-const SUBJECT_ACTION_WORDS = /(利用|決済|ご請求|お支払い)/;
+// 件名によるキーワード絞り込みはしない。カード会社ごとに表現がバラバラ
+// （「ご利用」「お支払い」「Mastercardで」「iD決済で」等）なので、キーワードで
+// 絞ろうとすると必ずどこかで漏れる。「これが購入確定通知かどうか」の判定は
+// 直近7日・未処理の全メールをAIにそのまま判定させることで解決する。
+// 個人的なメールも含めて内容がAI（Gemini API）に送られる点は理解した上で
+// 使うこと（同じGoogleアカウント内での処理だが、外部APIへの送信ではある）。
 
 // ============================================================
 // メイン処理（このプロジェクトの「トリガー」から checkCardEmails を呼ぶよう設定してください）
@@ -65,14 +59,10 @@ function checkCardEmails() {
 
     threads.forEach((thread) => {
       const messages = thread.getMessages();
-      let threadHadCandidate = false;
       let threadHadFailure = false;
 
       messages.forEach((message) => {
         const subject = message.getSubject() || '';
-        if (!SUBJECT_ACTION_WORDS.test(subject)) return;
-
-        threadHadCandidate = true;
         try {
           const body = message.getPlainBody();
           const result = analyzeEmailWithAi_(geminiKey, subject, body);
@@ -111,9 +101,9 @@ function checkCardEmails() {
         }
       });
 
-      // 候補になったメールが全部処理できた（AI判定含む）スレッドだけ「処理済み」にする。
+      // スレッド内の全メールがAI判定含めて処理できた場合だけ「処理済み」にする。
       // エラーが混ざっていたら次回また対象にして再挑戦させる。
-      if (threadHadCandidate && !threadHadFailure) {
+      if (!threadHadFailure) {
         thread.addLabel(label);
       }
     });
@@ -478,21 +468,20 @@ function updateStatus_(accessToken, status) {
 }
 
 // ============================================================
-// 調査用: ラベル絞り込みなしで検索し、件名候補になりそうなメールの
-// 件名と現在のラベルを確認する。取り込み漏れの調査に使ってください。
+// 調査用: checkCardEmails が対象にするメール（未処理ラベル・直近7日）の
+// 件名一覧をログに出す。件名だけで絞り込みはしていないので、ここに出てくる
+// メールが次回 checkCardEmails 実行時にすべてAI判定の対象になる。
 // 実行する時は、上のプルダウンで checkCardEmails ではなく debugSearch を選ぶこと。
 // ============================================================
 function debugSearch() {
-  const threads = GmailApp.search('newer_than:7d', 0, 50);
-  console.log(`全体件数: ${threads.length}件`);
+  const query = `-label:"${PROCESSED_LABEL_NAME}" newer_than:7d`;
+  const threads = GmailApp.search(query, 0, 50);
+  console.log(`検索クエリ: ${query}`);
+  console.log(`対象スレッド数: ${threads.length}件`);
   threads.forEach((thread) => {
-    const labels = thread.getLabels().map((l) => l.getName()).join(', ') || '(ラベルなし)';
     thread.getMessages().forEach((message) => {
       const subject = message.getSubject() || '';
-      const isCandidate = SUBJECT_ACTION_WORDS.test(subject);
-      if (isCandidate) {
-        console.log(`候補: "${subject}" / スレッドのラベル: ${labels}`);
-      }
+      console.log(`対象: "${subject}"`);
     });
   });
 }
