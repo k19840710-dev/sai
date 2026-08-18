@@ -277,6 +277,7 @@ function guessCategory_(merchant) {
     ['procurement', ['アリエクスプレス', 'aliexpress', 'ali express', 'タオバオ', 'taobao', '1688', 'pinduoduo', '拼多多', 'temu', 'shein', '速卖通']],
     ['beauty', ['美容院', 'ヘアサロン', '理容', 'ネイル', 'エステ', 'まつげ', 'コスメ', '化粧品', '資生堂', 'shiseido', 'アットコスメ', '脱毛']],
     ['social', ['ギフト', '贈り物', '贈答', 'ご祝儀', 'お祝い', 'プレゼント', '冠婚葬祭', '香典']],
+    ['entertainment', ['映画', '遊園地', 'ゲーム', 'カラオケ', 'ライブ', 'ジム', 'シネマ', 'ディズニー', 'usj', 'switch', 'playstation', 'steam', 'コミック', '漫画', 'シーモア', '電子書籍', 'kindle', 'ebookjapan', 'dmm', 'fanza', 'ニコニコ', 'hulu', 'u-next', 'ユーネクスト', 'abema']],
     ['travel', ['jtb', 'his', 'エイチ・アイ・エス', '楽天トラベル', 'じゃらん', 'booking', 'expedia', 'airbnb', 'エアビーアンドビー', 'ホテル', '旅館', '民宿']],
     ['communication', ['povo', 'ドコモ', 'au', 'ソフトバンク', 'モバイル', 'ワイモバイル', 'uq', 'nhk', 'wi-fi', 'ネット', 'サブスク', 'netflix', 'spotify', 'プライム', '楽天モバイル']],
     ['transport', ['suica', 'pasmo', 'etc', '新幹線', 'jr', '電車', 'バス', 'タクシー', 'ガソリン', 'eneos', '駐車場', 'メトロ', 'タイムズ', 'ana', 'jal', '航空', 'チャージ', '駅']],
