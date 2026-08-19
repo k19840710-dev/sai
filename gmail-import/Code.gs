@@ -283,8 +283,19 @@ function toComparableText_(str) {
   return String(str || '').normalize('NFKC').toLowerCase();
 }
 
+// 以前（カード会社ごとに手書きのルールがあった時代）は固定のcardIdで
+// 作成・管理していたカードたち。既にこのIDで実データが入っているユーザーの
+// カードと紐付け続けるための移行マップ。新しいカード会社はここに無くても、
+// 下のslugifyCardId_が自動でIDを作るので追記不要。
+const LEGACY_ISSUER_CARD_IDS = {
+  'メルカード': 'card-mercard',
+  '三井住友カード': 'card-smbc-nl',
+  'PayPayカード': 'card-paypay',
+};
+
 /** カード会社名からFirestoreの安全なドキュメントIDを作る（同じ会社名なら常に同じID） */
 function slugifyCardId_(issuerName) {
+  if (LEGACY_ISSUER_CARD_IDS[issuerName]) return LEGACY_ISSUER_CARD_IDS[issuerName];
   const base = String(issuerName || 'card').trim();
   const cleaned = base.replace(/[\/\s]+/g, '-').replace(/[^\p{L}\p{N}\-]/gu, '');
   return 'card-gmail-' + (cleaned || 'unknown');
