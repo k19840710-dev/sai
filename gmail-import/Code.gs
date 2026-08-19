@@ -59,6 +59,12 @@ function checkCardEmails() {
     const accessToken = getFirestoreAccessToken_();
     const geminiKey = getGeminiApiKey_();
     const label = getOrCreateLabel_(PROCESSED_LABEL_NAME);
+    // AIに「これは既存のどのカードと同じ実体か」を判断させるための材料。
+    // 例: メルペイは「メルカード」「iD決済」「バーチャルMastercard」など
+    // メール表現がバラバラでも実体は同じアカウントなので、既存名を渡すことで
+    // AI自身に同一判定させ、毎回違う名前で重複登録されるのを防ぐ。
+    const existingCardNames = listExistingCardNames_(accessToken);
+    console.log(`登録済みカード: ${existingCardNames.join('、') || '(なし)'}`);
 
     const query = `-label:"${PROCESSED_LABEL_NAME}" newer_than:7d`;
     const threads = GmailApp.search(query, 0, 50);
@@ -82,7 +88,7 @@ function checkCardEmails() {
         const subject = message.getSubject() || '';
         try {
           const body = message.getPlainBody();
-          const result = analyzeEmailWithAi_(geminiKey, subject, body);
+          const result = analyzeEmailWithAi_(geminiKey, subject, body, existingCardNames);
           // 無料枠のレート制限（1分あたり◯リクエスト）に極力引っかからないよう、
           // 判定1回ごとに少し間隔を空ける。
           Utilities.sleep(3200);
@@ -199,8 +205,21 @@ function fetchGeminiWithRetry_(url, payload, attempt) {
  * カード会社名・店名・金額・利用日を抽出してもらう。
  * 戻り値: { status: 'ok', data: {...} } / { status: 'not_purchase' } / { status: 'error', error }
  */
-function analyzeEmailWithAi_(apiKey, subject, body) {
+function analyzeEmailWithAi_(apiKey, subject, body, existingCardNames) {
   const truncatedBody = String(body || '').slice(0, 4000);
+
+  const cardHint = (existingCardNames && existingCardNames.length)
+    ? [
+      '',
+      `既に登録されているカード名: ${existingCardNames.join('、')}`,
+      'このメールの決済が、上のどれかと実体として同じカード・決済アカウントであれば',
+      '（例えば同じ○○ペイのアカウントから、メルカード決済・iD決済・バーチャルカード決済など',
+      '複数の見た目で通知が来ている場合は全部同じ実体）、issuer_nameは必ずその登録済みの',
+      '名前をそのまま（一字一句）使ってください。表記が違うだけで実体が同じなら新しい名前を',
+      '作らないこと。どれとも異なる、本当に初めて見るカード会社・決済サービスの場合だけ',
+      '新しい名前をissuer_nameにしてください。',
+    ].join('\n')
+    : '';
 
   const prompt = [
     'あなたはクレジットカードの利用通知メールを解析するアシスタントです。',
@@ -213,6 +232,7 @@ function analyzeEmailWithAi_(apiKey, subject, body) {
     '- merchant: 利用した店舗・サービス名',
     '- amount: 利用金額（円。数字のみ、カンマなし）',
     '- date: 利用日（YYYY-MM-DD形式）',
+    cardHint,
     '',
     `件名: ${subject}`,
     '本文:',
@@ -475,6 +495,24 @@ function toFirestoreFields_(obj) {
 function createTransaction_(accessToken, id, tx) {
   const url = firestoreDocPath_('artifacts', FIRESTORE_APP_ID, 'users', FIRESTORE_USER_ID, 'transactions', id);
   firestoreRequest_(accessToken, 'patch', url, { fields: toFirestoreFields_(tx) });
+}
+
+/** 登録済みカードの名前一覧を取得する（取得に失敗しても空配列にして続行） */
+function listExistingCardNames_(accessToken) {
+  try {
+    const url = firestoreDocPath_('artifacts', FIRESTORE_APP_ID, 'users', FIRESTORE_USER_ID, 'cards');
+    const options = { method: 'get', headers: { Authorization: 'Bearer ' + accessToken }, muteHttpExceptions: true };
+    const response = UrlFetchApp.fetch(url, options);
+    if (response.getResponseCode() >= 300) return [];
+    const data = JSON.parse(response.getContentText() || '{}');
+    const docs = data.documents || [];
+    return docs
+      .map((d) => d.fields && d.fields.name && d.fields.name.stringValue)
+      .filter(Boolean);
+  } catch (e) {
+    console.warn('カード一覧の取得に失敗しました（ヒント無しで続行します）: ' + e);
+    return [];
+  }
 }
 
 // 自動作成するカードのテーマ色（アプリ側のCARD_THEMESと同じキー）。
