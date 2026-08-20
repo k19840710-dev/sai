@@ -63,7 +63,11 @@ function checkCardEmails() {
     // 例: メルペイは「メルカード」「iD決済」「バーチャルMastercard」など
     // メール表現がバラバラでも実体は同じアカウントなので、既存名を渡すことで
     // AI自身に同一判定させ、毎回違う名前で重複登録されるのを防ぐ。
-    const existingCardNames = listExistingCardNames_(accessToken);
+    // { カード名: カードID } のマップで持つことで、アプリ側でカード名を後から
+    // 変更されても（例:「メルカード」→「マイカード」）正しいIDに追従できる
+    // （名前からIDを毎回作り直す方式だと、リネームで紐付けが外れてしまう）。
+    const cardCache = getExistingCardsCache_(accessToken);
+    const existingCardNames = Object.keys(cardCache);
     console.log(`登録済みカード: ${existingCardNames.join('、') || '(なし)'}`);
 
     const query = `-label:"${PROCESSED_LABEL_NAME}" newer_than:7d`;
@@ -88,7 +92,7 @@ function checkCardEmails() {
         const subject = message.getSubject() || '';
         try {
           const body = message.getPlainBody();
-          const result = analyzeEmailWithAi_(geminiKey, subject, body, existingCardNames);
+          const result = analyzeEmailWithAi_(geminiKey, subject, body, existingCardNames, message.getDate());
           // 無料枠のレート制限（1分あたり◯リクエスト）に極力引っかからないよう、
           // 判定1回ごとに少し間隔を空ける。
           Utilities.sleep(3200);
@@ -104,20 +108,22 @@ function checkCardEmails() {
           }
 
           const { issuerName, merchant, amount, date } = result.data;
-          const cardId = slugifyCardId_(issuerName);
-          ensureCardFromIssuer_(accessToken, cardId, issuerName);
+          const cardId = ensureCardExists_(accessToken, cardCache, issuerName);
 
-          // 「コミックシーモア　サクヒン　ポイント」のような余計な文字を削り、
-          // 知っている店名なら正式名称＋カテゴリに寄せる。
-          const cleaned = cleanMerchantName_(merchant);
+          // 「コミックシーモア　サクヒン　ポイント」のような余計な文字を削り、知っている
+          // 店名なら正式名称＋カテゴリに寄せる（src/App.jsxのOCR取込と同じ表記に揃うので、
+          // ここを優先する）。知らない店名だけ、AI自身が返した店名・カテゴリを使う。
+          const known = findKnownMerchant_(merchant);
+          const finalName = known ? known.name : (merchant || issuerName);
+          const finalCategory = known ? known.category : (result.data.category || guessCategory_(merchant));
           // メールのメッセージIDから決まる固定IDにしておくことで、同じメールを
           // 何度処理しても重複した明細ができない（既存ドキュメントを上書きするだけ）。
           createTransaction_(accessToken, `t-gmail-${message.getId()}`, {
             cardId,
             amount,
             date,
-            category: cleaned.category,
-            memo: cleaned.name || issuerName,
+            category: finalCategory,
+            memo: finalName,
           });
           importedCount += 1;
         } catch (err) {
@@ -205,8 +211,9 @@ function fetchGeminiWithRetry_(url, payload, attempt) {
  * カード会社名・店名・金額・利用日を抽出してもらう。
  * 戻り値: { status: 'ok', data: {...} } / { status: 'not_purchase' } / { status: 'error', error }
  */
-function analyzeEmailWithAi_(apiKey, subject, body, existingCardNames) {
+function analyzeEmailWithAi_(apiKey, subject, body, existingCardNames, messageDate) {
   const truncatedBody = String(body || '').slice(0, 4000);
+  const currentYear = (messageDate instanceof Date) ? messageDate.getFullYear() : new Date().getFullYear();
 
   const cardHint = (existingCardNames && existingCardNames.length)
     ? [
@@ -229,9 +236,10 @@ function analyzeEmailWithAi_(apiKey, subject, body, existingCardNames) {
     '',
     '利用確定の通知メールであれば、以下も抽出してください:',
     '- issuer_name: カード会社・決済サービス名（例: 「メルカード」「三井住友カード」「楽天カード」など。件名や本文、署名から判断）',
-    '- merchant: 利用した店舗・サービス名',
+    '- merchant: 利用した店舗・サービス名。決済代行会社の識別子（「SQ*」「AMZ*」等）や余計な記号は除いて、一般的な店名にしてください（例:「ＳＱ＊スターバックスコーヒー」→「スターバックス」）',
+    '- category: 利用内容から最も適したものを1つ選択（food/daily/entertainment/transport/communication/travel/beauty/procurement/social/otherのいずれか）',
     '- amount: 利用金額（円。数字のみ、カンマなし）',
-    '- date: 利用日（YYYY-MM-DD形式）',
+    `- date: 利用日（YYYY-MM-DD形式）。本文に年の記載が無ければ ${currentYear} 年として補完してください`,
     cardHint,
     '',
     `件名: ${subject}`,
@@ -249,6 +257,10 @@ function analyzeEmailWithAi_(apiKey, subject, body, existingCardNames) {
           is_purchase_notification: { type: 'BOOLEAN' },
           issuer_name: { type: 'STRING' },
           merchant: { type: 'STRING' },
+          category: {
+            type: 'STRING',
+            enum: ['food', 'daily', 'entertainment', 'transport', 'communication', 'travel', 'beauty', 'procurement', 'social', 'other'],
+          },
           amount: { type: 'INTEGER' },
           date: { type: 'STRING' },
         },
@@ -266,8 +278,11 @@ function analyzeEmailWithAi_(apiKey, subject, body, existingCardNames) {
   let parsed;
   try {
     const data = JSON.parse(responseText);
-    const text = data.candidates[0].content.parts[0].text;
-    parsed = JSON.parse(text);
+    // responseSchema指定時は基本的に素のJSONが返るが、念のため```json ... ```で
+    // 囲まれていた場合にも対応しておく。
+    const rawText = data.candidates[0].content.parts[0].text;
+    const cleanText = String(rawText).replace(/^```(?:json)?\s*|\s*```$/g, '').trim();
+    parsed = JSON.parse(cleanText);
   } catch (e) {
     return { status: 'error', error: `AI応答の解析に失敗: ${e}` };
   }
@@ -287,6 +302,7 @@ function analyzeEmailWithAi_(apiKey, subject, body, existingCardNames) {
     data: {
       issuerName: String(parsed.issuer_name).trim(),
       merchant: String(parsed.merchant).trim(),
+      category: parsed.category || null,
       amount,
       date: parsed.date,
     },
@@ -385,11 +401,11 @@ const KNOWN_MERCHANTS_ = [
 ];
 
 /**
- * メールから読み取った店名を、既知の店名リストに近ければ正式名称＋カテゴリに
- * 置き換える（src/App.jsx の cleanMerchantName と同じ考え方）。
- * 一致しなければ元の店名のままキーワード表からカテゴリだけ推測する。
+ * メールから読み取った店名が、既知の店名リストに近ければ { name, category } を
+ * 返す（src/App.jsx の cleanMerchantName と同じ考え方）。一致しなければ null。
+ * 一致しない場合はAI自身が返した店名・カテゴリをそのまま使う（呼び出し元を参照）。
  */
-function cleanMerchantName_(rawMerchant) {
+function findKnownMerchant_(rawMerchant) {
   const base = String(rawMerchant || '').replace(/[_＿]/g, ' ').replace(/\s+/g, ' ').trim();
   const compact = toComparableText_(base).replace(/\s+/g, '');
 
@@ -398,7 +414,7 @@ function cleanMerchantName_(rawMerchant) {
       return { name: merchant.name, category: merchant.category };
     }
   }
-  return { name: base, category: guessCategory_(base) };
+  return null;
 }
 
 // ============================================================
@@ -497,21 +513,29 @@ function createTransaction_(accessToken, id, tx) {
   firestoreRequest_(accessToken, 'patch', url, { fields: toFirestoreFields_(tx) });
 }
 
-/** 登録済みカードの名前一覧を取得する（取得に失敗しても空配列にして続行） */
-function listExistingCardNames_(accessToken) {
+/**
+ * 登録済みカードの { カード名: カードID } マップを取得する
+ * （取得に失敗しても空オブジェクトにして続行）。
+ * 名前からIDを毎回作り直す方式だと、アプリ側でカード名を後から変更された
+ * 場合に紐付けが外れてしまうため、実際のドキュメントIDをそのまま使う。
+ */
+function getExistingCardsCache_(accessToken) {
   try {
     const url = firestoreDocPath_('artifacts', FIRESTORE_APP_ID, 'users', FIRESTORE_USER_ID, 'cards');
     const options = { method: 'get', headers: { Authorization: 'Bearer ' + accessToken }, muteHttpExceptions: true };
     const response = UrlFetchApp.fetch(url, options);
-    if (response.getResponseCode() >= 300) return [];
+    if (response.getResponseCode() >= 300) return {};
     const data = JSON.parse(response.getContentText() || '{}');
     const docs = data.documents || [];
-    return docs
-      .map((d) => d.fields && d.fields.name && d.fields.name.stringValue)
-      .filter(Boolean);
+    const cache = {};
+    docs.forEach((d) => {
+      const name = d.fields && d.fields.name && d.fields.name.stringValue;
+      if (name) cache[name] = d.name.split('/').pop(); // dのnameはフルパスなので末尾がドキュメントID
+    });
+    return cache;
   } catch (e) {
     console.warn('カード一覧の取得に失敗しました（ヒント無しで続行します）: ' + e);
-    return [];
+    return {};
   }
 }
 
@@ -527,16 +551,30 @@ function themeForIssuer_(issuerName) {
   return CARD_THEME_PALETTE[hash % CARD_THEME_PALETTE.length];
 }
 
-/** 対応するカードがまだ無ければ、控えめな初期値で自動作成する（既にあれば何もしない） */
-function ensureCardFromIssuer_(accessToken, cardId, issuerName) {
+/**
+ * cardCache（{ カード名: カードID }）に issuerName が無ければ新規作成し、
+ * カードIDを返す。1回の実行内で同じ新規カード名が複数回出てきても、
+ * 2回目以降はキャッシュを見るだけでFirestoreへの問い合わせをしない。
+ */
+function ensureCardExists_(accessToken, cardCache, issuerName) {
+  if (cardCache[issuerName]) return cardCache[issuerName];
+
+  const cardId = slugifyCardId_(issuerName);
   const url = firestoreDocPath_('artifacts', FIRESTORE_APP_ID, 'users', FIRESTORE_USER_ID, 'cards', cardId);
-  const getOptions = {
+
+  // キャッシュに無くても、実際にはもう存在することがある（例:
+  // getExistingCardsCache_ が何らかの理由で取得に失敗し空になっていた場合）。
+  // 既存カード（保有者名・限度額など実データ入り）を空の初期値で
+  // 上書きしてしまわないよう、作成前に必ず存在確認する。
+  const existing = UrlFetchApp.fetch(url, {
     method: 'get',
     headers: { Authorization: 'Bearer ' + accessToken },
     muteHttpExceptions: true,
-  };
-  const existing = UrlFetchApp.fetch(url, getOptions);
-  if (existing.getResponseCode() === 200) return; // 既に存在する
+  });
+  if (existing.getResponseCode() === 200) {
+    cardCache[issuerName] = cardId;
+    return cardId;
+  }
 
   const card = {
     name: issuerName,
@@ -554,6 +592,8 @@ function ensureCardFromIssuer_(accessToken, cardId, issuerName) {
     bankAccount: '',
   };
   firestoreRequest_(accessToken, 'patch', url, { fields: toFirestoreFields_(card) });
+  cardCache[issuerName] = cardId;
+  return cardId;
 }
 
 function updateStatus_(accessToken, status) {
