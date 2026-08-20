@@ -108,6 +108,16 @@ function checkCardEmails() {
           }
 
           const { issuerName, merchant, amount, date } = result.data;
+
+          // 同じ支払いについて、メルペイ経由の通知とPayPal自体からの通知のように
+          // 別々のサービスから2通メールが来ることがある。どちらも内容として正しい
+          // ため通常のメッセージID単位の重複防止（同じメールを2回処理しない）では
+          // 防げない。金額・日付が完全に一致する明細が既にあればスキップする。
+          if (findDuplicateTransaction_(accessToken, amount, date)) {
+            console.log(`重複の可能性があるためスキップ: ${date} ¥${amount} (${issuerName}/${merchant})`);
+            return;
+          }
+
           const cardId = ensureCardExists_(accessToken, cardCache, issuerName);
 
           // 「コミックシーモア　サクヒン　ポイント」のような余計な文字を削り、知っている
@@ -511,6 +521,47 @@ function toFirestoreFields_(obj) {
 function createTransaction_(accessToken, id, tx) {
   const url = firestoreDocPath_('artifacts', FIRESTORE_APP_ID, 'users', FIRESTORE_USER_ID, 'transactions', id);
   firestoreRequest_(accessToken, 'patch', url, { fields: toFirestoreFields_(tx) });
+}
+
+/**
+ * 金額・日付が完全に一致する明細が既にあるか調べる。
+ * 同じ支払いについて、メルペイ経由の通知とPayPal自体からの通知のように、
+ * 別々のサービスから正しい内容の通知メールが2通届くことがあり、その場合は
+ * メッセージID単位の重複防止（同じメールを2回処理しない）だけでは防げない。
+ */
+function findDuplicateTransaction_(accessToken, amount, date) {
+  try {
+    const url = `https://firestore.googleapis.com/v1/projects/${FIRESTORE_PROJECT_ID}/databases/(default)/documents/artifacts/${FIRESTORE_APP_ID}/users/${FIRESTORE_USER_ID}:runQuery`;
+    const body = {
+      structuredQuery: {
+        from: [{ collectionId: 'transactions' }],
+        where: {
+          compositeFilter: {
+            op: 'AND',
+            filters: [
+              { fieldFilter: { field: { fieldPath: 'date' }, op: 'EQUAL', value: { stringValue: date } } },
+              { fieldFilter: { field: { fieldPath: 'amount' }, op: 'EQUAL', value: { integerValue: String(amount) } } },
+            ],
+          },
+        },
+        limit: 1,
+      },
+    };
+    const options = {
+      method: 'post',
+      headers: { Authorization: 'Bearer ' + accessToken },
+      contentType: 'application/json',
+      payload: JSON.stringify(body),
+      muteHttpExceptions: true,
+    };
+    const response = UrlFetchApp.fetch(url, options);
+    if (response.getResponseCode() >= 300) return false;
+    const results = JSON.parse(response.getContentText() || '[]');
+    return results.some((r) => r.document);
+  } catch (e) {
+    console.warn('重複チェックに失敗しました（チェックなしで続行します）: ' + e);
+    return false;
+  }
 }
 
 /**
