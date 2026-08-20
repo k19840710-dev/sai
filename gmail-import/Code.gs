@@ -30,7 +30,7 @@ const PROCESSED_LABEL_NAME = 'カード家計簿-取込済み';
 
 // AIモデル名。将来このモデルが使えなくなった場合は、Google AI Studio
 // (https://aistudio.google.com/) で使えるモデル名に差し替えてください。
-const GEMINI_MODEL = 'gemini-3.6-flash';
+const GEMINI_MODEL = 'gemini-3.5-flash-lite';
 
 // 件名によるキーワード絞り込みはしない。カード会社ごとに表現がバラバラ
 // （「ご利用」「お支払い」「Mastercardで」「iD決済で」等）なので、キーワードで
