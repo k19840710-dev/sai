@@ -292,10 +292,17 @@
                 </button>
             </nav>
 
-            <!-- クイック売上登録ボタン -->
-            <button onclick="openAddModal()" class="bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold app-card-shadow transition-colors flex items-center gap-1 whitespace-nowrap shrink-0 ml-auto sm:ml-0">
-                <span>売上記録</span>
-            </button>
+            <div class="flex items-center gap-2 ml-auto sm:ml-0 shrink-0">
+                <!-- アカウント・同期 -->
+                <button onclick="openAccountSyncModal()" aria-label="アカウント・同期" class="p-2 sm:p-2.5 bg-[var(--bg-subtle)] hover:bg-[var(--border-color)] text-[var(--text-main)] rounded-xl border border-[var(--border-color)] transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-5 sm:h-5"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+                </button>
+
+                <!-- クイック売上登録ボタン -->
+                <button onclick="openAddModal()" class="bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold app-card-shadow transition-colors flex items-center gap-1 whitespace-nowrap">
+                    <span>売上記録</span>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -750,15 +757,6 @@
                 <p class="text-[11px] text-[var(--text-sub)]">選んだ内容はこの端末に保存され、次回起動時にも引き継がれます。</p>
             </div>
 
-            <!-- Gmail自動取込みの状態カード -->
-            <div class="bg-[var(--card-bg)] p-6 rounded-2xl border border-[var(--border-color)] app-card-shadow space-y-3">
-                <h2 class="text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
-                    <span class="text-xl text-[var(--text-main)] leading-none" role="img" aria-hidden="true">📬</span>
-                    Gmail自動取込みの状態
-                </h2>
-                <div id="gmail-import-status" class="text-xs space-y-2">まだ一度も実行されていません</div>
-            </div>
-
             <!-- システム設定カード -->
             <div class="bg-[var(--card-bg)] p-6 rounded-2xl border border-[var(--border-color)] app-card-shadow space-y-4">
                 <h2 class="text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
@@ -1005,6 +1003,41 @@
                 <div id="product-sales-timeline" class="max-h-40 overflow-y-auto bg-[var(--bg-subtle)] rounded-xl p-3 border border-[var(--border-color)] text-xs space-y-1.5">
                     <!-- JS描写 -->
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- アカウント・同期モーダル -->
+    <div id="account-sync-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--card-bg)] rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4 relative border border-[var(--border-color)]">
+            <button onclick="closeAccountSyncModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[var(--text-sub)] hover:text-[var(--text-main)]">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <h3 class="text-lg font-bold text-[var(--text-main)] flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-[var(--text-sub)]"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+                アカウント・同期
+            </h3>
+
+            <div id="sync-modal-status" class="text-sm text-[var(--text-sub)]">確認中...</div>
+
+            <div class="bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-xl p-3 space-y-1.5">
+                <div class="text-[10px] text-[var(--text-sub)] font-semibold">アカウントID</div>
+                <div class="flex items-center gap-2">
+                    <code id="sync-modal-uid" class="flex-1 text-xs font-mono text-[var(--text-main)] break-all select-all">読み込み中...</code>
+                    <button onclick="copyUidToClipboard()" class="shrink-0 px-3 py-1.5 bg-[var(--card-bg)] border border-[var(--border-color)] rounded-lg text-xs font-bold text-[var(--text-main)] hover:bg-[var(--border-color)]">コピー</button>
+                </div>
+            </div>
+
+            <div class="bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-xl p-3 space-y-1.5">
+                <div class="text-xs font-bold text-[var(--text-main)]">Gmail自動取り込み</div>
+                <div id="gmail-import-status" class="text-xs space-y-2">まだ一度も実行されていません</div>
+            </div>
+
+            <div id="sync-modal-logout-section" class="hidden pt-2 border-t border-[var(--border-color)]">
+                <button onclick="handleLogout()" class="w-full border border-[var(--border-color)] hover:bg-[var(--bg-subtle)] text-[var(--text-main)] text-xs font-bold py-2.5 rounded-xl flex items-center justify-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+                    ログアウト
+                </button>
             </div>
         </div>
     </div>
@@ -1540,6 +1573,8 @@
         function updateAccountUidDisplay(uid) {
             const el = document.getElementById('account-uid-display');
             if (el) el.textContent = uid;
+            const modalEl = document.getElementById('sync-modal-uid');
+            if (modalEl) modalEl.textContent = uid;
         }
 
         function updateAccountStatusDisplay(user) {
@@ -1547,19 +1582,36 @@
             const linkSection = document.getElementById('account-link-section');
             const passwordSection = document.getElementById('account-password-section');
             const logoutSection = document.getElementById('account-logout-section');
-            if (!statusEl) return;
+            const modalStatusEl = document.getElementById('sync-modal-status');
+            const modalLogoutSection = document.getElementById('sync-modal-logout-section');
+
+            const statusText = user.isAnonymous
+                ? 'この端末専用のデータです（未ログイン）'
+                : 'ログイン中: ' + (user.email || '');
+
+            if (statusEl) statusEl.textContent = statusText;
+            if (modalStatusEl) modalStatusEl.textContent = statusText;
 
             if (user.isAnonymous) {
-                statusEl.textContent = 'この端末専用のデータです（未ログイン）';
                 if (linkSection) linkSection.classList.remove('hidden');
                 if (passwordSection) passwordSection.classList.add('hidden');
                 if (logoutSection) logoutSection.classList.add('hidden');
+                if (modalLogoutSection) modalLogoutSection.classList.add('hidden');
             } else {
-                statusEl.textContent = 'ログイン中: ' + (user.email || '');
                 if (linkSection) linkSection.classList.add('hidden');
                 if (passwordSection) passwordSection.classList.remove('hidden');
                 if (logoutSection) logoutSection.classList.remove('hidden');
+                if (modalLogoutSection) modalLogoutSection.classList.remove('hidden');
             }
+        }
+
+        function openAccountSyncModal() {
+            document.getElementById('account-sync-modal').classList.remove('hidden');
+            toggleBodyScroll(true);
+        }
+        function closeAccountSyncModal() {
+            document.getElementById('account-sync-modal').classList.add('hidden');
+            toggleBodyScroll(false);
         }
 
         async function handleChangePassword() {
@@ -3616,6 +3668,8 @@
         window.shiftProductStatsPeriod = shiftProductStatsPeriod;
         window.openProductDetailModal = openProductDetailModal;
         window.closeProductDetailModal = closeProductDetailModal;
+        window.openAccountSyncModal = openAccountSyncModal;
+        window.closeAccountSyncModal = closeAccountSyncModal;
         window.openEditProductMasterModal = openEditProductMasterModal;
         window.closeProductMasterModal = closeProductMasterModal;
         window.handleProductMasterSubmit = handleProductMasterSubmit;
