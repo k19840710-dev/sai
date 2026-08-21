@@ -1076,6 +1076,13 @@
                     <button type="button" onclick="closeProductMasterModal()" class="px-4 py-2 border border-[var(--border-color)] text-[var(--text-sub)] rounded-xl text-sm font-medium">キャンセル</button>
                     <button type="submit" class="px-4 py-2 bg-[var(--accent-bg)] hover:bg-[var(--accent-hover)] text-white rounded-xl text-sm font-medium">保存する</button>
                 </div>
+
+                <div class="pt-3 border-t border-[var(--border-color)]">
+                    <button type="button" onclick="deleteProductMaster()" class="w-full py-2 text-red-500 hover:bg-red-50 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                        この商品をマスターから削除
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -2778,6 +2785,10 @@
             if (type === 'transaction') {
                 const tx = transactions.find(t => t.id === id);
                 itemName = tx ? tx.title : '売上データ';
+            } else if (type === 'product') {
+                const p = products.find(item => item.id === id);
+                const historyCount = transactions.filter(t => t.productId === id || (p && t.title && t.title.trim() === p.title.trim())).length;
+                itemName = (p ? p.title : '商品マスター') + (historyCount > 0 ? `（売上履歴 ${historyCount}件は残ります）` : '');
             } else {
                 const pur = purchases.find(p => p.id === id);
                 itemName = pur ? `仕入れ (¥${pur.amount.toLocaleString()})` : '仕入れデータ';
@@ -2796,9 +2807,14 @@
         async function confirmDelete() {
             if (pendingDeleteTarget && currentUser) {
                 try {
-                    const colName = pendingDeleteTarget.type === 'transaction' ? 'transactions' : 'purchases';
+                    const colName = pendingDeleteTarget.type === 'transaction' ? 'transactions'
+                        : pendingDeleteTarget.type === 'product' ? 'products'
+                        : 'purchases';
                     const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, colName, pendingDeleteTarget.id);
                     await deleteDoc(docRef);
+                    if (pendingDeleteTarget.type === 'product') {
+                        closeProductDetailModal();
+                    }
                     closeDeleteModal();
                     showToast('データを削除しました', 'success');
                 } catch (err) {
@@ -3192,6 +3208,13 @@
         function closeProductMasterModal() {
             toggleBodyScroll(false);
             document.getElementById('product-master-modal').classList.add('hidden');
+        }
+
+        function deleteProductMaster() {
+            const id = document.getElementById('pm-id').value;
+            if (!id) return;
+            closeProductMasterModal();
+            openDeleteModal('product', id);
         }
 
         async function handleProductMasterSubmit(e) {
@@ -3675,6 +3698,7 @@
         window.openEditProductMasterModal = openEditProductMasterModal;
         window.closeProductMasterModal = closeProductMasterModal;
         window.handleProductMasterSubmit = handleProductMasterSubmit;
+        window.deleteProductMaster = deleteProductMaster;
         window.onSaleProductSelectChange = onSaleProductSelectChange;
         window.openNewProductModal = openNewProductModal;
         window.closeNewProductModal = closeNewProductModal;
