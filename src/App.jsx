@@ -1982,10 +1982,9 @@ export default function App() {
                             <p className="font-semibold text-white text-sm sm:text-base truncate">
                               {tx.memo}
                             </p>
-                            <div className="flex items-center flex-wrap gap-x-2 gap-y-0.5 text-xs text-slate-400 mt-0.5">
-                              <span className="whitespace-nowrap">{tx.date}</span>
-                              <span>•</span>
-                              <span className="text-slate-300 font-medium whitespace-nowrap">{card?.name || '削除されたカード'}</span>
+                            <div className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                              <div>{tx.date}</div>
+                              <div className="text-slate-300 font-medium truncate">{card?.name || '削除されたカード'}</div>
                             </div>
                           </div>
                         </div>
