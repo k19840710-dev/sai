@@ -23,6 +23,7 @@ import {
   Plane,
   Smartphone,
   Tv,
+  Repeat,
   Eye,
   EyeOff,
   User,
@@ -121,6 +122,8 @@ const CATEGORIES = [
   { id: 'transport', name: '交通費', icon: Car, color: 'bg-emerald-500 text-emerald-500' },
   { id: 'travel', name: '旅行', icon: Plane, color: 'bg-sky-500 text-sky-500' },
   { id: 'communication', name: '通信費', icon: Smartphone, color: 'bg-violet-500 text-violet-500' },
+  { id: 'subscription', name: 'サブスク', icon: Repeat, color: 'bg-cyan-500 text-cyan-500' },
+  { id: 'investment', name: '投資', icon: TrendingUp, color: 'bg-teal-500 text-teal-500' },
   { id: 'other', name: 'その他', icon: HelpCircle, color: 'bg-gray-500 text-gray-500' },
 ];
 
@@ -134,9 +137,11 @@ const CATEGORY_KEYWORDS = [
   ['procurement', ['アリエクスプレス', 'AliExpress', 'Ali Express', 'タオバオ', 'Taobao', '1688', 'Pinduoduo', '拼多多', 'Temu', 'SHEIN', '速卖通']],
   ['beauty', ['美容院', 'ヘアサロン', '理容', 'ネイル', 'エステ', 'まつげ', 'コスメ', '化粧品', '資生堂', 'Shiseido', 'アットコスメ', '脱毛']],
   ['social', ['ギフト', '贈り物', '贈答', 'ご祝儀', 'お祝い', 'プレゼント', '冠婚葬祭', '香典']],
-  ['entertainment', ['映画', '遊園地', 'ゲーム', 'カラオケ', 'ライブ', 'ジム', 'シネマ', 'ディズニー', 'USJ', 'Switch', 'PlayStation', 'Steam', 'コミック', '漫画', 'シーモア', '電子書籍', 'Kindle', 'ebookjapan', 'DMM', 'FANZA', 'ニコニコ', 'Hulu', 'U-NEXT', 'ユーネクスト', 'Abema']],
+  ['entertainment', ['映画', '遊園地', 'ゲーム', 'カラオケ', 'ライブ', 'ジム', 'シネマ', 'ディズニー', 'USJ', 'Switch', 'PlayStation', 'Steam', 'コミック', '漫画', 'シーモア', '電子書籍', 'Kindle', 'ebookjapan', 'DMM', 'FANZA', 'ニコニコ']],
   ['travel', ['JTB', 'HIS', 'エイチ・アイ・エス', '楽天トラベル', 'じゃらん', 'Booking', 'Expedia', 'Airbnb', 'エアビーアンドビー', 'ホテル', '旅館', '民宿']],
-  ['communication', ['povo', 'ｐｏｖｏ', 'ドコモ', 'ａｕ', 'ソフトバンク', 'モバイル', 'ﾓﾊﾞｲﾙ', 'ワイモバイル', 'UQ', 'NHK', 'Wi-Fi', 'ネット', 'サブスク', 'Netflix', 'Spotify', 'プライム', '楽天モバイル']],
+  ['communication', ['povo', 'ｐｏｖｏ', 'ドコモ', 'ａｕ', 'ソフトバンク', 'モバイル', 'ﾓﾊﾞｲﾙ', 'ワイモバイル', 'UQ', 'NHK', 'Wi-Fi', 'ネット', '楽天モバイル']],
+  ['subscription', ['サブスク', '月額', 'Netflix', 'Spotify', 'プライム', 'Amazon Prime', 'Hulu', 'U-NEXT', 'ユーネクスト', 'Abema', 'Disney', 'ディズニープラス', 'Apple Music', 'Apple One', 'iCloud', 'Adobe', 'YouTube Premium', 'ユーチューブプレミアム']],
+  ['investment', ['SBI証券', '楽天証券', '松井証券', 'マネックス証券', 'auカブコム', 'カブコム証券', 'NISA', 'ｉＤｅＣｏ', 'iDeCo', '積立', '投信', '投資信託', '株式', 'FX', '暗号資産', 'ビットコイン', 'Bitcoin', 'Coincheck', 'コインチェック', 'bitFlyer', 'ビットフライヤー', 'GMOコイン']],
   ['transport', ['Suica', 'PASMO', 'ETC', '新幹線', 'ＪＲ', 'JR', '電車', 'バス', 'タクシー', 'Cycling', 'サイクリング', 'ガソリン', 'ＥＮＥＯＳ', '駐車場', 'メトロ', 'タイムズ', 'ANA', 'JAL', '航空', 'チャージ']],
 ];
 
@@ -181,9 +186,9 @@ const KNOWN_MERCHANTS = [
   { match: 'ソフトバンク', name: 'ソフトバンク', category: 'communication' },
   { match: 'ラクテンモバイル', name: '楽天モバイル', category: 'communication' },
   { match: '楽天モバイル', name: '楽天モバイル', category: 'communication' },
-  { match: 'netflix', name: 'Netflix', category: 'communication' },
-  { match: 'spotify', name: 'Spotify', category: 'communication' },
-  { match: 'sbi証券', name: 'SBI証券', category: 'other' },
+  { match: 'netflix', name: 'Netflix', category: 'subscription' },
+  { match: 'spotify', name: 'Spotify', category: 'subscription' },
+  { match: 'sbi証券', name: 'SBI証券', category: 'investment' },
   { match: 'スターバックス', name: 'スターバックス', category: 'food' },
   { match: 'ドトール', name: 'ドトール', category: 'food' },
   { match: 'マクドナルド', name: 'マクドナルド', category: 'food' },
