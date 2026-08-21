@@ -109,23 +109,37 @@ function checkCardEmails() {
 
           const { issuerName, merchant, amount, date } = result.data;
 
-          // 同じ支払いについて、メルペイ経由の通知とPayPal自体からの通知のように
-          // 別々のサービスから2通メールが来ることがある。どちらも内容として正しい
-          // ため通常のメッセージID単位の重複防止（同じメールを2回処理しない）では
-          // 防げない。金額・日付が完全に一致する明細が既にあればスキップする。
-          if (findDuplicateTransaction_(accessToken, amount, date)) {
-            console.log(`重複の可能性があるためスキップ: ${date} ¥${amount} (${issuerName}/${merchant})`);
-            return;
-          }
-
-          const cardId = ensureCardExists_(accessToken, cardCache, issuerName);
-
           // 「コミックシーモア　サクヒン　ポイント」のような余計な文字を削り、知っている
           // 店名なら正式名称＋カテゴリに寄せる（src/App.jsxのOCR取込と同じ表記に揃うので、
           // ここを優先する）。知らない店名だけ、AI自身が返した店名・カテゴリを使う。
           const known = findKnownMerchant_(merchant);
           const finalName = known ? known.name : (merchant || issuerName);
           const finalCategory = known ? known.category : (result.data.category || guessCategory_(merchant));
+
+          // 同じ支払いについて、メルペイ経由の通知とEXIMBAY/PayPalのような決済代行
+          // 会社自体からの通知のように、別々のサービスから2通メールが来ることがある。
+          // どちらも内容として正しいため通常のメッセージID単位の重複防止（同じメールを
+          // 2回処理しない）では防げない。金額・日付が完全に一致する明細が既にあれば、
+          // 新規作成せず重複として扱う。
+          const duplicate = findDuplicateTransaction_(accessToken, amount, date);
+          if (duplicate) {
+            // 今回の会社名が、すでに登録済みの実在カード（このスクリプト実行前から
+            // 存在していたカード）であれば、決済代行会社名などで先に作られた曖昧な
+            // 記録より優先し、既存の明細を正しいカードに付け替える。
+            const isKnownRealCard = existingCardNames.includes(issuerName);
+            if (isKnownRealCard && duplicate.cardId !== cardCache[issuerName]) {
+              const cardId = ensureCardExists_(accessToken, cardCache, issuerName);
+              console.log(`重複を修正: ${date} ¥${amount} を「${issuerName}」の明細に付け替え`);
+              firestoreRequest_(accessToken, 'patch', duplicate.url, {
+                fields: toFirestoreFields_({ cardId, amount, date, category: finalCategory, memo: finalName }),
+              });
+            } else {
+              console.log(`重複のためスキップ: ${date} ¥${amount} (${issuerName}/${merchant})`);
+            }
+            return;
+          }
+
+          const cardId = ensureCardExists_(accessToken, cardCache, issuerName);
           // メールのメッセージIDから決まる固定IDにしておくことで、同じメールを
           // 何度処理しても重複した明細ができない（既存ドキュメントを上書きするだけ）。
           createTransaction_(accessToken, `t-gmail-${message.getId()}`, {
@@ -525,9 +539,12 @@ function createTransaction_(accessToken, id, tx) {
 
 /**
  * 金額・日付が完全に一致する明細が既にあるか調べる。
- * 同じ支払いについて、メルペイ経由の通知とPayPal自体からの通知のように、
- * 別々のサービスから正しい内容の通知メールが2通届くことがあり、その場合は
- * メッセージID単位の重複防止（同じメールを2回処理しない）だけでは防げない。
+ * 同じ支払いについて、メルペイ経由の通知とEXIMBAY/PayPalのような決済代行会社
+ * 自体からの通知のように、別々のサービスから正しい内容の通知メールが2通届く
+ * ことがあり、その場合はメッセージID単位の重複防止（同じメールを2回処理しない）
+ * だけでは防げない。
+ * 戻り値: 見つからなければ null。見つかれば { url, cardId }
+ * （urlはそのままPATCHで上書きできるドキュメントの完全なパス）。
  */
 function findDuplicateTransaction_(accessToken, amount, date) {
   try {
@@ -555,12 +572,19 @@ function findDuplicateTransaction_(accessToken, amount, date) {
       muteHttpExceptions: true,
     };
     const response = UrlFetchApp.fetch(url, options);
-    if (response.getResponseCode() >= 300) return false;
+    if (response.getResponseCode() >= 300) return null;
     const results = JSON.parse(response.getContentText() || '[]');
-    return results.some((r) => r.document);
+    const hit = results.find((r) => r.document);
+    if (!hit) return null;
+    return {
+      // hit.document.name は "projects/.../documents/..." というリソースパスのみで、
+      // スキーム＋ホストが付いていないので、そのままだと不正なURLになる。
+      url: `https://firestore.googleapis.com/v1/${hit.document.name}`,
+      cardId: (hit.document.fields && hit.document.fields.cardId && hit.document.fields.cardId.stringValue) || null,
+    };
   } catch (e) {
     console.warn('重複チェックに失敗しました（チェックなしで続行します）: ' + e);
-    return false;
+    return null;
   }
 }
 
