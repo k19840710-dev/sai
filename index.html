@@ -412,7 +412,7 @@
                     </h3>
                     <button onclick="switchTab('purchases')" class="text-xs font-bold text-[var(--text-main)] hover:underline">仕入れ登録 →</button>
                 </div>
-                <div id="stock-alert-list" class="flex flex-wrap gap-2 pt-1">
+                <div id="stock-alert-list" class="flex flex-col gap-1.5 pt-1">
                     <!-- JS挿入 -->
                 </div>
             </div>
@@ -2896,9 +2896,10 @@
             const alertList = document.getElementById('stock-alert-list');
             if (alertProds.length > 0) {
                 alertList.innerHTML = alertProds.map(p => `
-                    <span onclick="openProductDetailModal('${p.id}')" class="px-2.5 py-1 rounded-xl text-xs font-bold cursor-pointer transition-transform hover:scale-105 ${p.currentStock <= 0 ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-amber-100 text-amber-800 border border-amber-200'}">
-                        ${escapeHtml(p.title)}: ${p.currentStock <= 0 ? '【在庫切れ】' : `残り${p.currentStock}個`}
-                    </span>
+                    <div onclick="openProductDetailModal('${p.id}')" class="flex items-center justify-between gap-3 px-3 py-2 rounded-xl cursor-pointer transition-colors ${p.currentStock <= 0 ? 'bg-red-50 hover:bg-red-100 border border-red-200' : 'bg-amber-50 hover:bg-amber-100 border border-amber-200'}">
+                        <span class="text-xs font-bold text-[var(--text-main)] truncate">${escapeHtml(p.title)}</span>
+                        <span class="text-xs font-extrabold shrink-0 ${p.currentStock <= 0 ? 'text-red-700' : 'text-amber-800'}">${p.currentStock <= 0 ? '在庫切れ' : `残り${p.currentStock}個`}</span>
+                    </div>
                 `).join('');
                 alertSection.classList.remove('hidden');
             } else {
@@ -3414,15 +3415,15 @@
             tbody.innerHTML = pageItems.map(p => {
                 let itemsSummary = '';
                 if (p.items && Array.isArray(p.items) && p.items.length > 0) {
-                    itemsSummary = p.items.map(it => `${escapeHtml(it.title || '商品')} (${it.qty}個)`).join(', ');
+                    itemsSummary = p.items.map(it => `<div>${escapeHtml(it.title || '商品')} <span class="text-[var(--text-sub)] font-normal">(${it.qty}個)</span></div>`).join('');
                 } else {
-                    itemsSummary = `${escapeHtml(p.title || p.product || 'まとめ仕入れ')} (${p.qty || 1}個)`;
+                    itemsSummary = `<div>${escapeHtml(p.title || p.product || 'まとめ仕入れ')} <span class="text-[var(--text-sub)] font-normal">(${p.qty || 1}個)</span></div>`;
                 }
 
                 return `
                     <tr class="hover:bg-[var(--bg-subtle)] transition-colors">
                         <td class="p-3 pl-4 text-xs font-semibold text-[var(--text-sub)] whitespace-nowrap">${p.date || ''}</td>
-                        <td class="p-3 font-semibold text-[var(--text-main)] text-xs">${itemsSummary}</td>
+                        <td class="p-3 font-semibold text-[var(--text-main)] text-xs space-y-1">${itemsSummary}</td>
                         <td class="p-3 text-right font-extrabold text-[var(--text-main)] whitespace-nowrap">¥${(p.amount || 0).toLocaleString()}</td>
                         <td class="p-3 text-[var(--text-main)] text-xs">${escapeHtml(p.memo || '-')}</td>
                         <td class="p-3 text-center pr-4 whitespace-nowrap">
