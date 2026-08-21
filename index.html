@@ -415,7 +415,7 @@
             <div id="stock-alert-section" class="hidden bg-[var(--bg-subtle)] border border-[var(--border-color)] p-3.5 rounded-2xl space-y-2">
                 <div class="flex items-center justify-between">
                     <h3 class="font-bold text-[var(--text-main)] text-xs sm:text-sm flex items-center gap-1.5">
-                        <span class="text-base text-[var(--text-main)] leading-none" role="img" aria-hidden="true">⚠️</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--text-main)]"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
                         在庫注意・在庫切れ
                     </h3>
                     <button onclick="switchTab('purchases')" class="text-xs font-bold text-[var(--text-main)] hover:underline">仕入れ登録 →</button>
@@ -431,7 +431,7 @@
                 <div class="lg:col-span-2 bg-[var(--card-bg)] p-3.5 sm:p-4 rounded-2xl border border-[var(--border-color)] app-card-shadow">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="font-bold text-[var(--text-main)] flex items-center gap-2 text-sm sm:text-base">
-                            <span class="text-base text-[var(--text-main)] leading-none" role="img" aria-hidden="true">📈</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--text-main)]"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                             月別推移 (売上 / 手取り額 / 最終利益)
                         </h3>
                     </div>
@@ -445,7 +445,7 @@
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="font-bold text-[var(--text-main)] flex items-center gap-1.5 text-sm">
-                                <span class="text-base text-[var(--text-main)] leading-none" role="img" aria-hidden="true">🏆</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--text-main)]"><path d="M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2"/><path d="M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2"/><path d="M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3"/></svg>
                                 商品ランキング
                             </h3>
                             <select id="ranking-sort-type" onchange="updateDashboard()" class="text-xs font-semibold border border-[var(--border-color)] rounded-lg p-1 bg-[var(--card-bg)] focus:outline-none">
@@ -470,7 +470,7 @@
             <div class="bg-[var(--card-bg)] rounded-2xl border border-[var(--border-color)] app-card-shadow overflow-hidden">
                 <div class="p-3.5 border-b border-[var(--border-color)] flex items-center justify-between">
                     <h3 class="font-bold text-[var(--text-main)] flex items-center gap-2 text-sm">
-                        <span class="text-base text-[var(--text-sub)] leading-none" role="img" aria-hidden="true">🕓</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--text-sub)]"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
                         最近売れた商品
                     </h3>
                     <button onclick="switchTab('transactions')" class="text-xs font-semibold text-[var(--text-main)] hover:text-[var(--accent-hover)] flex items-center gap-1">
@@ -542,7 +542,7 @@
                 </div>
                 <div id="product-stats-empty" class="hidden p-12 text-center">
                     <div class="inline-flex p-4 bg-[var(--bg-subtle)] text-[var(--text-sub)] rounded-full mb-3">
-                        <span class="text-4xl leading-none" role="img" aria-hidden="true">📦</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/></svg>
                     </div>
                     <p class="text-[var(--text-sub)] font-medium">登録されている商品データがありません</p>
                 </div>
@@ -554,7 +554,7 @@
         <section id="tab-transactions" class="tab-content hidden space-y-4">
             <div class="bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--border-color)] app-card-shadow flex flex-col md:flex-row gap-3 items-center justify-between">
                 <div class="relative w-full md:w-80">
-                    <span class="text-base text-[var(--text-sub)] absolute left-3 top-3 leading-none" role="img" aria-hidden="true">🔍</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--text-sub)] absolute left-3 top-3"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
                     <input type="text" id="search-input" oninput="transactionsPage = 1; debouncedRenderTransactions();" placeholder="商品名・メモで検索..." class="w-full pl-9 pr-4 py-2 border border-[var(--border-color)] rounded-xl text-sm focus:outline-none focus:border-[var(--accent-bg)]">
                 </div>
 
@@ -573,7 +573,7 @@
             </div>
             <div id="empty-state" class="hidden p-12 text-center bg-[var(--card-bg)] rounded-2xl border border-[var(--border-color)] app-card-shadow">
                 <div class="inline-flex p-4 bg-[var(--bg-subtle)] text-[var(--text-sub)] rounded-full mb-3">
-                    <span class="text-4xl leading-none" role="img" aria-hidden="true">📭</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10"><path d="M12 22v-9"/><path d="M15.17 2.21a1.67 1.67 0 0 1 1.63 0L21 4.57a1.93 1.93 0 0 1 0 3.36L8.82 14.79a1.655 1.655 0 0 1-1.64 0L3 12.43a1.93 1.93 0 0 1 0-3.36z"/><path d="M20 13v3.87a2.06 2.06 0 0 1-1.11 1.83l-6 3.08a1.93 1.93 0 0 1-1.78 0l-6-3.08A2.06 2.06 0 0 1 4 16.87V13"/><path d="M21 12.43a1.93 1.93 0 0 0 0-3.36L8.83 2.2a1.64 1.64 0 0 0-1.63 0L3 4.57a1.93 1.93 0 0 0 0 3.36l12.18 6.86a1.636 1.636 0 0 0 1.63 0z"/></svg>
                 </div>
                 <p class="text-[var(--text-sub)] font-medium">該当する取引データがありません</p>
             </div>
@@ -733,7 +733,7 @@
                 </div>
                 <div id="purchases-empty-state" class="hidden p-12 text-center">
                     <div class="inline-flex p-4 bg-[var(--bg-subtle)] text-[var(--text-sub)] rounded-full mb-3">
-                        <span class="text-4xl leading-none" role="img" aria-hidden="true">🛍️</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg>
                     </div>
                     <p class="text-[var(--text-sub)] font-medium">仕入れデータがありません</p>
                 </div>
@@ -760,7 +760,7 @@
             <!-- システム設定カード -->
             <div class="bg-[var(--card-bg)] p-6 rounded-2xl border border-[var(--border-color)] app-card-shadow space-y-4">
                 <h2 class="text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
-                    <span class="text-xl text-[var(--text-main)] leading-none" role="img" aria-hidden="true">🎚️</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-[var(--text-main)]"><path d="M10 8h4"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M17 16h4"/><path d="M19 12V3"/><path d="M19 21v-5"/><path d="M3 14h4"/><path d="M5 10V3"/><path d="M5 21v-7"/></svg>
                     計算設定
                 </h2>
                 <div>
@@ -785,7 +785,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <button onclick="exportAllJSON()" class="p-4 border border-[var(--sales-icon-fg)]/25 bg-[var(--sales-icon-bg)]/40 rounded-xl text-left hover:border-[var(--sales-icon-fg)] transition-all flex items-start gap-3">
                         <div class="p-2.5 bg-[var(--sales-icon-bg)] text-[var(--sales-icon-fg)] rounded-lg shrink-0">
-                            <span class="text-xl leading-none" role="img" aria-hidden="true">📄</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 12a1 1 0 0 0-1 1v1a1 1 0 0 1-1 1 1 1 0 0 1 1 1v1a1 1 0 0 0 1 1"/><path d="M14 18a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1 1 1 0 0 1-1-1v-1a1 1 0 0 0-1-1"/></svg>
                         </div>
                         <div>
                             <div class="font-bold text-[var(--text-main)] text-sm">全データ一括バックアップ (JSON)</div>
@@ -795,7 +795,7 @@
 
                     <button onclick="exportCSV('sales')" class="p-4 border border-[var(--net-icon-fg)]/25 bg-[var(--net-icon-bg)]/40 rounded-xl text-left hover:border-[var(--net-icon-fg)] transition-all flex items-start gap-3">
                         <div class="p-2.5 bg-[var(--net-icon-bg)] text-[var(--net-icon-fg)] rounded-lg shrink-0">
-                            <span class="text-xl leading-none" role="img" aria-hidden="true">📥</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
                         </div>
                         <div>
                             <div class="font-bold text-[var(--text-main)] text-sm">売上CSVダウンロード</div>
@@ -806,7 +806,7 @@
 
                 <div class="p-4 border border-[var(--border-color)] rounded-xl space-y-3 bg-[var(--bg-subtle)]">
                     <div class="font-bold text-sm text-[var(--text-main)] flex items-center gap-2">
-                        <span class="text-base text-[var(--text-main)] leading-none" role="img" aria-hidden="true">📤</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--text-main)]"><path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/></svg>
                         バックアップから復元 (JSON / CSV)
                     </div>
 
@@ -937,8 +937,8 @@
                     <h3 id="detail-product-title" class="text-xl font-bold text-[var(--text-main)] mt-1">商品名</h3>
                 </div>
                 <button onclick="openEditProductMasterModal()" class="px-3 py-1.5 bg-[var(--bg-subtle)] hover:bg-[var(--border-color)] text-[var(--text-main)] text-xs font-bold rounded-xl transition-colors flex items-center gap-1 border border-[var(--border-color)]">
-                    <span class="text-sm leading-none" role="img" aria-hidden="true">🔧</span>
-                    初期在庫設定
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+                    在庫設定
                 </button>
             </div>
 
@@ -991,7 +991,7 @@
 
             <div class="bg-[var(--bg-subtle)] p-4 rounded-xl border border-[var(--border-color)]">
                 <h4 class="text-xs font-bold text-[var(--text-main)] mb-2 flex items-center gap-1.5">
-                    <span class="text-sm text-[var(--text-main)] leading-none" role="img" aria-hidden="true">📈</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-[var(--text-main)]"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                     販売価格の推移
                 </h4>
                 <div class="h-44 relative">
@@ -1001,7 +1001,7 @@
 
             <div class="space-y-2">
                 <h4 class="text-xs font-bold text-[var(--text-main)] flex items-center gap-1.5">
-                    <span class="text-sm text-[var(--text-sub)] leading-none" role="img" aria-hidden="true">🕓</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-[var(--text-sub)]"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
                     販売履歴
                 </h4>
                 <div id="product-sales-timeline" class="max-h-40 overflow-y-auto bg-[var(--bg-subtle)] rounded-xl p-3 border border-[var(--border-color)] text-xs space-y-1.5">
@@ -1046,13 +1046,13 @@
         </div>
     </div>
 
-    <!-- 初期在庫・警告設定モーダル -->
+    <!-- 在庫設定モーダル -->
     <div id="product-master-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[var(--card-bg)] rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 relative border border-[var(--border-color)]">
             <button onclick="closeProductMasterModal()" aria-label="閉じる" class="absolute top-4 right-4 text-[var(--text-sub)] hover:text-[var(--text-main)]">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
-            <h3 class="text-lg font-bold text-[var(--text-main)]">在庫・マスター設定</h3>
+            <h3 class="text-lg font-bold text-[var(--text-main)]">在庫設定</h3>
 
             <form id="product-master-form" onsubmit="handleProductMasterSubmit(event)" class="space-y-4">
                 <input type="hidden" id="pm-id">
@@ -1220,7 +1220,7 @@
     <div id="delete-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[var(--card-bg)] rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4 text-center border border-[var(--border-color)]">
             <div class="w-12 h-12 bg-[var(--bg-subtle)] text-[var(--text-main)] rounded-full flex items-center justify-center mx-auto">
-                <span class="text-2xl leading-none" role="img" aria-hidden="true">⚠️</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
             </div>
             <div>
                 <h3 class="text-base font-bold text-[var(--text-main)]">データの削除</h3>
@@ -1261,7 +1261,7 @@
 
     <!-- トースト通知 -->
     <div id="toast" class="fixed bottom-20 xl:bottom-6 right-6 bg-[#2F3440] text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 text-sm z-50 transform translate-y-20 opacity-0 transition-all duration-300">
-        <span id="toast-icon" class="text-xl leading-none" role="img" aria-hidden="true">✅</span>
+        <span id="toast-icon" class="w-5 h-5 shrink-0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span>
         <span id="toast-message">メッセージ</span>
     </div>
 
@@ -1921,19 +1921,19 @@
             if (data.lastSuccess === false) {
                 statusHtml = `
                     <div class="flex items-start gap-2 p-2.5 bg-red-50 border border-red-100 rounded-xl">
-                        <span class="text-base text-red-500 shrink-0 mt-0.5 leading-none" role="img" aria-hidden="true">⚠️</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-red-500 shrink-0 mt-0.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
                         <div class="text-red-600 font-semibold">前回エラーが出ました: ${escapeHtml(data.lastError || '')}</div>
                     </div>`;
             } else if (isStale) {
                 statusHtml = `
                     <div class="flex items-start gap-2 p-2.5 bg-amber-50 border border-amber-100 rounded-xl">
-                        <span class="text-base text-amber-500 shrink-0 mt-0.5 leading-none" role="img" aria-hidden="true">⚠️</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
                         <div class="text-amber-700 font-semibold">${minutesAgo}分動きがありません。Apps Scriptのトリガーを確認してみてください</div>
                     </div>`;
             } else {
                 statusHtml = `
                     <div class="flex items-center gap-2 text-emerald-600 font-semibold">
-                        <span class="text-base leading-none" role="img" aria-hidden="true">✅</span> 正常に動作しています
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> 正常に動作しています
                     </div>`;
             }
 
@@ -3075,7 +3075,7 @@
                 <tr class="group hover:bg-[var(--bg-subtle)] transition-colors">
                     <td class="p-3 pl-4 font-bold text-[var(--text-main)] sticky left-0 z-10 bg-[var(--card-bg)] group-hover:bg-[var(--bg-subtle)] transition-colors shadow-[2px_0_4px_-2px_rgba(0,0,0,0.15)]">
                         <button onclick="openProductDetailModal('${p.id}')" class="hover:text-[var(--text-main)] text-left flex items-center gap-1 w-[150px]">
-                            <span class="text-sm text-[var(--text-sub)] leading-none no-underline shrink-0" role="img" aria-hidden="true">📦</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-[var(--text-sub)] shrink-0"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/></svg>
                             <span class="underline truncate">${escapeHtml(p.title)}</span>
                         </button>
                     </td>
@@ -3608,15 +3608,13 @@
             const icon = document.getElementById('toast-icon');
             document.getElementById('toast-message').textContent = msg;
 
-            if (type === 'error') {
-                icon.textContent = '❌';
-            } else if (type === 'warning') {
-                icon.textContent = '⚠️';
-            } else if (type === 'success') {
-                icon.textContent = '✅';
-            } else {
-                icon.textContent = 'ℹ️';
-            }
+            const iconSvgs = {
+                error: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>',
+                warning: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+                success: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>',
+                info: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>'
+            };
+            icon.innerHTML = iconSvgs[type] || iconSvgs.info;
 
             toast.classList.remove('translate-y-20', 'opacity-0');
             setTimeout(() => {
