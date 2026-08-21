@@ -220,20 +220,12 @@
     <header id="app-header" class="hidden bg-[var(--card-bg)] border-b border-[var(--border-color)] sticky top-0 z-30 pt-[env(safe-area-inset-top,0px)]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-0 sm:min-h-16 flex flex-wrap items-center justify-between gap-y-2">
 
-            <!-- アプリタイトル & 同期バッジ -->
-            <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-                <div class="flex items-center space-x-2">
-                    <div class="bg-[var(--accent-bg)] text-white p-1.5 sm:p-2 rounded-xl app-card-shadow shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 sm:w-6 sm:h-6"><path d="M12 22V12"/><path d="m16 17 2 2 4-4"/><path d="M21 11.127V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.729l7 4a2 2 0 0 0 2 .001l1.32-.753"/><path d="M3.29 7 12 12l8.71-5"/><path d="m7.5 4.27 8.997 5.148"/></svg>
-                    </div>
-                    <h1 class="font-bold text-base sm:text-lg text-[var(--text-main)] leading-tight whitespace-nowrap">メルカリ売上・在庫管理</h1>
+            <!-- アプリタイトル -->
+            <div class="flex items-center space-x-2.5">
+                <div class="bg-[var(--accent-bg)] text-white p-2 sm:p-2.5 rounded-xl app-card-shadow shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 sm:w-7 sm:h-7"><path d="M12 22V12"/><path d="m16 17 2 2 4-4"/><path d="M21 11.127V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.729l7 4a2 2 0 0 0 2 .001l1.32-.753"/><path d="M3.29 7 12 12l8.71-5"/><path d="m7.5 4.27 8.997 5.148"/></svg>
                 </div>
-                <div>
-                    <span id="sync-badge" class="inline-flex px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold bg-[var(--bg-subtle)] text-[var(--text-main)] rounded-full border border-[var(--border-color)] items-center gap-1 shrink-0">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent-bg)] animate-pulse"></span>
-                        データ同期完了
-                    </span>
-                </div>
+                <h1 class="font-bold text-lg sm:text-xl text-[var(--text-main)] leading-tight whitespace-nowrap">メルカリ売上・在庫管理</h1>
             </div>
 
             <!-- デスクトップ ナビゲーション -->
