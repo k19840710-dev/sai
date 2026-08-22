@@ -127,17 +127,31 @@ function checkCardEmails() {
           // みなす（カードが違う＝ゲートウェイ名など別チャネルからの重複の可能性）。
           const duplicate = findDuplicateTransaction_(accessToken, amount, date);
           if (duplicate && duplicate.cardId !== cardId) {
-            // 今回の会社名が、すでに登録済みの実在カード（このスクリプト実行前から
-            // 存在していたカード）であれば、決済代行会社名などで先に作られた曖昧な
-            // 記録より優先し、既存の明細を正しいカードに付け替える。
+            // カードと店名・カテゴリは別々に決める。2通のメールは「先に処理された方が
+            // 勝ち」で丸ごと上書きすると、片方にしか無い有用な情報（例: 決済代行会社の
+            // 領収書にしか店名が書かれていない）が消えてしまうことがあるため。
+            //
+            // カード: 今回の会社名が、このスクリプト実行前から登録済みの実在カードで
+            // あれば、決済代行会社名などで先に作られた曖昧なカードより優先する。
+            // そうでなければ（今回も既存も実在カードでない場合は）既存の割り当てを保つ。
             const isKnownRealCard = existingCardNames.includes(issuerName);
-            if (isKnownRealCard) {
-              console.log(`重複を修正: ${date} ¥${amount} を「${issuerName}」の明細に付け替え`);
-              firestoreRequest_(accessToken, 'patch', duplicate.url, {
-                fields: toFirestoreFields_({ cardId, amount, date, category: finalCategory, memo: finalName }),
-              });
-            } else {
+            const finalCardId = isKnownRealCard ? cardId : duplicate.cardId;
+
+            // 店名・カテゴリ: 知っている店名リスト（KNOWN_MERCHANTS_）に一致する、
+            // より具体的な方を採用する。今回・既存のどちらも一致しない/両方一致するなら
+            // 今回の内容を使う（判断材料が無ければ最新の解析結果を信じる）。
+            const existingIsKnownMerchant = !!(duplicate.memo && findKnownMerchant_(duplicate.memo));
+            const useExisting = existingIsKnownMerchant && !known;
+            const patchMemo = useExisting ? duplicate.memo : finalName;
+            const patchCategory = useExisting ? (duplicate.category || finalCategory) : finalCategory;
+
+            if (finalCardId === duplicate.cardId && patchMemo === duplicate.memo && patchCategory === duplicate.category) {
               console.log(`重複のためスキップ: ${date} ¥${amount} (${issuerName}/${merchant})`);
+            } else {
+              console.log(`重複を修正: ${date} ¥${amount} → カード付け替え/店名補完（${patchMemo}）`);
+              firestoreRequest_(accessToken, 'patch', duplicate.url, {
+                fields: toFirestoreFields_({ cardId: finalCardId, amount, date, category: patchCategory, memo: patchMemo }),
+              });
             }
             return;
           }
@@ -582,11 +596,14 @@ function findDuplicateTransaction_(accessToken, amount, date) {
     const results = JSON.parse(response.getContentText() || '[]');
     const hit = results.find((r) => r.document);
     if (!hit) return null;
+    const fields = hit.document.fields || {};
     return {
       // hit.document.name は "projects/.../documents/..." というリソースパスのみで、
       // スキーム＋ホストが付いていないので、そのままだと不正なURLになる。
       url: `https://firestore.googleapis.com/v1/${hit.document.name}`,
-      cardId: (hit.document.fields && hit.document.fields.cardId && hit.document.fields.cardId.stringValue) || null,
+      cardId: (fields.cardId && fields.cardId.stringValue) || null,
+      memo: (fields.memo && fields.memo.stringValue) || null,
+      category: (fields.category && fields.category.stringValue) || null,
     };
   } catch (e) {
     console.warn('重複チェックに失敗しました（チェックなしで続行します）: ' + e);
