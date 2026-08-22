@@ -109,6 +109,8 @@ function checkCardEmails() {
 
           const { issuerName, merchant, amount, date } = result.data;
 
+          const cardId = ensureCardExists_(accessToken, cardCache, issuerName);
+
           // 「コミックシーモア　サクヒン　ポイント」のような余計な文字を削り、知っている
           // 店名なら正式名称＋カテゴリに寄せる（src/App.jsxのOCR取込と同じ表記に揃うので、
           // ここを優先する）。知らない店名だけ、AI自身が返した店名・カテゴリを使う。
@@ -119,16 +121,17 @@ function checkCardEmails() {
           // 同じ支払いについて、メルペイ経由の通知とEXIMBAY/PayPalのような決済代行
           // 会社自体からの通知のように、別々のサービスから2通メールが来ることがある。
           // どちらも内容として正しいため通常のメッセージID単位の重複防止（同じメールを
-          // 2回処理しない）では防げない。金額・日付が完全に一致する明細が既にあれば、
-          // 新規作成せず重複として扱う。
+          // 2回処理しない）では防げない。ただし「金額・日付が一致」というだけで弾くと、
+          // 同じカードで同額の買い物をたまたま同じ日に2回した場合まで片方が消えてしまう
+          // ので、既存の明細と「カードまで一致」した場合だけ、別サービス経由の重複通知と
+          // みなす（カードが違う＝ゲートウェイ名など別チャネルからの重複の可能性）。
           const duplicate = findDuplicateTransaction_(accessToken, amount, date);
-          if (duplicate) {
+          if (duplicate && duplicate.cardId !== cardId) {
             // 今回の会社名が、すでに登録済みの実在カード（このスクリプト実行前から
             // 存在していたカード）であれば、決済代行会社名などで先に作られた曖昧な
             // 記録より優先し、既存の明細を正しいカードに付け替える。
             const isKnownRealCard = existingCardNames.includes(issuerName);
-            if (isKnownRealCard && duplicate.cardId !== cardCache[issuerName]) {
-              const cardId = ensureCardExists_(accessToken, cardCache, issuerName);
+            if (isKnownRealCard) {
               console.log(`重複を修正: ${date} ¥${amount} を「${issuerName}」の明細に付け替え`);
               firestoreRequest_(accessToken, 'patch', duplicate.url, {
                 fields: toFirestoreFields_({ cardId, amount, date, category: finalCategory, memo: finalName }),
@@ -139,7 +142,6 @@ function checkCardEmails() {
             return;
           }
 
-          const cardId = ensureCardExists_(accessToken, cardCache, issuerName);
           // メールのメッセージIDから決まる固定IDにしておくことで、同じメールを
           // 何度処理しても重複した明細ができない（既存ドキュメントを上書きするだけ）。
           createTransaction_(accessToken, `t-gmail-${message.getId()}`, {
@@ -547,6 +549,8 @@ function createTransaction_(accessToken, id, tx) {
  * だけでは防げない。
  * 戻り値: 見つからなければ null。見つかれば { url, cardId }
  * （urlはそのままPATCHで上書きできるドキュメントの完全なパス）。
+ * カードまで一致しているかは呼び出し元で判断する（同じカードでの同額別購入と
+ * 区別するため）。
  */
 function findDuplicateTransaction_(accessToken, amount, date) {
   try {
